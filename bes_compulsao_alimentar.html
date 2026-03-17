@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Escala de Compulsão Alimentar Periódica — BES</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #F2F5F3;
+    --surface: #FFFFFF;
+    --surface2: #EBF0EC;
+    --teal: #2E7D6E;
+    --teal-dark: #1D5249;
+    --teal-light: #A8CBBF;
+    --teal-pale: #D6EAE5;
+    --amber: #C87C3A;
+    --red: #B04040;
+    --text: #1A2620;
+    --text-muted: #5A7268;
+    --border: #D4E0DB;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Layout */
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 36px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .header-tag {
+    display: inline-block;
+    background: var(--teal-pale);
+    color: var(--teal-dark);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 44px);
+    color: var(--teal-dark);
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .header h1 em { font-style: italic; color: var(--teal); }
+  .header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 540px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta-chip::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--teal-light);
+  }
+
+  /* Alert */
+  .alert {
+    background: var(--teal-pale);
+    border-left: 3px solid var(--teal);
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    color: var(--teal-dark);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .alert strong { font-weight: 500; }
+
+  /* Screens */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.4s ease both; }
+
+  /* Start screen */
+  .start-card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 36px;
+    box-shadow: 0 2px 24px rgba(30,82,73,0.08);
+    margin-bottom: 20px;
+  }
+  .start-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--teal-dark);
+    margin-bottom: 12px;
+  }
+  .start-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .btn-start {
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 99px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(46,125,110,0.3);
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(46,125,110,0.35); }
+
+  /* Progress */
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 5px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal-light), var(--teal));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question */
+  .q-card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: 0 2px 24px rgba(30,82,73,0.07);
+    margin-bottom: 18px;
+    animation: fadeUp 0.35s ease both;
+  }
+  .q-num {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 20px;
+  }
+  .q-intro {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+    font-style: italic;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text);
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+  }
+  .opt:hover { border-color: var(--teal-light); background: var(--teal-pale); }
+  .opt.selected {
+    border-color: var(--teal);
+    background: linear-gradient(135deg, #EAF4F1, #F8FCFB);
+    box-shadow: 0 4px 16px rgba(46,125,110,0.12);
+  }
+  .opt-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--teal-light);
+    flex-shrink: 0;
+    margin-top: 3px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .opt-dot::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--teal);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .opt.selected .opt-dot { border-color: var(--teal); }
+  .opt.selected .opt-dot::after { opacity: 1; }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn {
+    padding: 11px 24px;
+    border-radius: 99px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    color: white;
+    box-shadow: 0 4px 14px rgba(46,125,110,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface2); }
+
+  /* Results */
+  .result-banner {
+    border-radius: 18px;
+    padding: 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    color: white;
+  }
+  .result-banner.normal { background: linear-gradient(135deg, #2E7D6E, #1D5249); }
+  .result-banner.moderate { background: linear-gradient(135deg, #B07730, #7A4E18); }
+  .result-banner.severe { background: linear-gradient(135deg, #9A3030, #6B1E1E); }
+  .result-banner::before {
+    content: attr(data-icon);
+    position: absolute;
+    font-size: 160px;
+    opacity: 0.07;
+    top: -20px; right: -10px;
+    line-height: 1;
+  }
+  .result-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 10px;
+  }
+  .result-score {
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .result-max { font-size: 16px; opacity: 0.6; margin-bottom: 16px; }
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+  .result-desc {
+    font-size: 14px;
+    opacity: 0.87;
+    line-height: 1.75;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Score breakdown */
+  .breakdown {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 24px rgba(30,82,73,0.07);
+  }
+  .breakdown h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--teal-dark);
+    margin-bottom: 18px;
+  }
+  .scale-visual {
+    position: relative;
+    height: 12px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .scale-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: 99px;
+    transition: width 1s ease;
+  }
+  .scale-normal { background: linear-gradient(90deg, #2E7D6E, #A8CBBF); }
+  .scale-moderate { background: linear-gradient(90deg, #B07730, #E8C080); }
+  .scale-severe { background: linear-gradient(90deg, #9A3030, #E08080); }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .scale-markers {
+    position: relative;
+    height: 20px;
+    margin-top: 6px;
+  }
+  .marker {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .marker::before {
+    content: '|';
+    display: block;
+    font-size: 8px;
+  }
+
+  .disclaimer-box {
+    background: #FFF8EE;
+    border: 1.5px solid #E8C890;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #7A5A20;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .disclaimer-box strong { font-weight: 500; }
+
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-download {
+    flex: 1;
+    min-width: 200px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 99px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(46,125,110,0.25);
+  }
+  .btn-download:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(46,125,110,0.3); }
+  .btn-restart {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+    padding: 14px 24px;
+    border-radius: 99px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-restart:hover { background: var(--surface2); }
+
+  .citation {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.7;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .q-card { padding: 22px 18px; }
+    .actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-tag">Instrumento Validado</div>
+    <h1>Escala de Compulsão<br><em>Alimentar Periódica</em></h1>
+    <p>BES — Binge Eating Scale. Identifica a presença e gravidade de comportamentos associados à compulsão alimentar.</p>
+    <div class="header-meta">
+      <span class="meta-chip">16 questões</span>
+      <span class="meta-chip">~10 minutos</span>
+      <span class="meta-chip">Gormally et al. (1982)</span>
+      <span class="meta-chip">Tradução: Freitas & Appolinario (2001)</span>
+    </div>
+  </div>
+
+  <!-- START -->
+  <div id="screen-start" class="screen active">
+    <div class="alert">
+      <strong>Importante:</strong> Este instrumento é de uso informativo e de autoconhecimento. Não substitui avaliação clínica. Em caso de dúvidas ou sofrimento relacionado à alimentação, consulte um profissional de saúde.
+    </div>
+    <div class="start-card">
+      <h2>Como responder</h2>
+      <p>Você encontrará 16 grupos de afirmações. Leia todas as opções de cada grupo e selecione <strong>aquela que melhor descreve</strong> como você se sente em relação ao seu comportamento alimentar. Responda com honestidade — não há respostas certas ou erradas.</p>
+      <button class="btn-start" onclick="showScreen('screen-quiz'); renderQ()">Iniciar →</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span id="prog-label">Questão 1 de 16</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="q-area"></div>
+    <div class="nav">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQ()">← Anterior</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextQ()" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="screen-results" class="screen">
+    <div id="results-content"></div>
+  </div>
+
+</div>
+
+<script>
+// Scoring table from PDF
+// Each question: array indexed 0 = option1, 1 = option2, etc.
+const SCORING = [
+  [0, 0, 1, 3],    // #1
+  [0, 1, 2, 3],    // #2
+  [0, 1, 3, 3],    // #3
+  [0, 0, 0, 2],    // #4
+  [0, 1, 2, 3],    // #5
+  [0, 1, 3],       // #6 — only 3 options
+  [0, 1, 3, 3],    // #7
+  [0, 1, 2, 3],    // #8
+  [0, 1, 2, 3],    // #9
+  [0, 1, 2, 3],    // #10
+  [0, 1, 2, 3],    // #11
+  [0, 1, 2, 3],    // #12
+  [0, 1, 2, 3],    // #13
+  [0, 1, 2, 3],    // #14
+  [0, 1, 2, 3],    // #15
+  [0, 1, 2],       // #16 — only 3 options
+];
+
+const QUESTIONS = [
+  {
+    intro: 'Como você se sente em relação ao seu peso/aparência com outras pessoas:',
+    opts: [
+      'Não me sinto constrangido(a) com o meu peso ou o tamanho do meu corpo quando estou com outras pessoas.',
+      'Me sinto preocupado(a) em como pareço para os outros, mas isto normalmente não me faz sentir desapontado(a) comigo mesmo(a).',
+      'Fico mesmo constrangido(a) com a minha aparência e o meu peso, o que me faz sentir desapontado(a) comigo mesmo(a).',
+      'Me sinto muito constrangido(a) com o meu peso e, frequentemente, sinto muita vergonha e desprezo por mim mesmo(a). Tento evitar contatos sociais por causa desse constrangimento.'
+    ]
+  },
+  {
+    intro: 'Sobre sua velocidade ao comer:',
+    opts: [
+      'Não tenho nenhuma dificuldade para comer devagar, de maneira apropriada.',
+      'Embora pareça que devoro os alimentos, não acabo me sentindo empanturrado(a) por comer demais.',
+      'Às vezes tendo a comer rapidamente, sentindo-me então desconfortavelmente cheio(a) depois.',
+      'Tenho o hábito de engolir minha comida sem realmente mastigá-la. Quando isto acontece, em geral me sinto desconfortavelmente empanturrado(a) por ter comido demais.'
+    ]
+  },
+  {
+    intro: 'Sobre o controle dos seus impulsos para comer:',
+    opts: [
+      'Me sinto capaz de controlar meus impulsos para comer, quando eu quero.',
+      'Sinto que tenho falhado em controlar meu comportamento alimentar mais do que a média das pessoas.',
+      'Me sinto totalmente incapaz de controlar meus impulsos para comer.',
+      'Por me sentir tão incapaz de controlar meu comportamento alimentar, entro em desespero tentando manter o controle.'
+    ]
+  },
+  {
+    intro: 'Sobre comer quando você está chateado(a):',
+    opts: [
+      'Não tenho o hábito de comer quando estou chateado(a).',
+      'Às vezes como quando estou chateado(a), mas frequentemente sou capaz de me ocupar e afastar minha mente da comida.',
+      'Tenho o hábito regular de comer quando estou chateado(a), mas de vez em quando posso usar alguma outra atividade para afastar minha mente da comida.',
+      'Tenho o forte hábito de comer quando estou chateado(a). Nada parece me ajudar a parar com esse hábito.'
+    ]
+  },
+  {
+    intro: 'Sobre comer por fome física ou por impulso:',
+    opts: [
+      'Normalmente quando como alguma coisa é porque estou fisicamente com fome.',
+      'De vez em quando como alguma coisa por impulso, mesmo quando não estou realmente com fome.',
+      'Tenho o hábito regular de comer alimentos que realmente não aprecio para satisfazer uma sensação de fome, mesmo que fisicamente não necessite de comida.',
+      'Mesmo que não esteja fisicamente com fome, tenho uma sensação de fome em minha boca que somente parece ser satisfeita quando como um alimento que enche a boca. Às vezes, quando como para satisfazer minha "fome na boca", em seguida o cuspo para não ganhar peso.'
+    ]
+  },
+  {
+    intro: 'Sobre sentimentos de culpa após comer demais:',
+    opts: [
+      'Não sinto qualquer culpa ou ódio de mim mesmo(a) depois de comer demais.',
+      'De vez em quando sinto culpa ou ódio de mim mesmo(a) depois de comer demais.',
+      'Quase o tempo todo sinto muita culpa ou ódio de mim mesmo(a) depois de comer demais.'
+    ]
+  },
+  {
+    intro: 'Sobre perda de controle quando está em dieta:',
+    opts: [
+      'Não perco o controle total da minha alimentação quando estou em dieta, mesmo após períodos em que como demais.',
+      'Às vezes, quando estou em dieta e como um alimento proibido, sinto como se tivesse estragado tudo e como ainda mais.',
+      'Frequentemente, quando como demais durante uma dieta, tenho o hábito de dizer: "agora que estraguei tudo, por que não ir até o fim". Quando isto acontece, como ainda mais.',
+      'Tenho o hábito regular de começar dietas rigorosas por mim mesmo(a), mas as quebro entrando numa compulsão alimentar. Minha vida parece ser "uma festa" ou "um morrer de fome".'
+    ]
+  },
+  {
+    intro: 'Sobre a frequência com que come a ponto de se sentir muito cheio(a):',
+    opts: [
+      'Raramente como tanta comida a ponto de me sentir desconfortavelmente empanturrado(a) depois.',
+      'Normalmente, cerca de uma vez por mês, como uma tal quantidade de comida que acabo me sentindo muito empanturrado(a).',
+      'Tenho períodos regulares durante o mês em que como grandes quantidades de comida, seja nas refeições, seja nos lanches.',
+      'Como tanta comida que, regularmente, me sinto bastante desconfortável depois de comer e, algumas vezes, um pouco enjoado(a).'
+    ]
+  },
+  {
+    intro: 'Sobre variações na sua ingestão de calorias:',
+    opts: [
+      'Em geral, minha ingestão calórica não sobe a níveis muito altos, nem desce a níveis muito baixos.',
+      'Às vezes, depois de comer demais, tento reduzir minha ingestão calórica para quase nada, para compensar o excesso de calorias que ingeri.',
+      'Tenho o hábito regular de comer demais durante a noite. Minha rotina parece ser não estar com fome de manhã, mas comer demais à noite.',
+      'Na minha vida adulta tenho tido períodos que duram semanas em que praticamente me mato de fome. Isto se segue a períodos em que como demais. Parece que vivo uma vida de "festa" ou de "morrer de fome".'
+    ]
+  },
+  {
+    intro: 'Sobre sua capacidade de parar de comer quando quer:',
+    opts: [
+      'Normalmente sou capaz de parar de comer quando quero. Sei quando "já chega".',
+      'De vez em quando tenho uma compulsão para comer que parece que não posso controlar.',
+      'Frequentemente tenho fortes impulsos para comer que parece que não sou capaz de controlar, mas em outras ocasiões posso controlá-los.',
+      'Me sinto incapaz de controlar impulsos para comer. Tenho medo de não ser capaz de parar de comer por vontade própria.'
+    ]
+  },
+  {
+    intro: 'Sobre parar de comer quando se sente cheio(a):',
+    opts: [
+      'Não tenho problema algum para parar de comer quando me sinto cheio(a).',
+      'Normalmente posso parar de comer quando me sinto cheio(a), mas de vez em quando comer demais me deixa desconfortavelmente empanturrado(a).',
+      'Tenho um problema para parar de comer uma vez que tenha começado e normalmente me sinto desconfortavelmente empanturrado(a) depois de fazer uma refeição.',
+      'Por ter o problema de não ser capaz de parar de comer quando quero, às vezes tenho que provocar o vômito, usar laxantes e/ou diuréticos para aliviar minha sensação de empanturramento.'
+    ]
+  },
+  {
+    intro: 'Sobre o seu comportamento alimentar em público:',
+    opts: [
+      'Parece que como tanto quando estou com os outros quanto quando estou sozinho(a).',
+      'Às vezes, quando estou com outras pessoas, não como tanto quanto quero porque me sinto constrangido(a) com o meu comportamento alimentar.',
+      'Frequentemente como só uma pequena quantidade de comida quando outros estão presentes, pois me sinto muito embaraçado(a) com o meu comportamento alimentar.',
+      'Me sinto tão envergonhado(a) por comer demais que escolho horas para comer demais quando sei que ninguém me verá. Me sinto como uma pessoa que se esconde para comer.'
+    ]
+  },
+  {
+    intro: 'Sobre sua rotina de refeições:',
+    opts: [
+      'Faço três refeições ao dia com apenas um lanche ocasional entre as refeições.',
+      'Faço três refeições ao dia, mas normalmente também lancho entre as refeições.',
+      'Quando faço lanches pesados, tenho o hábito de pular as refeições regulares.',
+      'Há períodos regulares em que parece que estou continuamente comendo, sem refeições planejadas.'
+    ]
+  },
+  {
+    intro: 'Sobre pensamentos relacionados ao controle alimentar:',
+    opts: [
+      'Não penso muito em tentar controlar impulsos indesejáveis para comer.',
+      'Pelo menos em algum momento sinto que meus pensamentos estão "pré-ocupados" com tentar controlar meus impulsos para comer.',
+      'Frequentemente sinto que gasto muito tempo pensando no quanto comi ou tentando não comer mais.',
+      'Parece que a maior parte das horas que passo acordado(a) estão "pré-ocupadas" por pensamentos sobre comer ou não comer. Sinto como se estivesse constantemente lutando para não comer.'
+    ]
+  },
+  {
+    intro: 'Sobre pensar em comida:',
+    opts: [
+      'Não penso muito sobre comida.',
+      'Tenho fortes desejos por comida, mas eles só duram curtos períodos de tempo.',
+      'Há dias em que parece que não posso pensar em mais nada a não ser comida.',
+      'Na maioria dos dias, meus pensamentos parecem estar "pré-ocupados" com comida. Sinto como se vivesse para comer.'
+    ]
+  },
+  {
+    intro: 'Sobre reconhecer sua sensação de fome:',
+    opts: [
+      'Normalmente sei se estou ou não fisicamente com fome. Como a porção certa de comida para me satisfazer.',
+      'De vez em quando me sinto em dúvida para saber se estou ou não fisicamente com fome. Nessas ocasiões é difícil saber quanto deveria comer para me satisfazer.',
+      'Mesmo que eu pudesse saber quantas calorias deveria ingerir, não teria ideia alguma de qual seria a quantidade "normal" de comida para mim.'
+    ]
+  },
+];
+
+let answers = new Array(16).fill(null);
+let currentQ = 0;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderQ() {
+  const q = QUESTIONS[currentQ];
+  const sel = answers[currentQ];
+  const total = QUESTIONS.length;
+  const pct = Math.round((currentQ / total) * 100);
+
+  document.getElementById('prog-label').textContent = `Questão ${currentQ + 1} de ${total}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('btn-prev').disabled = currentQ === 0;
+  document.getElementById('btn-next').disabled = sel === null;
+  document.getElementById('btn-next').textContent = currentQ === total - 1 ? 'Ver Resultado →' : 'Próxima →';
+
+  const area = document.getElementById('q-area');
+  let optsHtml = q.opts.map((txt, i) => `
+    <button class="opt ${sel === i ? 'selected' : ''}" onclick="selectOpt(${i})">
+      <div class="opt-dot"></div>
+      <span>${txt}</span>
+    </button>
+  `).join('');
+
+  area.innerHTML = `
+    <div class="q-card">
+      <div class="q-num">Questão ${currentQ + 1}</div>
+      ${q.intro ? `<div class="q-intro">${q.intro}</div>` : ''}
+      <div class="options">${optsHtml}</div>
+    </div>
+  `;
+}
+
+function selectOpt(i) {
+  answers[currentQ] = i;
+  renderQ();
+}
+
+function nextQ() {
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQ(); }
+}
+
+function calcScore() {
+  let total = 0;
+  answers.forEach((ans, i) => {
+    if (ans !== null) total += SCORING[i][ans];
+  });
+  return total;
+}
+
+function getLevel(score) {
+  if (score <= 17) return {
+    key: 'normal',
+    title: 'Sem Indicativo de Compulsão',
+    desc: 'Sua pontuação indica que você não apresenta, no momento, padrões de comportamento associados à compulsão alimentar periódica. Seus hábitos alimentares parecem estar dentro de um espectro considerado normal pela escala.',
+    icon: '✓',
+    color: 'normal'
+  };
+  if (score <= 29) return {
+    key: 'moderate',
+    title: 'Indicativo Moderado',
+    desc: 'Sua pontuação situa-se na faixa intermediária, indicando uma inclinação variável a episódios de compulsão alimentar. Isso não representa um diagnóstico, mas pode ser útil explorar esses padrões com um profissional de saúde.',
+    icon: '~',
+    color: 'moderate'
+  };
+  return {
+    key: 'severe',
+    title: 'Indicativo de Compulsão Alimentar Periódica',
+    desc: 'Sua pontuação sugere a presença de padrões associados à compulsão alimentar periódica. É importante ressaltar que esta escala não substitui uma avaliação clínica. Recomendamos conversar com um profissional de saúde para uma avaliação adequada.',
+    icon: '!',
+    color: 'severe'
+  };
+}
+
+function showResults() {
+  const score = calcScore();
+  const level = getLevel(score);
+  const maxScore = 46;
+  const fillPct = Math.min((score / maxScore) * 100, 100);
+  let fillClass = score <= 17 ? 'scale-normal' : score <= 29 ? 'scale-moderate' : 'scale-severe';
+  const m17 = Math.round((17 / maxScore) * 100);
+  const m30 = Math.round((30 / maxScore) * 100);
+
+  const html = `
+    <div class="result-banner ${level.color}" data-icon="${level.icon}">
+      <div class="result-label">Resultado da Avaliação</div>
+      <div class="result-score">${score}</div>
+      <div class="result-max">de ${maxScore} pontos possíveis</div>
+      <div class="result-title">${level.title}</div>
+      <div class="result-desc">${level.desc}</div>
+    </div>
+
+    <div class="breakdown">
+      <h3>Sua pontuação no espectro</h3>
+      <div class="scale-labels">
+        <span>0</span>
+        <span>${maxScore}</span>
+      </div>
+      <div class="scale-visual">
+        <div class="scale-fill ${fillClass}" style="width: 0%" id="scale-fill-anim"></div>
+      </div>
+      <div class="scale-markers">
+        <div class="marker" style="left: ${m17}%">17</div>
+        <div class="marker" style="left: ${m30}%">30</div>
+        <div class="marker" style="left: ${Math.round((score / maxScore) * 100)}%; color: #1D5249; font-weight: 500;">↑ Você</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:10px; margin-top: 24px;">
+        <div style="background: var(--bg); border-radius: 10px; padding: 14px; text-align:center;">
+          <div style="font-size:11px; color: var(--text-muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">Normal</div>
+          <div style="font-family: 'DM Serif Display', serif; font-size:20px; color: var(--teal-dark);">≤ 17</div>
+        </div>
+        <div style="background: var(--bg); border-radius: 10px; padding: 14px; text-align:center;">
+          <div style="font-size:11px; color: var(--text-muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">Moderado</div>
+          <div style="font-family: 'DM Serif Display', serif; font-size:20px; color: var(--amber);">18 – 29</div>
+        </div>
+        <div style="background: var(--bg); border-radius: 10px; padding: 14px; text-align:center;">
+          <div style="font-size:11px; color: var(--text-muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">Indicativo</div>
+          <div style="font-family: 'DM Serif Display', serif; font-size:20px; color: var(--red);">≥ 30</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer-box">
+      ⚠️ <strong>Aviso importante:</strong> Esta escala é um instrumento de rastreamento e <strong>não realiza diagnóstico clínico</strong>. Os resultados devem ser interpretados por um profissional de saúde habilitado. Se você identificar padrões preocupantes, considere buscar suporte profissional.
+    </div>
+
+    <div class="actions">
+      <button class="btn-download" onclick="downloadPDF(${score}, '${level.key}', '${level.title}')">⬇ Baixar Resultado em PDF</button>
+      <button class="btn-restart" onclick="restart()">Refazer</button>
+    </div>
+    <div class="citation">
+      BES — Binge Eating Scale. Gormally et al. (1982).<br>
+      Tradução e validação: Freitas & Appolinario. Rev Bras Psiquiatr 2001;23(4):215-20.
+    </div>
+  `;
+
+  document.getElementById('results-content').innerHTML = html;
+  showScreen('screen-results');
+
+  setTimeout(() => {
+    const fill = document.getElementById('scale-fill-anim');
+    if (fill) fill.style.width = fillPct + '%';
+    fill.style.transition = 'width 1.2s ease';
+  }, 200);
+}
+
+function downloadPDF(score, levelKey, levelTitle) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const colors = {
+    normal: [46, 125, 110],
+    moderate: [176, 119, 48],
+    severe: [154, 48, 48]
+  };
+  const col = colors[levelKey] || colors.normal;
+
+  doc.setFillColor(...col);
+  doc.rect(0, 0, 210, 52, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('Escala de Compulsão Alimentar Periódica', 105, 18, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.text('BES — Binge Eating Scale', 105, 28, { align: 'center' });
+  doc.setFontSize(10);
+  doc.text(`Resultado gerado em ${new Date().toLocaleDateString('pt-BR')}`, 105, 40, { align: 'center' });
+
+  // Score box
+  doc.setFillColor(242, 245, 243);
+  doc.rect(15, 60, 180, 44, 'F');
+  doc.setTextColor(...col);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(40);
+  doc.text(String(score), 60, 88, { align: 'center' });
+  doc.setFontSize(11);
+  doc.setTextColor(90, 114, 104);
+  doc.text('pontos', 60, 97, { align: 'center' });
+  doc.setTextColor(26, 38, 32);
+  doc.setFontSize(14);
+  doc.text(levelTitle, 140, 82, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(90, 114, 104);
+
+  const maxScore = 46;
+  const m17 = Math.round((17 / maxScore) * 164);
+  const m30 = Math.round((30 / maxScore) * 164);
+  const mScore = Math.round((score / maxScore) * 164);
+
+  // Scale bar
+  let y = 115;
+  doc.setFillColor(212, 224, 219);
+  doc.rect(23, y, 164, 6, 'F');
+  doc.setFillColor(...col);
+  doc.rect(23, y, mScore, 6, 'F');
+  doc.setTextColor(90, 114, 104);
+  doc.setFontSize(8);
+  doc.text('17', 23 + m17, y + 12, { align: 'center' });
+  doc.text('30', 23 + m30, y + 12, { align: 'center' });
+  doc.text('0', 23, y + 12, { align: 'center' });
+  doc.text('46', 187, y + 12, { align: 'center' });
+
+  // Ranges
+  y = 140;
+  const ranges = [
+    { label: 'Normal', range: '≤ 17', c: [46, 125, 110] },
+    { label: 'Moderado', range: '18 – 29', c: [176, 119, 48] },
+    { label: 'Indicativo de compulsão', range: '≥ 30', c: [154, 48, 48] },
+  ];
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(26, 38, 32);
+  doc.text('Faixas de interpretação:', 20, y);
+  y += 8;
+  ranges.forEach(r => {
+    doc.setFillColor(...r.c);
+    doc.rect(20, y - 3, 4, 4, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(26, 38, 32);
+    doc.text(r.label + ':', 27, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(r.range, 80, y);
+    y += 9;
+  });
+
+  // Disclaimer
+  y += 8;
+  doc.setFillColor(255, 248, 238);
+  doc.rect(15, y, 180, 28, 'F');
+  doc.setTextColor(122, 90, 32);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.text('Aviso importante:', 20, y + 8);
+  doc.setFont('helvetica', 'normal');
+  const disclaimer = 'Esta escala é um instrumento de rastreamento e não realiza diagnóstico clínico. Os resultados devem ser interpretados por um profissional de saúde habilitado.';
+  const dLines = doc.splitTextToSize(disclaimer, 165);
+  doc.text(dLines, 20, y + 15);
+
+  y += 40;
+  doc.setTextColor(150, 150, 150);
+  doc.setFontSize(8);
+  doc.text('Gormally J, Black S, Daston S, Rardin D (1982). Tradução: Freitas S, Appolinario JC. Rev Bras Psiquiatr 2001;23(4):215-20.', 105, y, { align: 'center' });
+
+  doc.save('BES-resultado.pdf');
+}
+
+function restart() {
+  answers = new Array(16).fill(null);
+  currentQ = 0;
+  showScreen('screen-start');
+}
+</script>
+</body>
+</html>
