@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tríade do Tempo – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F4F8F8; --ink:#1B3A5C; --muted:#5A7A8A;
+    --card:#FFFFFF; --border:#D6E8E8;
+    --green:#6DC44A; --teal:#7ECECE; --teal-dark:#4AABAB; --navy:#1B3A5C;
+    --importancia:#4AABAB;
+    --urgencia:#E05A2B;
+    --circunstancia:#1B3A5C;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+  /* HEADER */
+  .header{background:linear-gradient(135deg,var(--navy) 0%,#2A5580 100%);color:#fff;padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(126,206,206,.15);}
+  .header::after{content:'';position:absolute;bottom:-40px;left:-40px;width:150px;height:150px;border-radius:50%;background:rgba(109,196,74,.1);}
+  .header-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:10px;position:relative;z-index:1;}
+  .header h1{font-family:'Playfair Display',serif;font-size:clamp(26px,5vw,44px);font-weight:700;line-height:1.15;margin-bottom:12px;position:relative;z-index:1;}
+  .header p{color:rgba(255,255,255,.72);font-size:14px;max-width:500px;margin:0 auto;line-height:1.65;position:relative;z-index:1;}
+  .header-author{margin-top:12px;font-size:12px;color:rgba(255,255,255,.45);position:relative;z-index:1;}
+
+  /* PROGRESS */
+  .progress-wrap{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;}
+  .progress-bar-bg{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:99px;transition:width .4s ease;width:0%;}
+  .progress-label{font-size:12px;color:var(--muted);white-space:nowrap;min-width:55px;text-align:right;}
+
+  .container{max-width:680px;margin:0 auto;padding:28px 16px 0;}
+
+  /* SCREENS */
+  .screen{display:none;animation:fadeIn .4s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* INTRO */
+  .intro-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 28px;text-align:center;margin-top:24px;box-shadow:0 4px 24px rgba(27,58,92,.07);}
+  .intro-box h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:12px;color:var(--navy);}
+  .intro-box p{color:var(--muted);font-size:14px;line-height:1.75;margin-bottom:20px;}
+  .scale-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px;}
+  .scale-pill{padding:7px 14px;border-radius:99px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--bg);color:var(--ink);}
+  .scale-pill span{font-weight:700;margin-right:4px;}
+  .intro-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+  .stat-chip{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+  .stat-chip strong{display:block;font-size:20px;color:var(--navy);font-weight:500;}
+  .stat-chip span{font-size:12px;color:var(--muted);}
+
+  /* SECTION */
+  .section-header{margin:24px 0 16px;}
+  .section-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+  .section-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+  /* QUESTION CARD */
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;box-shadow:0 1px 6px rgba(27,58,92,.04);}
+  .q-num{font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;}
+  .q-text{font-size:14px;line-height:1.6;color:var(--ink);margin-bottom:16px;}
+  .scale-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .scale-btn{flex:1;min-width:52px;padding:9px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3;}
+  .scale-btn:hover{border-color:var(--teal-dark);color:var(--ink);}
+  .scale-btn.selected-A{background:var(--importancia);border-color:var(--importancia);color:#fff;}
+  .scale-btn.selected-B{background:var(--importancia);border-color:var(--importancia);color:#fff;}
+  .scale-btn.selected-C{background:var(--urgencia);border-color:var(--urgencia);color:#fff;}
+  .scale-btn.selected-default{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+  /* NAV */
+  .nav-row{display:flex;gap:12px;margin-top:28px;justify-content:flex-end;}
+  .btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:opacity .2s,transform .1s;}
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--green);color:#fff;}
+  .btn-primary:hover{opacity:.88;}
+  .btn-secondary{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+  .btn-secondary:hover{background:var(--border);}
+  .btn-large{padding:16px 40px;font-size:15px;width:100%;text-align:center;}
+  .page-info{text-align:center;color:var(--muted);font-size:13px;margin-top:8px;}
+
+  /* RESULTS */
+  .results-title{font-family:'Playfair Display',serif;font-size:clamp(22px,5vw,34px);color:var(--navy);text-align:center;margin:32px 0 6px;}
+  .results-sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:28px;}
+
+  /* TRIADE VISUAL */
+  .triade-wrap{display:flex;justify-content:center;margin:28px 0 32px;}
+  .triade-svg-container{position:relative;width:300px;height:260px;}
+  .triade-svg-container svg{width:100%;height:100%;}
+  .sphere-label{position:absolute;text-align:center;pointer-events:none;}
+  .sphere-label .pct{font-size:20px;font-weight:700;display:block;line-height:1;}
+  .sphere-label .name{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;display:block;margin-top:3px;}
+  #lbl-imp{top:18px;left:50%;transform:translateX(-50%);color:#fff;}
+  #lbl-urg{bottom:28px;left:14px;color:#fff;}
+  #lbl-cir{bottom:28px;right:10px;color:#fff;}
+
+  /* SCORE CARDS */
+  .score-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+  .score-card{border-radius:16px;padding:20px 16px;text-align:center;}
+  .score-card .sc-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .score-card .sc-pct{font-size:32px;font-weight:300;line-height:1;display:block;margin-bottom:4px;}
+  .score-card .sc-pts{font-size:12px;display:block;}
+
+  /* INTERPRETATION */
+  .interp-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.06);}
+  .interp-card h3{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+  .interp-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .interp-card p{font-size:14px;line-height:1.7;color:var(--muted);}
+
+  .cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:24px;}
+  .cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.6;}
+  .cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+
+  .restart-row{text-align:center;margin-top:8px;margin-bottom:8px;}
+
+  /* FOOTER */
+  .site-footer{background:var(--navy);color:rgba(255,255,255,.65);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+  .site-footer a{color:var(--teal);text-decoration:none;}
+  .site-footer strong{color:#fff;}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s ease;z-index:999;pointer-events:none;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  @media(max-width:480px){
+    .score-cards{grid-template-columns:1fr;}
+    .scale-btn{font-size:11px;padding:8px 2px;}
+    .triade-svg-container{width:260px;height:226px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Gestão do Tempo</div>
+  <h1>Tríade do Tempo</h1>
+  <p>Descubra como você distribui seu tempo entre as esferas da Importância, Urgência e Circunstância.</p>
+  <div class="header-author">Adaptado por Paulo Gomes, Neuropsicólogo</div>
+</div>
+
+<div class="progress-wrap" id="progressWrap" style="display:none">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 18</div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-box">
+      <h2>Como você usa o seu tempo?</h2>
+      <p>Este teste é composto por 18 perguntas. Para cada uma, escolha a opção que melhor descreve seu comportamento habitual. <strong>Responda com a primeira coisa que vier à mente</strong> — ela costuma ser a mais verdadeira.</p>
+      <div class="scale-pills">
+        <div class="scale-pill"><span>1</span>Nunca</div>
+        <div class="scale-pill"><span>2</span>Raramente</div>
+        <div class="scale-pill"><span>3</span>Às Vezes</div>
+        <div class="scale-pill"><span>4</span>Quase Sempre</div>
+        <div class="scale-pill"><span>5</span>Sempre</div>
+      </div>
+      <div class="intro-stats">
+        <div class="stat-chip"><strong>18</strong><span>perguntas</span></div>
+        <div class="stat-chip"><strong>3</strong><span>esferas</span></div>
+        <div class="stat-chip"><strong>~10 min</strong><span>para completar</span></div>
+      </div>
+      <button class="btn btn-primary btn-large" onclick="startTest()">Começar o teste →</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS PAGE 1 (Q1-9) -->
+  <div class="screen" id="screen-p1">
+    <div id="questions-p1"></div>
+    <div class="page-info" id="info-p1"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goIntro()">← Voltar</button>
+      <button class="btn btn-primary" onclick="goPage(2)">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS PAGE 2 (Q10-18) -->
+  <div class="screen" id="screen-p2">
+    <div id="questions-p2"></div>
+    <div class="page-info" id="info-p2"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goPage(1)">← Voltar</button>
+      <button class="btn btn-primary" onclick="showResults()">Ver meus resultados →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="results-title">Sua Tríade do Tempo</div>
+    <div class="results-sub">Veja como você distribui seu tempo entre as três esferas</div>
+
+    <div class="triade-wrap">
+      <div class="triade-svg-container">
+        <svg viewBox="0 0 300 260" fill="none" xmlns="http://www.w3.org/2000/svg" id="triadeSVG">
+          <!-- Importância (topo) -->
+          <circle id="circImp" cx="150" cy="100" r="80" fill="#4AABAB" opacity="0.92"/>
+          <!-- Urgência (esq baixo) -->
+          <circle id="circUrg" cx="100" cy="185" r="80" fill="#E05A2B" opacity="0.92"/>
+          <!-- Circunstância (dir baixo) -->
+          <circle id="circCir" cx="200" cy="185" r="80" fill="#1B3A5C" opacity="0.92"/>
+        </svg>
+        <div class="sphere-label" id="lbl-imp">
+          <span class="pct" id="pct-imp">--%</span>
+          <span class="name">Importância</span>
+        </div>
+        <div class="sphere-label" id="lbl-urg">
+          <span class="pct" id="pct-urg">--%</span>
+          <span class="name">Urgência</span>
+        </div>
+        <div class="sphere-label" id="lbl-cir">
+          <span class="pct" id="pct-cir">--%</span>
+          <span class="name">Circunstância</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-cards" id="scoreCards"></div>
+    <div id="interpCards"></div>
+
+    <div class="cta-box">
+      <p>Quer entender melhor sua tríade e trabalhar estratégias personalizadas de gestão do tempo?</p>
+      <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn btn-primary" style="flex:1" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="restartTest()">Refazer o teste</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var questions = [
+  {n:1,  text:"Costumo ir a eventos, festas ou cursos, mesmo sem ter muita vontade, para agradar ao chefe, aos amigos ou à família.", group:"A"},
+  {n:2,  text:"Não consigo realizar tudo o que me propus a fazer no dia e preciso cumprir hora extra ou levar trabalho para casa.", group:"C"},
+  {n:3,  text:"Quando recebo um e-mail, costumo dar uma olhada para checar o conteúdo.", group:"A"},
+  {n:4,  text:"Costumo visitar com regularidade pessoas relevantes em minha vida – amigos, parentes, filhos.", group:"B"},
+  {n:5,  text:"É comum aparecerem problemas inesperados no meu dia a dia.", group:"C"},
+  {n:6,  text:"Assumo compromissos com outras pessoas ou aceito novas posições na empresa, mesmo que não goste muito da nova atividade, se for para aumentar meus rendimentos ou obter uma promoção.", group:"A"},
+  {n:7,  text:"Tenho um tempo definido para dedicar a mim mesmo e nele posso fazer o que quiser.", group:"B"},
+  {n:8,  text:"Costumo deixar para fazer relatórios, imposto de renda, compras de Natal, estudar para provas e outras tarefas perto do prazo de entrega.", group:"C"},
+  {n:9,  text:"Nos dias de descanso, costumo passar boa parte do tempo assistindo à televisão, jogando ou acessando a internet.", group:"A"},
+  {n:10, text:"Faço um planejamento por escrito de tudo o que preciso fazer durante a semana.", group:"B"},
+  {n:11, text:"Posso afirmar que estou conseguindo realizar tudo o que gostaria em minha vida e que o tempo está passando na velocidade correta.", group:"B"},
+  {n:12, text:"Costumo participar de reuniões sem saber direito o conteúdo, o porquê da minha presença ali ou a que resultado aquele encontro pode levar.", group:"A"},
+  {n:13, text:"Consigo melhores resultados e me sinto mais produtivo quando estou sob pressão ou quando o prazo é curto.", group:"C"},
+  {n:14, text:"Quando quero alguma coisa, defino esse objetivo por escrito, estabeleço prazos em minha agenda, monitoro os resultados obtidos e os comparo com os esperados.", group:"B"},
+  {n:15, text:"Leio muitos e-mails desnecessários, com piadas, correntes, propagandas, apresentações, produtos, etc.", group:"A"},
+  {n:16, text:"Estive atrasado com minhas tarefas ou reuniões nas últimas semanas.", group:"C"},
+  {n:17, text:"Faço exercícios com regularidade, alimento-me de forma adequada e desfruto horas suficientes de lazer.", group:"B"},
+  {n:18, text:"É comum reduzir meu horário de almoço ou até mesmo comer enquanto trabalho para concluir um projeto ou uma tarefa.", group:"C"}
+];
+
+var answers = {};
+
+var scaleLabels = ['Nunca','Raramente','Às Vezes','Quase Sempre','Sempre'];
+
+function buildQuestions(containerId, from, to) {
+  var c = document.getElementById(containerId);
+  c.innerHTML = '';
+
+  // section tags
+  var groups = {};
+  for (var i = from-1; i < to; i++) {
+    var g = questions[i].group;
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(i);
+  }
+
+  var rendered = [];
+  for (var i = from-1; i < to; i++) rendered.push(i);
+
+  rendered.forEach(function(idx) {
+    var q = questions[idx];
+    var card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'qcard-' + idx;
+
+    var btns = '';
+    for (var v = 1; v <= 5; v++) {
+      var sel = answers[idx] === v;
+      var selClass = sel ? ('selected-' + q.group) : '';
+      btns += '<button class="scale-btn ' + selClass + '" id="sbtn-' + idx + '-' + v + '" onclick="setAnswer(' + idx + ',' + v + ')">' +
+        v + '<br><span style="font-size:10px;font-weight:300">' + scaleLabels[v-1] + '</span>' +
+        '</button>';
+    }
+
+    card.innerHTML =
+      '<div class="q-num">Pergunta ' + q.n + ' &nbsp;·&nbsp; Grupo ' + q.group + '</div>' +
+      '<div class="q-text">' + q.text + '</div>' +
+      '<div class="scale-row">' + btns + '</div>';
+
+    c.appendChild(card);
+  });
+}
+
+function setAnswer(idx, val) {
+  answers[idx] = val;
+  var q = questions[idx];
+  for (var v = 1; v <= 5; v++) {
+    var btn = document.getElementById('sbtn-' + idx + '-' + v);
+    if (!btn) continue;
+    if (v === val) {
+      btn.className = 'scale-btn selected-' + q.group;
+    } else {
+      btn.className = 'scale-btn';
+    }
+  }
+  updateProgress();
+  updatePageInfo();
+}
+
+function updateProgress() {
+  var count = Object.keys(answers).length;
+  document.getElementById('progressFill').style.width = (count/18*100) + '%';
+  document.getElementById('progressLabel').textContent = count + ' / 18';
+}
+
+function updatePageInfo() {
+  var p1 = 0, p2 = 0;
+  for (var i = 0; i < 9;  i++) if (answers[i] !== undefined) p1++;
+  for (var i = 9; i < 18; i++) if (answers[i] !== undefined) p2++;
+  var el1 = document.getElementById('info-p1');
+  var el2 = document.getElementById('info-p2');
+  if (el1) el1.textContent = p1 + ' de 9 respondidas';
+  if (el2) el2.textContent = p2 + ' de 9 respondidas';
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function startTest() {
+  buildQuestions('questions-p1', 1, 9);
+  updateProgress(); updatePageInfo();
+  document.getElementById('progressWrap').style.display = 'flex';
+  showScreen('screen-p1');
+}
+
+function goIntro() {
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-intro');
+}
+
+function goPage(n) {
+  if (n === 2) {
+    buildQuestions('questions-p2', 10, 18);
+    updatePageInfo();
+    showScreen('screen-p2');
+  } else {
+    showScreen('screen-p1');
+  }
+}
+
+function calcScores() {
+  var totals = {A:0, B:0, C:0};
+  questions.forEach(function(q, idx) {
+    var v = answers[idx] || 0;
+    totals[q.group] += v;
+  });
+  var total = totals.A + totals.B + totals.C;
+  var pctB = total > 0 ? Math.round((totals.B / total) * 100) : 0;
+  var pctC = total > 0 ? Math.round((totals.C / total) * 100) : 0;
+  var pctA = 100 - pctB - pctC;
+  return { totals:totals, total:total, pctImp:pctB, pctUrg:pctC, pctCir:pctA };
+}
+
+function showResults() {
+  var s = calcScores();
+
+  // Update triade visual sizes
+  var base = 70, max = 95;
+  function radius(pct) { return base + Math.round((pct/100) * (max-base)); }
+  var rImp = radius(s.pctImp);
+  var rUrg = radius(s.pctUrg);
+  var rCir = radius(s.pctCir);
+
+  document.getElementById('circImp').setAttribute('r', rImp);
+  document.getElementById('circUrg').setAttribute('r', rUrg);
+  document.getElementById('circCir').setAttribute('r', rCir);
+
+  document.getElementById('pct-imp').textContent = s.pctImp + '%';
+  document.getElementById('pct-urg').textContent = s.pctUrg + '%';
+  document.getElementById('pct-cir').textContent = s.pctCir + '%';
+
+  // Score cards
+  var cards = [
+    {label:'Importância', pct:s.pctImp, pts:s.totals.B, color:'#4AABAB', bg:'rgba(74,171,171,.1)'},
+    {label:'Urgência',    pct:s.pctUrg, pts:s.totals.C, color:'#E05A2B', bg:'rgba(224,90,43,.1)'},
+    {label:'Circunstância',pct:s.pctCir,pts:s.totals.A, color:'#1B3A5C', bg:'rgba(27,58,92,.08)'}
+  ];
+  var sc = document.getElementById('scoreCards');
+  sc.innerHTML = cards.map(function(c) {
+    return '<div class="score-card" style="background:'+c.bg+';border:1.5px solid '+c.color+'33">' +
+      '<span class="sc-label" style="color:'+c.color+'">'+c.label+'</span>' +
+      '<span class="sc-pct" style="color:'+c.color+'">'+c.pct+'%</span>' +
+      '<span class="sc-pts" style="color:var(--muted)">'+c.pts+' pontos de 30</span>' +
+      '</div>';
+  }).join('');
+
+  // Interpretation
+  var dominant = s.pctImp >= s.pctUrg && s.pctImp >= s.pctCir ? 'imp'
+    : s.pctUrg >= s.pctImp && s.pctUrg >= s.pctCir ? 'urg' : 'cir';
+
+  var interpData = {
+    imp: {
+      title: 'Parabéns! Sua esfera dominante é a Importância.',
+      color: '#4AABAB',
+      text: 'Você dedica a maior parte do seu tempo àquilo que realmente importa para sua vida e seus objetivos. Isso indica maturidade na gestão pessoal do tempo. Continue cultivando hábitos como planejamento semanal, definição de metas por escrito e autocuidado. O desafio agora é manter esse equilíbrio à medida que as demandas externas aumentam.'
+    },
+    urg: {
+      title: 'Sua esfera dominante é a Urgência.',
+      color: '#E05A2B',
+      text: 'Você tende a reagir às demandas do dia a dia conforme elas aparecem, priorizando o que é urgente em detrimento do que é importante. Isso é muito comum antes de se adotar uma metodologia de gestão pessoal. A boa notícia é que com algumas mudanças simples — como planejamento semanal e aprender a dizer não — é possível migrar progressivamente para a esfera da importância.'
+    },
+    cir: {
+      title: 'Sua esfera dominante é a Circunstância.',
+      color: '#1B3A5C',
+      text: 'Boa parte do seu tempo é consumida por situações externas e demandas de terceiros, muitas vezes sem que você tenha escolhido ativamente estar nelas. Isso pode gerar sensação de falta de controle sobre o próprio tempo. Trabalhar o estabelecimento de limites, aprender a delegar e definir prioridades pessoais claras são passos fundamentais para recuperar o protagonismo sobre sua rotina.'
+    }
+  };
+
+  var ic = document.getElementById('interpCards');
+  var info = interpData[dominant];
+  ic.innerHTML =
+    '<div class="interp-card">' +
+      '<h3><span class="interp-dot" style="background:'+info.color+'"></span>' + info.title + '</h3>' +
+      '<p>' + info.text + '</p>' +
+    '</div>' +
+    '<div class="interp-card">' +
+      '<h3><span class="interp-dot" style="background:var(--green)"></span>O que isso significa?</h3>' +
+      '<p>A <strong>Tríade do Tempo</strong> mostra que toda pessoa divide seu tempo entre três esferas: ' +
+      '<strong style="color:#4AABAB">Importância</strong> (o que é relevante para seus objetivos e valores), ' +
+      '<strong style="color:#E05A2B">Urgência</strong> (o que precisa ser feito agora, sob pressão) e ' +
+      '<strong style="color:#1B3A5C">Circunstância</strong> (o que acontece por influência externa ou hábito). ' +
+      'O ideal é que a esfera da importância seja a maior, pois ela representa as escolhas conscientes que nos levam aonde queremos chegar.</p>' +
+    '</div>';
+
+  showScreen('screen-results');
+}
+
+function restartTest() {
+  answers = {};
+  updateProgress();
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-intro');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// ── PDF ──
+function downloadPDF() {
+  var s = calcScores();
+  if (typeof window.jspdf === 'undefined') {
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = function(){ gerarPDF(s); };
+    document.head.appendChild(script);
+  } else { gerarPDF(s); }
+}
+
+function gerarPDF(s) {
+  var doc = new window.jspdf.jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+  var W=210, M=20;
+  var navy=[27,58,92], teal=[74,171,171], green=[109,196,74];
+  var white=[255,255,255], light=[244,248,248], muted=[90,122,138], ink=[27,58,92];
+  var impColor=[74,171,171], urgColor=[224,90,43], cirColor=[27,58,92];
+  var date = new Date().toLocaleDateString('pt-BR');
+  var y=0;
+
+  function sf(c){ doc.setFillColor(c[0],c[1],c[2]); }
+  function sd(c){ doc.setDrawColor(c[0],c[1],c[2]); }
+  function st(c){ doc.setTextColor(c[0],c[1],c[2]); }
+  function chk(n){ if(y+n>275){ doc.addPage(); y=20; } }
+
+  // Header
+  sf(navy); doc.rect(0,0,W,46,'F');
+  sd(teal); doc.setLineWidth(0.3); doc.circle(196,8,20,'D');
+  st(teal); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.text('GESTÃO DO TEMPO', W/2, 12, {align:'center'});
+  st(white); doc.setFont('helvetica','bold'); doc.setFontSize(20);
+  doc.text('Tríade do Tempo', W/2, 24, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+  doc.setTextColor(200,220,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  Gerado em '+date, W/2, 33, {align:'center'});
+  doc.text('paulogomespsicologo.com', W/2, 40, {align:'center'});
+  y = 56;
+
+  // Triade circles (visual)
+  chk(70);
+  var cx=W/2, cy=y+36;
+  var base=22, maxR=32;
+  function r(pct){ return base + Math.round((pct/100)*(maxR-base)); }
+  var rI=r(s.pctImp), rU=r(s.pctUrg), rC=r(s.pctCir);
+
+  sf(impColor); doc.setGState(new doc.GState({opacity:0.88}));
+  doc.circle(cx, cy-18, rI, 'F');
+  sf(urgColor);
+  doc.circle(cx-18, cy+16, rU, 'F');
+  sf(cirColor);
+  doc.circle(cx+18, cy+16, rC, 'F');
+  doc.setGState(new doc.GState({opacity:1}));
+
+  // Labels on circles
+  function circLabel(x, ly, pct, name, col) {
+    st(white); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text(pct+'%', x, ly-2, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    doc.text(name, x, ly+4, {align:'center'});
+  }
+  circLabel(cx, cy-18, s.pctImp, 'Importância', impColor);
+  circLabel(cx-18, cy+16, s.pctUrg, 'Urgência', urgColor);
+  circLabel(cx+18, cy+16, s.pctCir, 'Circunstância', cirColor);
+
+  y = cy + 42;
+
+  // Score row
+  chk(28);
+  var cols = [
+    {label:'Importância', pct:s.pctImp, pts:s.totals.B, color:impColor},
+    {label:'Urgência',    pct:s.pctUrg, pts:s.totals.C, color:urgColor},
+    {label:'Circunstância',pct:s.pctCir,pts:s.totals.A, color:cirColor}
+  ];
+  var cw = (W-M*2)/3;
+  cols.forEach(function(col, i) {
+    var x = M + i*cw;
+    sf(light); sd(col.color); doc.setLineWidth(0.4);
+    doc.roundedRect(x, y, cw-4, 22, 3, 3, 'FD');
+    st(col.color); doc.setFont('helvetica','bold'); doc.setFontSize(18);
+    doc.text(col.pct+'%', x+cw/2-2, y+13, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+    doc.text(col.label, x+cw/2-2, y+19, {align:'center'});
+    st(muted); doc.setFontSize(7);
+    doc.text(col.pts+' pts de 30', x+cw/2-2, y+25, {align:'center'});
+  });
+  y += 32;
+
+  // Interpretation
+  var dominant = s.pctImp >= s.pctUrg && s.pctImp >= s.pctCir ? 'imp'
+    : s.pctUrg >= s.pctImp && s.pctUrg >= s.pctCir ? 'urg' : 'cir';
+  var interpTexts = {
+    imp: {title:'Esfera Dominante: Importância', color:impColor,
+      text:'Você dedica a maior parte do seu tempo àquilo que realmente importa para sua vida e objetivos. Continue cultivando hábitos como planejamento semanal, definição de metas por escrito e autocuidado. O desafio agora é manter esse equilíbrio à medida que as demandas externas aumentam.'},
+    urg: {title:'Esfera Dominante: Urgência', color:urgColor,
+      text:'Você tende a reagir às demandas do dia a dia conforme elas aparecem, priorizando o urgente em detrimento do importante. Com algumas mudanças — como planejamento semanal e aprender a dizer não — é possível migrar progressivamente para a esfera da importância.'},
+    cir: {title:'Esfera Dominante: Circunstância', color:cirColor,
+      text:'Boa parte do seu tempo é consumida por situações externas e demandas de terceiros. Trabalhar o estabelecimento de limites, aprender a delegar e definir prioridades pessoais claras são passos fundamentais para recuperar o protagonismo sobre sua rotina.'}
+  };
+
+  var info = interpTexts[dominant];
+  chk(40);
+  sf(info.color); doc.rect(M, y, 3, 28, 'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); st(info.color);
+  doc.text(info.title, M+7, y+7);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); st(ink);
+  var lines = doc.splitTextToSize(info.text, W-M*2-10);
+  doc.text(lines, M+7, y+14);
+  y += lines.length*5 + 18;
+
+  chk(30);
+  sf(navy); doc.roundedRect(M, y, W-M*2, 22, 4, 4, 'F');
+  st(white); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+  doc.text('Quer aprofundar esses resultados?', W/2, y+8, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.setTextColor(180,210,210);
+  doc.text('Agende uma consulta: paulogomespsicologo.com', W/2, y+16, {align:'center'});
+  y += 30;
+
+  // Footer
+  var pages = doc.internal.getNumberOfPages();
+  for (var p=1; p<=pages; p++) {
+    doc.setPage(p); sf(navy); doc.rect(0,287,W,10,'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); st(white);
+    doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com', W/2, 293, {align:'center'});
+  }
+
+  doc.save('triade-do-tempo-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

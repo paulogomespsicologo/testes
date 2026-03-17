@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DASS-21 – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --D:#5A7A8A;--A:#E8943A;--S:#8B6FBE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.header{background:linear-gradient(150deg,#0D2640 0%,var(--navy) 55%,#1E4A6E 100%);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(90,122,138,.22) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(139,111,190,.15) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,50px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:14px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--green));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:660px;margin:0 auto;padding:32px 16px 0;}
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:28px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:24px;}
+.dim-pills{display:flex;gap:10px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+.dpill{padding:8px 18px;border-radius:99px;font-size:12px;font-weight:500;border:1.5px solid;}
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+.notice{background:rgba(90,122,138,.07);border:1.5px solid rgba(90,122,138,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#3A5A6A;line-height:1.65;margin-bottom:24px;text-align:left;}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-full{width:100%;text-align:center;padding:16px;}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* SCALE REFERENCE */
+.scale-ref{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:16px;}
+.scale-ref p{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;}
+.scale-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.schip{border-radius:10px;padding:10px 6px;text-align:center;border:1.5px solid var(--border);background:var(--bg);}
+.schip .sv{font-size:18px;font-weight:300;display:block;color:var(--navy);font-family:'Cormorant Garamond',serif;}
+.schip .sl{font-size:10px;color:var(--muted);line-height:1.4;margin-top:2px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:10px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 3px 14px rgba(27,58,92,.07);}
+.q-num{font-size:11px;color:var(--muted);letter-spacing:.6px;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.65;margin-bottom:14px;font-style:italic;}
+.scale-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.sbt{padding:11px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.35;}
+.sbt:hover{border-color:var(--teal-d);color:var(--ink);}
+.sbt .sv{font-size:18px;font-weight:300;display:block;margin-bottom:3px;font-family:'Cormorant Garamond',serif;}
+.sbt.sel{color:#fff;border-color:transparent;}
+
+/* SENSITIVITY */
+.sens{background:#FFF5F5;border:1.5px solid #FFCCCC;border-radius:12px;padding:16px 18px;margin-bottom:14px;font-size:13px;color:#7A2020;line-height:1.6;}
+.sens strong{display:block;margin-bottom:4px;}
+
+/* RESULTS */
+.results-header{text-align:center;margin:8px 0 24px;}
+.results-header .rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.results-header h2{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,32px);font-weight:300;font-style:italic;color:var(--navy);}
+
+/* DIM RESULT CARDS */
+.dim-cards{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:20px;}
+.dim-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:24px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.dc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;}
+.dc-left{}
+.dc-letter{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;}
+.dc-name{font-size:15px;font-weight:500;margin-top:-2px;}
+.dc-right{text-align:right;flex-shrink:0;}
+.dc-score{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;line-height:1;}
+.dc-max{font-size:12px;color:var(--muted);}
+.dc-band{display:inline-block;padding:5px 14px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:4px;}
+/* Bar */
+.dc-bar-wrap{margin:12px 0;}
+.dc-bar-segments{display:flex;height:8px;border-radius:99px;overflow:hidden;margin-bottom:6px;}
+.dc-seg{height:100%;transition:flex .3s;}
+.dc-labels{display:flex;justify-content:space-between;}
+.dc-label{font-size:9px;color:var(--muted);text-align:center;flex:1;}
+/* Dot marker */
+.dc-marker-wrap{position:relative;height:16px;margin-bottom:4px;}
+.dc-marker{position:absolute;top:0;transform:translateX(-50%);transition:left .8s ease;}
+.dc-marker::before{content:'▼';font-size:10px;}
+/* Description */
+.dc-desc{font-size:13px;line-height:1.75;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+
+/* SENSITIVITY RESULTS NOTE */
+.sens-result{background:#FFF8F0;border:1.5px solid #FFDDAA;border-radius:12px;padding:16px 18px;margin-bottom:16px;font-size:13px;color:#7A4A10;line-height:1.65;}
+.sens-result strong{display:block;margin-bottom:4px;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;text-align:center;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){.scale-chips{grid-template-columns:repeat(4,1fr);}.intro-card{padding:28px 18px;}.dc-letter{font-size:40px;}.dc-score{font-size:32px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Avaliação Psicológica</div>
+  <h1>Escala de <strong>Depressividade,<br>Ansiedade e Estresse</strong></h1>
+  <p>Avalie como você tem se sentido durante a última semana em três dimensões essenciais do bem-estar emocional.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baseado no DASS-21 (domínio público)</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 21</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como você tem se sentido?</h2>
+    <p>Para cada afirmação, indique com que frequência ela se aplicou a você <strong>na última semana</strong>. Não há respostas certas ou erradas — responda com honestidade.</p>
+    <div class="dim-pills">
+      <span class="dpill" style="color:var(--D);border-color:var(--D)44;background:rgba(90,122,138,.07)">Depressividade</span>
+      <span class="dpill" style="color:var(--A);border-color:var(--A)44;background:rgba(232,148,58,.07)">Ansiedade</span>
+      <span class="dpill" style="color:var(--S);border-color:var(--S)44;background:rgba(139,111,190,.07)">Estresse</span>
+    </div>
+    <div class="notice">
+      ⚠️ Este instrumento é uma ferramenta de triagem, <strong>não um diagnóstico clínico</strong>. Os resultados devem ser interpretados por um profissional de saúde mental.
+    </div>
+    <div class="intro-stats">
+      <div class="stat"><strong>21</strong><span>afirmações</span></div>
+      <div class="stat"><strong>~5 min</strong><span>para completar</span></div>
+      <div class="stat"><strong>3</strong><span>dimensões</span></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div class="scale-ref">
+    <p>Para cada afirmação, escolha a opção que melhor descreve sua experiência <strong>na última semana</strong>:</p>
+    <div class="scale-chips">
+      <div class="schip"><span class="sv">0</span><span class="sl">Não se aplicou a mim</span></div>
+      <div class="schip"><span class="sv">1</span><span class="sl">Aplicou-se um pouco</span></div>
+      <div class="schip"><span class="sv">2</span><span class="sl">Aplicou-se bastante</span></div>
+      <div class="schip"><span class="sv">3</span><span class="sl">Aplicou-se muito</span></div>
+    </div>
+  </div>
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-header">
+    <div class="rh-eyebrow">DASS-21 — Resultado</div>
+    <h2>Seu perfil emocional</h2>
+  </div>
+  <div class="dim-cards" id="dimCards"></div>
+  <div class="sens-result" id="sensResult" style="display:none">
+    <strong>⚠️ Atenção</strong>
+    Seus resultados indicam sintomas que merecem atenção profissional. Buscar apoio com um psicólogo ou psiquiatra pode ser muito benéfico. Se estiver passando por uma crise, o CVV atende 24h pelo telefone <strong>188</strong>.
+  </div>
+  <div class="cta-box">
+    <p>Quer compreender melhor seus resultados e desenvolver estratégias personalizadas para seu bem-estar emocional?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+<div class="site-footer"><strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br><a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════
+// DASS-21 ITEMS (domínio público)
+// dim: D=Depressividade, A=Ansiedade, S=Estresse
+// ═══════════════════════════════════
+var ITEMS = [
+  {n:1,  d:'S', t:'Achei difícil me acalmar.'},
+  {n:2,  d:'D', t:'Percebi que tinha a boca seca.'},
+  {n:3,  d:'A', t:'Não consegui vivenciar nenhum sentimento positivo.'},
+  {n:4,  d:'A', t:'Tive dificuldade em respirar em alguns momentos (por exemplo, respiração acelerada, falta de ar sem ter feito esforço físico).'},
+  {n:5,  d:'D', t:'Achei difícil ter iniciativa para fazer as coisas.'},
+  {n:6,  d:'S', t:'Tive a tendência de reagir de forma exagerada às situações.'},
+  {n:7,  d:'A', t:'Senti tremores (por exemplo, nas mãos).'},
+  {n:8,  d:'S', t:'Senti que estava usando muita energia nervosa.'},
+  {n:9,  d:'A', t:'Fiquei preocupado com situações em que poderia entrar em pânico e fazer papel ridículo.'},
+  {n:10, d:'D', t:'Senti que não tinha nada a esperar do futuro.'},
+  {n:11, d:'S', t:'Percebi que estava agitado.'},
+  {n:12, d:'A', t:'Achei difícil relaxar.'},
+  {n:13, d:'D', t:'Senti-me triste e deprimido.'},
+  {n:14, d:'S', t:'Fui intolerante quando algo me impedia de continuar o que estava fazendo.'},
+  {n:15, d:'A', t:'Estive à beira de um ataque de pânico.'},
+  {n:16, d:'D', t:'Não fui capaz de me entusiasmar com nada.'},
+  {n:17, d:'S', t:'Senti que não tinha muito valor como pessoa.'},
+  {n:18, d:'S', t:'Percebi que estava bastante irritável.'},
+  {n:19, d:'A', t:'Senti o funcionamento do meu coração mesmo sem ter feito esforço físico (por exemplo, sensação de aumento da frequência cardíaca ou de falhas no coração).'},
+  {n:20, d:'D', t:'Senti medo sem motivo.'},
+  {n:21, d:'D', t:'Senti que a vida não tinha sentido.'}
+];
+
+var LABELS = ['Não se aplicou\na mim','Aplicou-se\num pouco','Aplicou-se\nbastante','Aplicou-se\nmuito'];
+var LCOLORS = ['#4AABAB','#7ECECE','#E8943A','#C03A3A'];
+
+// Thresholds (scores × 2 for DASS-21 → DASS-42 equivalent)
+// D: Normal 0-9, Leve 10-13, Moderado 14-20, Severo 21-27, Extremamente severo 28+
+// A: Normal 0-7, Leve 8-9, Moderado 10-14, Severo 15-19, Extremamente severo 20+
+// S: Normal 0-14, Leve 15-18, Moderado 19-25, Severo 26-33, Extremamente severo 34+
+// Raw max per subscale = 7×3=21, displayed raw; interpretation uses ×2
+
+var DIMS = {
+  D:{
+    name:'Depressividade', letter:'D', color:'#5A7A8A',
+    bands:[
+      {label:'Normal',      max:4,  color:'#6DC44A'},
+      {label:'Leve',        max:6,  color:'#A8C840'},
+      {label:'Moderado',    max:10, color:'#E8943A'},
+      {label:'Severo',      max:13, color:'#D4607A'},
+      {label:'Muito severo',max:21, color:'#C03A3A'}
+    ],
+    descs:{
+      'Normal':    'Você não apresenta sintomas significativos de depressividade no momento. Continue cultivando hábitos que favorecem seu bem-estar emocional.',
+      'Leve':      'Você apresenta alguns sintomas leves de depressividade. Vale atenção ao seu estado emocional e ao autocuidado nos próximos dias.',
+      'Moderado':  'Você apresenta um nível moderado de sintomas depressivos. Buscar apoio profissional pode ser muito útil para compreender e lidar com esses sentimentos.',
+      'Severo':    'Você apresenta sintomas severos de depressividade. É importante buscar apoio de um profissional de saúde mental o quanto antes.',
+      'Muito severo': 'Você apresenta sintomas muito intensos de depressividade. Procure apoio profissional especializado com urgência.'
+    }
+  },
+  A:{
+    name:'Ansiedade', letter:'A', color:'#E8943A',
+    bands:[
+      {label:'Normal',      max:3,  color:'#6DC44A'},
+      {label:'Leve',        max:4,  color:'#A8C840'},
+      {label:'Moderado',    max:7,  color:'#E8943A'},
+      {label:'Severo',      max:9,  color:'#D4607A'},
+      {label:'Muito severo',max:21, color:'#C03A3A'}
+    ],
+    descs:{
+      'Normal':    'Você não apresenta sintomas significativos de ansiedade no momento.',
+      'Leve':      'Você apresenta alguns sintomas leves de ansiedade. Práticas de relaxamento e mindfulness podem ajudar.',
+      'Moderado':  'Você apresenta um nível moderado de ansiedade. Considere buscar suporte profissional para desenvolver estratégias de manejo.',
+      'Severo':    'Você apresenta sintomas severos de ansiedade. Buscar apoio de um profissional de saúde mental é recomendado.',
+      'Muito severo': 'Você apresenta sintomas muito intensos de ansiedade. Procure apoio profissional especializado com urgência.'
+    }
+  },
+  S:{
+    name:'Estresse', letter:'S', color:'#8B6FBE',
+    bands:[
+      {label:'Normal',      max:7,  color:'#6DC44A'},
+      {label:'Leve',        max:9,  color:'#A8C840'},
+      {label:'Moderado',    max:12, color:'#E8943A'},
+      {label:'Severo',      max:16, color:'#D4607A'},
+      {label:'Muito severo',max:21, color:'#C03A3A'}
+    ],
+    descs:{
+      'Normal':    'Seu nível de estresse está dentro do esperado. Continue cuidando do equilíbrio entre demandas e recursos pessoais.',
+      'Leve':      'Você apresenta um nível leve de estresse. Vale observar as fontes de pressão no seu dia a dia.',
+      'Moderado':  'Você apresenta um nível moderado de estresse. Identificar os principais estressores e desenvolver estratégias de manejo pode ser muito útil.',
+      'Severo':    'Você apresenta um nível severo de estresse. Buscar apoio profissional é recomendado para evitar o agravamento.',
+      'Muito severo': 'Você apresenta um nível muito intenso de estresse. Procure apoio profissional especializado com urgência.'
+    }
+  }
+};
+
+var answers = {};
+
+function getBand(dim, rawScore){
+  var bands = DIMS[dim].bands;
+  for(var i=0;i<bands.length;i++){
+    if(rawScore<=bands[i].max) return bands[i];
+  }
+  return bands[bands.length-1];
+}
+
+function buildQuestions(){
+  var c=document.getElementById('questionsWrap'); c.innerHTML='';
+  ITEMS.forEach(function(q,i){
+    // Sensitivity flag for item 20 (medo) – no specific crisis item in DASS-21, but keep clean
+    var html='<div class="q-card'+(answers[i]!==undefined?' answered':'')+'" id="qc-'+i+'">'+
+      '<div class="q-num">'+q.n+' / 21 &nbsp;·&nbsp; <span style="color:'+(q.d==='D'?'var(--D)':q.d==='A'?'var(--A)':'var(--S)')+'">'+DIMS[q.d].name+'</span></div>'+
+      '<div class="q-text">"'+q.t+'"</div>'+
+      '<div class="scale-row">';
+    for(var v=0;v<=3;v++){
+      var isSel=answers[i]===v;
+      html+='<button class="sbt'+(isSel?' sel':'')+'" id="sb-'+i+'-'+v+'" style="'+(isSel?'background:'+LCOLORS[v]+';':'')+'" onclick="setAns('+i+','+v+')">'+
+        '<span class="sv">'+v+'</span>'+LABELS[v]+'</button>';
+    }
+    html+='</div></div>';
+    c.innerHTML+=html;
+  });
+  updateProg();
+}
+
+function setAns(idx,val){
+  answers[idx]=val;
+  for(var v=0;v<=3;v++){
+    var b=document.getElementById('sb-'+idx+'-'+v);
+    if(!b) continue;
+    if(v===val){b.className='sbt sel';b.style.background=LCOLORS[v];}
+    else{b.className='sbt';b.style.background='';}
+  }
+  document.getElementById('qc-'+idx).className='q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n=Object.keys(answers).length;
+  document.getElementById('progFill').style.width=(n/21*100)+'%';
+  document.getElementById('progTxt').textContent=n+' / 21';
+  document.getElementById('pgInfo').textContent=n+' de 21 respondidas';
+}
+
+function calcScores(){
+  var scores={D:0,A:0,S:0};
+  ITEMS.forEach(function(q,i){scores[q.d]+=(answers[i]||0);});
+  return scores;
+}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function goIntro(){document.getElementById('progBar').style.display='none';showScreen('s-intro');}
+function startTest(){buildQuestions();document.getElementById('progBar').style.display='flex';showScreen('s-questions');}
+function restartTest(){answers={};document.getElementById('progBar').style.display='none';showScreen('s-intro');}
+
+function showResults(){
+  var scores=calcScores();
+  var dc=document.getElementById('dimCards'); dc.innerHTML='';
+  var needsAttention=false;
+
+  ['D','A','S'].forEach(function(key){
+    var dim=DIMS[key], score=scores[key], maxScore=21;
+    var band=getBand(key,score);
+    var pct=score/maxScore*100;
+    if(band.label==='Severo'||band.label==='Muito severo') needsAttention=true;
+
+    // Build segment bar
+    var bands=dim.bands;
+    var segs='';
+    bands.forEach(function(b,i){
+      var segMax=b.max, segMin=i>0?bands[i-1].max+1:0;
+      var segPct=((segMax-segMin+1)/maxScore*100);
+      segs+='<div class="dc-seg" style="flex:'+segPct+';background:'+b.color+';opacity:0.3"></div>';
+    });
+
+    // Marker position
+    var markerLeft=Math.min(pct,97);
+
+    dc.innerHTML+=
+      '<div class="dim-card" style="border-color:'+dim.color+'33">'+
+        '<div class="dc-top">'+
+          '<div class="dc-left">'+
+            '<div class="dc-letter" style="color:'+dim.color+'">'+key+'</div>'+
+            '<div class="dc-name">'+dim.name+'</div>'+
+          '</div>'+
+          '<div class="dc-right">'+
+            '<div class="dc-score" style="color:'+dim.color+'">'+score+'</div>'+
+            '<div class="dc-max">/21 pontos</div>'+
+            '<div class="dc-band" style="background:'+band.color+'22;color:'+band.color+';border:1px solid '+band.color+'44">'+band.label+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="dc-bar-wrap">'+
+          '<div class="dc-marker-wrap"><div class="dc-marker" style="left:'+markerLeft+'%;color:'+band.color+'"></div></div>'+
+          '<div class="dc-bar-segments">'+segs+'</div>'+
+          // filled bar on top
+          '<div style="height:8px;border-radius:99px;overflow:hidden;margin-top:-8px;">'+
+            '<div style="height:100%;width:'+pct+'%;background:'+band.color+';border-radius:99px;transition:width 1s ease"></div>'+
+          '</div>'+
+          '<div class="dc-labels">'+
+            bands.map(function(b){return '<div class="dc-label">'+b.label+'</div>';}).join('')+
+          '</div>'+
+        '</div>'+
+        '<div class="dc-desc">'+dim.descs[band.label]+'</div>'+
+      '</div>';
+  });
+
+  // Sensitivity notice
+  var sn=document.getElementById('sensResult');
+  sn.style.display=needsAttention?'block':'none';
+
+  showScreen('s-results');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ═══════════════════════════════════
+// PDF
+// ═══════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var scores=calcScores();
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function hex2rgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO PSICOLÓGICA  ·  DASS-21',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text('Escala de Depressividade, Ansiedade e Estresse',W/2,25,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,35,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,42,{align:'center'});
+  y=58;
+
+  // Summary row
+  chk(28);
+  var dimOrder=['D','A','S'];
+  var cw=(W-M*2)/3;
+  dimOrder.forEach(function(key,i){
+    var dim=DIMS[key],score=scores[key],band=getBand(key,score);
+    var col=hex2rgb(dim.color),bc=hex2rgb(band.color);
+    var x=M+i*cw;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(x,y,cw-3,24,3,3,'FD');
+    doc.setFont('helvetica','bold');doc.setFontSize(18);st(col);
+    doc.text(String(score),x+cw/2-1.5,y+11,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);st(muted);
+    doc.text(dim.name,x+cw/2-1.5,y+17,{align:'center'});
+    sf(bc);doc.roundedRect(x+4,y+19,cw-11,5,2,2,'F');
+    st(white);doc.setFont('helvetica','bold');doc.setFontSize(7);
+    doc.text(band.label,x+cw/2-1.5,y+23,{align:'center'});
+  });
+  y+=34;
+
+  // Each dimension detail
+  dimOrder.forEach(function(key){
+    var dim=DIMS[key],score=scores[key],band=getBand(key,score);
+    var col=hex2rgb(dim.color),bc=hex2rgb(band.color);
+    chk(36);
+    sf(col);doc.rect(M,y,3,30,'F');
+    // Letter + name
+    doc.setFont('helvetica','bold');doc.setFontSize(18);st(col);
+    doc.text(key,M+8,y+11);
+    doc.setFont('helvetica','bold');doc.setFontSize(11);st(ink);
+    doc.text(dim.name,M+17,y+11);
+    // Score + band
+    doc.setFont('helvetica','bold');doc.setFontSize(14);st(col);
+    doc.text(score+'/21',W-M,y+11,{align:'right'});
+    sf(bc);doc.roundedRect(W-M-28,y+14,28,8,2,2,'F');
+    st(white);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
+    doc.text(band.label,W-M-14,y+19.5,{align:'center'});
+    // Bar
+    var barW=W-M*2-10;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(M+7,y+16,barW,5,2,2,'FD');
+    sf(bc);doc.roundedRect(M+7,y+16,barW*(score/21),5,2,2,'F');
+    // Description
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);st(muted);
+    var dlines=doc.splitTextToSize(dim.descs[band.label],W-M*2-10);
+    doc.text(dlines,M+7,y+27);
+    y+=dlines.length*4.5+22;
+  });
+
+  // Attention note if needed
+  var needsAttention=false;
+  dimOrder.forEach(function(k){var b=getBand(k,scores[k]);if(b.label==='Severo'||b.label==='Muito severo')needsAttention=true;});
+  if(needsAttention){
+    chk(22);
+    sf([255,245,240]);sd([255,180,100]);doc.setLineWidth(0.4);doc.roundedRect(M,y,W-M*2,18,3,3,'FD');
+    st([122,74,16]);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text('Atenção: seus resultados indicam sintomas que merecem cuidado profissional.',M+6,y+7);
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+    doc.text('Se necessário, o CVV atende 24h pelo telefone 188.',M+6,y+14);
+    y+=26;
+  }
+
+  // CTA
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  // Footer
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('dass21-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

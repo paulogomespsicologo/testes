@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventário de Administração do Tempo – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F8F8;
+    --ink: #1B3A5C;
+    --muted: #5A7A8A;
+    --card: #FFFFFF;
+    --border: #D6E8E8;
+    --green: #6DC44A;
+    --teal: #7ECECE;
+    --teal-dark: #4AABAB;
+    --navy: #1B3A5C;
+    --bom: #6DC44A;
+    --regular: #E6A022;
+    --melhoria: #E05A2B;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #2A5580 100%);
+    color: #fff;
+    padding: 52px 24px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content:''; position:absolute; top:-60px; right:-60px;
+    width:220px; height:220px; border-radius:50%;
+    background:rgba(126,206,206,.15);
+  }
+  .header::after {
+    content:''; position:absolute; bottom:-40px; left:-40px;
+    width:160px; height:160px; border-radius:50%;
+    background:rgba(109,196,74,.1);
+  }
+  .header-label {
+    font-size:11px; letter-spacing:3px; text-transform:uppercase;
+    color:var(--teal); margin-bottom:12px; position:relative; z-index:1;
+  }
+  .header h1 {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(26px,5.5vw,48px);
+    font-weight:700; line-height:1.15; margin-bottom:14px;
+    position:relative; z-index:1;
+  }
+  .header p {
+    color:rgba(255,255,255,.75); font-size:15px;
+    max-width:500px; margin:0 auto; line-height:1.6;
+    position:relative; z-index:1;
+  }
+  .header-author {
+    margin-top:14px; font-size:13px;
+    color:rgba(255,255,255,.5);
+    position:relative; z-index:1;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    position:sticky; top:0; z-index:100;
+    background:var(--card); border-bottom:1px solid var(--border);
+    padding:12px 24px; display:flex; align-items:center; gap:14px;
+  }
+  .progress-bar-bg {
+    flex:1; height:7px; background:var(--border);
+    border-radius:99px; overflow:hidden;
+  }
+  .progress-bar-fill {
+    height:100%;
+    background:linear-gradient(90deg, var(--teal), var(--green));
+    border-radius:99px; transition:width .4s ease; width:0%;
+  }
+  .progress-label { font-size:12px; color:var(--muted); white-space:nowrap; min-width:60px; text-align:right; }
+
+  /* LAYOUT */
+  .container { max-width:700px; margin:0 auto; padding:28px 16px 0; }
+
+  /* SCREENS */
+  .screen { display:none; animation:fadeIn .4s ease; }
+  .screen.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* INTRO */
+  .intro-box {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:40px 32px; text-align:center;
+    margin-top:24px; box-shadow:0 4px 24px rgba(27,58,92,.07);
+  }
+  .intro-box h2 {
+    font-family:'Playfair Display',serif; font-size:26px;
+    margin-bottom:12px; color:var(--navy);
+  }
+  .intro-box p { color:var(--muted); font-size:15px; line-height:1.7; margin-bottom:24px; }
+  .intro-stats {
+    display:flex; gap:16px; justify-content:center;
+    flex-wrap:wrap; margin-bottom:28px;
+  }
+  .stat-chip {
+    background:var(--bg); border:1px solid var(--border);
+    border-radius:12px; padding:12px 20px; text-align:center;
+  }
+  .stat-chip strong { display:block; font-size:22px; color:var(--navy); font-weight:500; }
+  .stat-chip span { font-size:12px; color:var(--muted); }
+
+  /* SECTION DIVIDER */
+  .section-title {
+    font-size:11px; letter-spacing:3px; text-transform:uppercase;
+    color:var(--teal-dark); padding:24px 0 12px;
+    display:flex; align-items:center; gap:12px; font-weight:500;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* QUESTION CARD */
+  .question-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:18px 20px; margin-bottom:10px;
+    display:flex; align-items:flex-start; gap:16px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .q-text-wrap { flex:1; }
+  .q-num { font-size:11px; color:var(--muted); letter-spacing:1px; margin-bottom:3px; }
+  .q-text { font-size:14px; line-height:1.55; }
+  .toggle-wrap {
+    display:flex; gap:8px; align-items:center; flex-shrink:0; padding-top:2px;
+  }
+  .toggle-btn {
+    width:44px; height:36px; border-radius:10px; border:1.5px solid var(--border);
+    background:transparent; font-family:'DM Sans',sans-serif; font-size:13px;
+    font-weight:500; cursor:pointer; transition:all .15s; color:var(--muted);
+  }
+  .toggle-btn:hover { border-color:var(--teal-dark); color:var(--ink); }
+  .toggle-btn.active-s { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .toggle-btn.active-n { background:var(--teal-dark); border-color:var(--teal-dark); color:#fff; }
+
+  /* NAV */
+  .nav-row {
+    display:flex; gap:12px; margin-top:28px; justify-content:flex-end;
+  }
+  .btn {
+    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500;
+    padding:14px 28px; border-radius:10px; border:none; cursor:pointer;
+    transition:opacity .2s, transform .1s;
+  }
+  .btn:active { transform:scale(.98); }
+  .btn-primary { background:var(--green); color:#fff; }
+  .btn-primary:hover { opacity:.88; }
+  .btn-secondary { background:transparent; color:var(--navy); border:1px solid var(--border); }
+  .btn-secondary:hover { background:var(--border); }
+  .btn-large { padding:16px 40px; font-size:15px; width:100%; text-align:center; }
+
+  .page-info { text-align:center; color:var(--muted); font-size:13px; margin-top:8px; }
+
+  /* RESULTS */
+  .results-hero {
+    background:linear-gradient(135deg, var(--navy), #2A5580);
+    color:#fff; border-radius:20px; padding:36px 28px;
+    text-align:center; margin-top:24px; margin-bottom:24px;
+  }
+  .results-hero h2 {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(22px,5vw,34px); margin-bottom:8px;
+  }
+  .score-big {
+    font-size:72px; font-weight:300; line-height:1;
+    color:var(--teal); margin:16px 0 8px;
+  }
+  .score-max { font-size:16px; color:rgba(255,255,255,.5); }
+  .result-badge {
+    display:inline-block; margin-top:16px;
+    padding:10px 24px; border-radius:99px;
+    font-size:14px; font-weight:500;
+  }
+
+  /* AREAS TABLE */
+  .areas-section {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:24px; margin-bottom:24px;
+    box-shadow:0 2px 12px rgba(27,58,92,.06);
+  }
+  .areas-section h3 {
+    font-family:'Playfair Display',serif; font-size:18px;
+    color:var(--navy); margin-bottom:6px;
+  }
+  .areas-section p { font-size:13px; color:var(--muted); margin-bottom:20px; }
+
+  .area-row {
+    display:flex; align-items:center; gap:14px;
+    padding:10px 0; border-bottom:1px solid var(--bg);
+  }
+  .area-row:last-child { border-bottom:none; }
+  .area-letter {
+    width:28px; height:28px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; color:#fff; flex-shrink:0;
+  }
+  .area-name { flex:1; font-size:13px; color:var(--ink); }
+  .area-score { font-size:14px; font-weight:500; width:20px; text-align:center; flex-shrink:0; }
+  .area-bar-bg { width:90px; height:8px; background:var(--bg); border-radius:99px; overflow:hidden; flex-shrink:0; }
+  .area-bar-fill { height:100%; border-radius:99px; transition:width 1s cubic-bezier(.22,.68,0,1.2); width:0%; }
+  .area-conceito {
+    font-size:11px; font-weight:500; padding:3px 10px;
+    border-radius:99px; flex-shrink:0; min-width:90px; text-align:center;
+  }
+
+  /* HIGHLIGHT AREAS */
+  .highlight-section {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:24px; margin-bottom:24px;
+  }
+  .highlight-section h3 {
+    font-family:'Playfair Display',serif; font-size:18px;
+    color:var(--navy); margin-bottom:16px;
+  }
+  .highlight-card {
+    border-radius:12px; padding:16px 18px; margin-bottom:10px;
+  }
+  .highlight-card:last-child { margin-bottom:0; }
+  .highlight-card h4 { font-size:14px; font-weight:500; margin-bottom:4px; }
+  .highlight-card p { font-size:13px; line-height:1.6; }
+
+  /* FOOTER */
+  .restart-row { text-align:center; margin-top:32px; }
+  .site-footer {
+    background:var(--navy); color:rgba(255,255,255,.7);
+    text-align:center; padding:24px; font-size:13px; margin-top:48px;
+  }
+  .site-footer a { color:var(--teal); text-decoration:none; }
+  .site-footer strong { color:#fff; }
+
+  @media(max-width:480px){
+    .question-card { padding:14px; gap:10px; }
+    .area-bar-bg { width:50px; }
+    .intro-box { padding:24px 16px; }
+    .area-conceito { min-width:70px; font-size:10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Gestão do Tempo e Produtividade</div>
+  <h1>Inventário de Administração do Tempo</h1>
+  <p>Descubra como você gerencia seu tempo e identifique as áreas que precisam de atenção.</p>
+  <div class="header-author">Adaptado por Paulo Gomes, Neuropsicólogo</div>
+</div>
+
+<div class="progress-wrap" id="progressWrap" style="display:none">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 96</div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-box">
+      <h2>Como você administra o seu tempo?</h2>
+      <p>Você irá ler 96 afirmações. Responda <strong>S (Sim)</strong> se a afirmação descrever seu comportamento mais frequente, ou <strong>N (Não)</strong> caso contrário. Não existem respostas certas ou erradas!</p>
+      <div class="intro-stats">
+        <div class="stat-chip"><strong>96</strong><span>afirmações</span></div>
+        <div class="stat-chip"><strong>16</strong><span>áreas avaliadas</span></div>
+        <div class="stat-chip"><strong>~10 min</strong><span>para completar</span></div>
+      </div>
+      <button class="btn btn-primary btn-large" onclick="startTest()">Começar o inventário →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 1: Q1-32 -->
+  <div class="screen" id="screen-p1">
+    <div class="section-title">Afirmações 1 – 32</div>
+    <div id="questions-p1"></div>
+    <div class="page-info" id="info-p1"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goIntro()">← Voltar</button>
+      <button class="btn btn-primary" onclick="goPage(2)">Próxima página →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Q33-64 -->
+  <div class="screen" id="screen-p2">
+    <div class="section-title">Afirmações 33 – 64</div>
+    <div id="questions-p2"></div>
+    <div class="page-info" id="info-p2"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goPage(1)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goPage(3)">Próxima página →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Q65-96 -->
+  <div class="screen" id="screen-p3">
+    <div class="section-title">Afirmações 65 – 96</div>
+    <div id="questions-p3"></div>
+    <div class="page-info" id="info-p3"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goPage(2)">← Voltar</button>
+      <button class="btn btn-primary" onclick="showResults()">Ver meus resultados →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="results-hero" id="resultsHero"></div>
+    <div class="areas-section">
+      <h3>Resultado por área</h3>
+      <p>Pontuação: 0–1 = Bom · 2–3 = Regular · 4–6 = Necessita melhoria</p>
+      <div id="areaRows"></div>
+    </div>
+    <div class="highlight-section" id="highlightSection"></div>
+    <div class="restart-row">
+      <button class="btn btn-primary" style="margin-bottom:12px;width:100%;max-width:340px;display:block;margin-left:auto;margin-right:auto" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+      <button class="btn btn-secondary" onclick="restartTest()">Refazer o inventário</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+
+<script>
+const questions = [
+  "Poucas vezes planejo as atividades do meu próximo dia de trabalho.",
+  "Trabalho sem surpresas ou problemas é monótono e cansativo.",
+  "Às vezes deixo sem terminar o que começo.",
+  "Falo muito.",
+  "Depois de tomar uma decisão, fico em dúvida se foi a melhor.",
+  "Nem sempre percebo a existência de problemas no trabalho.",
+  "Quando delegar uma tarefa implica em dar muitas instruções, prefiro executá-la eu mesmo.",
+  "Largo tudo o que estou fazendo para atender ao meu chefe quando ele me chama.",
+  "Prefiro atender pessoalmente todos os telefonemas.",
+  "Quando meus subordinados/colegas têm dificuldades ou problemas com o trabalho, eu os ajudo.",
+  "Para mim trabalho é trabalho, independente da sua importância.",
+  "A primeira coisa que faço ao chegar ao trabalho é cuidar das tarefas rotineiras.",
+  "No trabalho faço questão de que tudo saia perfeito.",
+  "Nunca me preocupei em definir meus objetivos de vida.",
+  "Tenho certa dificuldade em reformular planos estabelecidos.",
+  "Para trabalhar gosto de silêncio completo.",
+  "Tenho dificuldade em aceitar que o planejamento ajude a resolver o problema da falta de tempo das pessoas.",
+  "Sempre tenho coisas urgentes para fazer.",
+  "Minhas gavetas estão sempre em desordem.",
+  "Ao dar uma informação, é comum ter que repeti-la pois as pessoas têm dificuldade de me entender.",
+  "Prefiro evitar decisões que envolvam riscos.",
+  "É difícil evitar decisões que envolvam riscos.",
+  "Tenho dificuldade para delegar trabalhos de certa responsabilidade.",
+  "Evito dizer não às pessoas.",
+  "O telefone é o pior inimigo do trabalho.",
+  "É frequente fazer o trabalho de meus subordinados/colegas.",
+  "Para mim a diferença entre urgente e prioritário nem sempre é muito clara.",
+  "O rendimento do meu trabalho me parece igual em todas as horas do dia.",
+  "Antes de assinar uma carta, leio e releio para ter certeza de que não tem erros.",
+  "É inútil ter objetivos na vida, pois o que vale mesmo é o destino.",
+  "Dificilmente mudo de opinião ou de ponto de vista.",
+  "Tenho dificuldade para concentrar-me no que estou fazendo.",
+  "Por mais que eu planeje meu dia de trabalho, sempre ficam coisas por fazer.",
+  "Prefiro resolver os problemas depois deles acontecerem.",
+  "Às vezes esqueço onde pus papéis, documentos e objetos.",
+  "Muitas vezes as pessoas têm dificuldade para entender o que quero dizer.",
+  "Penso bastante antes de tomar uma decisão.",
+  "A maioria dos problemas tem causas que dificilmente podem ser previstas.",
+  "Uso boa parte do meu tempo fazendo coisas que outros poderiam fazer.",
+  "Quando as pessoas me pedem ajuda, dificilmente recuso-me a ajudá-las.",
+  "Raramente telefono para confirmar reuniões, visitas, etc.",
+  "Em geral, trabalho mais do que meus subordinados/colegas.",
+  "É comum faltar-me tempo para fazer as coisas importantes.",
+  "Costumo deixar os trabalhos de maior responsabilidade para o fim do expediente.",
+  "Revejo o trabalho de meus subordinados para evitar possíveis erros.",
+  "Procuro \"tocar a vida para frente\" sem esquentar muito a cabeça com o futuro.",
+  "As pessoas me consideram \"cabeça dura\".",
+  "Distraio-me facilmente com a movimentação das pessoas à minha volta.",
+  "Prefiro resolver as coisas na hora do que planejar com antecedência.",
+  "A maioria das coisas que acontece numa empresa é imprevisível.",
+  "Costumo fazer várias coisas ao mesmo tempo.",
+  "Tenho dificuldade para expressar minhas ideias.",
+  "Só tomo decisões quando sou obrigado.",
+  "Se os problemas fossem previsíveis, não existiriam.",
+  "Só delego coisas para pessoas experientes.",
+  "Dificilmente deixo de atender a uma visita inesperada, mesmo que esteja ocupado.",
+  "As pessoas queixam-se de que meu telefone vive ocupado.",
+  "Mesmo que eu esteja com muito trabalho, acabo me envolvendo no trabalho dos meus subordinados/colegas.",
+  "Minhas prioridades são estabelecidas de acordo com a urgência.",
+  "O dia foi feito para trabalhar e a noite para descansar.",
+  "As pessoas dizem que sou detalhista.",
+  "No mundo de hoje, onde tudo muda tão rapidamente, não adianta ter objetivos pessoais.",
+  "Quando acho que algo está certo ou errado, ninguém me convence do contrário.",
+  "Dificilmente me desligo do que está acontecendo à minha volta.",
+  "Evito assumir compromissos para o futuro.",
+  "Quando ocorre uma crise no trabalho, procuro resolvê-la, em vez de perder tempo pensando como ela poderia ser evitada.",
+  "Costumo guardar as coisas no trabalho sem lugar certo para cada uma delas.",
+  "Ao transmitir uma informação, costumo perder-me nos detalhes.",
+  "Tenho uma tendência a adiar as decisões.",
+  "A maioria dos problemas só existe na cabeça das pessoas.",
+  "Quem delega muito acaba sendo dispensável na empresa.",
+  "Minha porta está sempre aberta para todos.",
+  "Os telefonemas interrompem com frequência o meu trabalho.",
+  "Quando meus subordinados/colegas estão atrasados com algum trabalho, sempre \"dou uma mão\".",
+  "Nem sempre tenho uma ideia clara sobre os objetivos do meu trabalho.",
+  "Gosto de comer bastante à hora do almoço.",
+  "Há coisas do meu setor que só eu sei fazer bem feito.",
+  "O amanhã a Deus pertence.",
+  "Quando planejo o meu dia de trabalho, cumpro o planejamento custe o que custar.",
+  "Quando sou interrompido no meio de um trabalho preciso de um tempo para retomá-lo.",
+  "Faço as coisas sem me preocupar com o tempo.",
+  "A competência de uma pessoa é diretamente proporcional à sua capacidade de resolver problemas de última hora.",
+  "Para mim, é difícil manter a mesa de trabalho em ordem.",
+  "Minha dificuldade em conversar com as pessoas atrapalha o rendimento do meu trabalho.",
+  "Tomar decisões é uma tarefa difícil.",
+  "Os problemas surgem sem que ninguém perceba.",
+  "Há coisas de que gosto de fazer e que não delego por nada deste mundo.",
+  "Na minha empresa sou \"pau para toda obra\".",
+  "Prefiro escrever do que tratar com as pessoas pelo telefone.",
+  "É comum meus subordinados terem menos serviço do que eu.",
+  "Dificilmente estabeleço prazos para minhas tarefas.",
+  "Para mim, qualquer horário durante o expediente é bom para fazer reuniões.",
+  "Sou exigente comigo mesmo e com os outros.",
+  "Os nossos objetivos independem de nós. \"O homem põe e Deus dispõe\".",
+  "Quando me proponho a fazer algo, insisto até conseguir.",
+  "As pessoas dizem que sou dispersivo."
+];
+
+// Areas: A=rows of q indices (0-based), letter A=qs 1,17,33,49,65,81 => indices 0,16,32,48,64,80
+const areaMapping = {
+  A: [0,16,32,48,64,80],
+  B: [1,17,33,49,65,81],
+  C: [2,18,34,50,66,82],
+  D: [3,19,35,51,67,83],
+  E: [4,20,36,52,68,84],
+  F: [5,21,37,53,69,85],
+  G: [6,22,38,54,70,86],
+  H: [7,23,39,55,71,87],
+  I: [8,24,40,56,72,88],
+  J: [9,25,41,57,73,89],
+  K: [10,26,42,58,74,90],
+  L: [11,27,43,59,75,91],
+  M: [12,28,44,60,76,92],
+  N: [13,29,45,61,77,93],
+  O: [14,30,46,62,78,94],
+  P: [15,31,47,63,79,95]
+};
+
+const areaNames = {
+  A: "Planejamento do tempo",
+  B: "Administração por crises",
+  C: "Organização pessoal e autodisciplina",
+  D: "Comunicação",
+  E: "Tomada de decisões",
+  F: "Diagnóstico de problemas",
+  G: "Delegação",
+  H: "Capacidade de dizer não",
+  I: "Uso do telefone",
+  J: "Delegação \"para cima\"",
+  K: "Estabelecimento de prioridades",
+  L: "Utilização dos níveis de capacidade",
+  M: "Perfeccionismo",
+  N: "Objetivos pessoais",
+  O: "Flexibilidade no trabalho",
+  P: "Concentração"
+};
+
+const areaTips = {
+  A: "Invista em planejamento diário: reserve 10 minutos no início ou fim do dia para organizar suas tarefas com antecedência.",
+  B: "Tente identificar padrões nas crises recorrentes e desenvolva respostas preventivas em vez de apenas reativas.",
+  C: "Crie sistemas simples de organização: um lugar certo para cada coisa e listas de tarefas para guiar seu dia.",
+  D: "Pratique a comunicação objetiva: antes de falar, defina o ponto principal que precisa transmitir.",
+  E: "Estabeleça critérios claros de decisão com antecedência para reduzir a indecisão quando a pressão chegar.",
+  F: "Dedique tempo à análise antes de agir: pergunte-se 'qual é a causa raiz deste problema?' antes de buscar soluções.",
+  G: "Delegue com clareza: defina o resultado esperado, o prazo e o nível de autonomia para quem vai executar.",
+  H: "Lembre-se: cada 'sim' desnecessário é um 'não' para suas prioridades. Pratique dizer não com respeito e firmeza.",
+  I: "Defina horários específicos para atender e retornar ligações, reduzindo interrupções no trabalho focado.",
+  J: "Evite resolver problemas que são de responsabilidade de superiores. Apresente a situação com possíveis soluções.",
+  K: "Diferencie urgente de importante. Priorize o que é importante antes que se torne urgente.",
+  L: "Identifique seu horário de pico de energia e use-o para tarefas de maior complexidade e criatividade.",
+  M: "O perfeccionismo pode ser inimigo do progresso. Pergunte-se: qual é o nível de qualidade realmente necessário aqui?",
+  N: "Defina metas claras de curto, médio e longo prazo. Objetivos escritos têm muito mais chance de se tornarem realidade.",
+  O: "Flexibilidade é uma habilidade. Pratique revisar planos sem resistência excessiva quando o contexto mudar.",
+  P: "Use técnicas como Pomodoro (25 min focado + 5 min pausa) para melhorar sua capacidade de concentração."
+};
+
+// answers: 0=unanswered, 'S'=sim, 'N'=não
+const answers = new Array(96).fill(null);
+
+function buildQuestions(containerId, from, to) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  for (let i = from; i <= to; i++) {
+    const idx = i - 1;
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'qcard-' + idx;
+    card.innerHTML = `
+      <div class="q-text-wrap">
+        <div class="q-num">Nº ${i}</div>
+        <div class="q-text">${questions[idx]}</div>
+      </div>
+      <div class="toggle-wrap">
+        <button class="toggle-btn ${answers[idx]==='S'?'active-s':''}" id="btn-s-${idx}" onclick="setAnswer(${idx},'S')">S</button>
+        <button class="toggle-btn ${answers[idx]==='N'?'active-n':''}" id="btn-n-${idx}" onclick="setAnswer(${idx},'N')">N</button>
+      </div>`;
+    c.appendChild(card);
+  }
+}
+
+function setAnswer(idx, val) {
+  answers[idx] = val;
+  const btnS = document.getElementById('btn-s-' + idx);
+  const btnN = document.getElementById('btn-n-' + idx);
+  if (btnS) btnS.className = 'toggle-btn' + (val==='S' ? ' active-s' : '');
+  if (btnN) btnN.className = 'toggle-btn' + (val==='N' ? ' active-n' : '');
+  updateProgress();
+  updatePageInfo();
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressFill').style.width = (answered/96*100) + '%';
+  document.getElementById('progressLabel').textContent = answered + ' / 96';
+}
+
+function updatePageInfo() {
+  const ranges = [[1,32],[33,64],[65,96]];
+  ranges.forEach(([from,to], i) => {
+    const el = document.getElementById('info-p'+(i+1));
+    if (!el) return;
+    const answered = answers.slice(from-1, to).filter(a => a !== null).length;
+    el.textContent = answered + ' de ' + (to-from+1) + ' respondidas';
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function startTest() {
+  buildQuestions('questions-p1', 1, 32);
+  updateProgress(); updatePageInfo();
+  document.getElementById('progressWrap').style.display = 'flex';
+  showScreen('screen-p1');
+}
+
+function goIntro() {
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-intro');
+}
+
+function goPage(n) {
+  if (n === 2) {
+    buildQuestions('questions-p2', 33, 64);
+    updatePageInfo();
+    showScreen('screen-p2');
+  } else if (n === 3) {
+    buildQuestions('questions-p3', 65, 96);
+    updatePageInfo();
+    showScreen('screen-p3');
+  } else if (n === 1) {
+    showScreen('screen-p1');
+  }
+}
+
+function calcScores() {
+  // Total SIM = count of 'S' answers
+  const total = answers.filter(a => a === 'S').length;
+  const byArea = {};
+  for (const [letter, indices] of Object.entries(areaMapping)) {
+    byArea[letter] = indices.filter(i => answers[i] === 'S').length;
+  }
+  return { total, byArea };
+}
+
+function getResultInfo(total) {
+  if (total <= 16) return { label: 'Você administra bem o seu tempo', color: '#6DC44A', bg: 'rgba(109,196,74,.15)' };
+  if (total <= 36) return { label: 'Você administra razoavelmente o seu tempo', color: '#E6A022', bg: 'rgba(230,160,34,.15)' };
+  if (total <= 56) return { label: 'Você não administra adequadamente o seu tempo', color: '#E05A2B', bg: 'rgba(224,90,43,.15)' };
+  if (total <= 76) return { label: 'Você administra mal o seu tempo', color: '#C0392B', bg: 'rgba(192,57,43,.18)' };
+  return { label: 'Você não administra o seu tempo', color: '#922B21', bg: 'rgba(146,43,33,.18)' };
+}
+
+function getConceito(score) {
+  if (score <= 1) return { label: 'Bom', color: '#6DC44A', bg: 'rgba(109,196,74,.15)' };
+  if (score <= 3) return { label: 'Regular', color: '#E6A022', bg: 'rgba(230,160,34,.15)' };
+  return { label: 'Necessita melhoria', color: '#E05A2B', bg: 'rgba(224,90,43,.12)' };
+}
+
+// Color palette for area letters
+const areaColors = ['#1B3A5C','#2A5580','#4AABAB','#6DC44A','#E6A022','#E05A2B',
+  '#8E44AD','#2471A3','#27AE60','#C0392B','#1B3A5C','#4AABAB',
+  '#6DC44A','#E6A022','#2A5580','#8E44AD'];
+
+function showResults() {
+  const { total, byArea } = calcScores();
+  const ri = getResultInfo(total);
+
+  // Hero
+  document.getElementById('resultsHero').innerHTML = `
+    <h2>Seu resultado</h2>
+    <div class="score-big">${total}</div>
+    <div class="score-max">de 96 pontos</div>
+    <div class="result-badge" style="background:${ri.bg};color:${ri.color}">${ri.label}</div>
+  `;
+
+  // Area rows
+  const areaRowsEl = document.getElementById('areaRows');
+  areaRowsEl.innerHTML = '';
+  const letters = Object.keys(areaMapping);
+  letters.forEach((letter, idx) => {
+    const score = byArea[letter];
+    const conceito = getConceito(score);
+    const pct = (score / 6) * 100;
+    const row = document.createElement('div');
+    row.className = 'area-row';
+    row.innerHTML = `
+      <div class="area-letter" style="background:${areaColors[idx]}">${letter}</div>
+      <div class="area-name">${areaNames[letter]}</div>
+      <div class="area-score">${score}</div>
+      <div class="area-bar-bg">
+        <div class="area-bar-fill" id="abar-${letter}" style="background:${conceito.color}"></div>
+      </div>
+      <div class="area-conceito" style="background:${conceito.bg};color:${conceito.color}">${conceito.label}</div>
+    `;
+    areaRowsEl.appendChild(row);
+  });
+
+  // Highlight: areas needing improvement
+  const needsMelhoria = letters.filter(l => byArea[l] >= 4).sort((a,b) => byArea[b]-byArea[a]);
+  const highlightEl = document.getElementById('highlightSection');
+  if (needsMelhoria.length === 0) {
+    highlightEl.innerHTML = `<h3>🎉 Parabéns!</h3>
+      <p style="color:var(--muted);font-size:14px;margin-top:8px;line-height:1.6">
+        Nenhuma área apresentou necessidade crítica de melhoria. Continue investindo em boas práticas de gestão do tempo!
+      </p>`;
+  } else {
+    highlightEl.innerHTML = `<h3>Áreas prioritárias para desenvolver</h3>` +
+      needsMelhoria.map(l => {
+        const conceito = getConceito(byArea[l]);
+        return `<div class="highlight-card" style="background:${conceito.bg};border:1px solid ${conceito.color}22">
+          <h4 style="color:${conceito.color}">${l} – ${areaNames[l]} (${byArea[l]} pontos)</h4>
+          <p style="color:var(--ink)">${areaTips[l]}</p>
+        </div>`;
+      }).join('') +
+      `<p style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.6">
+        💬 <strong>Quer aprofundar esses resultados?</strong> Uma consulta com Paulo Gomes pode ajudá-lo a criar estratégias personalizadas de gestão do tempo.
+        <br><a href="https://paulogomespsicologo.com" style="color:var(--teal-dark);font-weight:500">Agende uma consulta →</a>
+      </p>`;
+  }
+
+  showScreen('screen-results');
+
+  // Animate bars
+  setTimeout(() => {
+    letters.forEach(letter => {
+      const bar = document.getElementById('abar-' + letter);
+      if (bar) bar.style.width = ((byArea[letter]/6)*100) + '%';
+    });
+  }, 150);
+}
+
+function restartTest() {
+  answers.fill(null);
+  updateProgress();
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-intro');
+}
+
+function downloadPDF() {
+  const { total, byArea } = calcScores();
+  const ri = getResultInfo(total);
+  const letters = Object.keys(areaMapping);
+  const date = new Date().toLocaleDateString('pt-BR');
+
+  // Load jsPDF dynamically
+  if (!window.jspdf) {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => gerarPDF(total, byArea, ri, letters, date);
+    document.head.appendChild(script);
+  } else {
+    gerarPDF(total, byArea, ri, letters, date);
+  }
+}
+
+function gerarPDF(total, byArea, ri, letters, date) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210, margin = 20;
+  let y = 0;
+
+  // ── Helpers ──
+  const navy   = [27, 58, 92];
+  const teal   = [74, 171, 171];
+  const green  = [109, 196, 74];
+  const orange = [230, 160, 34];
+  const red    = [224, 90, 43];
+  const white  = [255, 255, 255];
+  const light  = [244, 248, 248];
+  const muted  = [90, 122, 138];
+
+  function conceitoColor(score) {
+    if (score <= 1) return green;
+    if (score <= 3) return orange;
+    return red;
+  }
+  function conceitoLabel(score) {
+    if (score <= 1) return 'Bom';
+    if (score <= 3) return 'Regular';
+    return 'Necessita melhoria';
+  }
+  function resultColor(t) {
+    if (t <= 16) return green;
+    if (t <= 36) return orange;
+    if (t <= 56) return red;
+    if (t <= 76) return [192,57,43];
+    return [146,43,33];
+  }
+
+  function hexToRgb(arr) { return arr; }
+
+  function checkPage(needed) {
+    if (y + needed > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  }
+
+  // ── COVER / HEADER ──
+  doc.setFillColor(...navy);
+  doc.rect(0, 0, W, 52, 'F');
+
+  // Decorative circle top-right
+  doc.setFillColor(126, 206, 206, 0.15);
+  doc.setDrawColor(126,206,206);
+  doc.setLineWidth(0.1);
+  doc.circle(195, 10, 22, 'D');
+
+  // Title
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('INVENTÁRIO DE ADMINISTRAÇÃO DO TEMPO', W/2, 18, {align:'center'});
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.setTextColor(126, 206, 206);
+  doc.text('Gestão do Tempo e Produtividade', W/2, 26, {align:'center'});
+
+  doc.setTextColor(200,220,220);
+  doc.setFontSize(9);
+  doc.text(`Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  paulogomespsicologo.com`, W/2, 33, {align:'center'});
+  doc.text(`Resultado gerado em ${date}`, W/2, 40, {align:'center'});
+
+  y = 62;
+
+  // ── SCORE BOX ──
+  const rc = resultColor(total);
+  doc.setFillColor(...rc);
+  doc.roundedRect(margin, y, W - margin*2, 38, 4, 4, 'F');
+
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(36);
+  doc.text(String(total), margin + 22, y + 24, {align:'center'});
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(255,255,255,0.7);
+  doc.text('de 96 pontos', margin + 22, y + 31, {align:'center'});
+
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  const riLines = doc.splitTextToSize(ri.label, 95);
+  doc.text(riLines, margin + 50, y + 16);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(230,240,240);
+  const desc = getResultDesc(total);
+  const descLines = doc.splitTextToSize(desc, 95);
+  doc.text(descLines, margin + 50, y + 24);
+
+  y += 48;
+
+  // ── AREAS TABLE ──
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.setTextColor(...navy);
+  doc.text('Resultado por Área de Dificuldade', margin, y);
+  y += 6;
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...muted);
+  doc.text('Pontuação: 0–1 = Bom  ·  2–3 = Regular  ·  4–6 = Necessita melhoria', margin, y);
+  y += 8;
+
+  // Table header
+  doc.setFillColor(...navy);
+  doc.roundedRect(margin, y, W - margin*2, 8, 2, 2, 'F');
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.text('Área', margin + 3, y + 5.5);
+  doc.text('Descrição', margin + 16, y + 5.5);
+  doc.text('Pts', margin + 118, y + 5.5);
+  doc.text('Conceito', margin + 127, y + 5.5);
+  y += 10;
+
+  letters.forEach((letter, idx) => {
+    checkPage(10);
+    const score = byArea[letter];
+    const cc = conceitoColor(score);
+    const cl = conceitoLabel(score);
+    const rowBg = idx % 2 === 0 ? light : white;
+
+    doc.setFillColor(...rowBg);
+    doc.rect(margin, y - 1, W - margin*2, 9, 'F');
+
+    // Letter badge
+    doc.setFillColor(...navy);
+    doc.roundedRect(margin + 1, y, 9, 7, 1.5, 1.5, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.text(letter, margin + 5.5, y + 5, {align:'center'});
+
+    // Area name
+    doc.setTextColor(...navy);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.text(areaNames[letter], margin + 14, y + 5);
+
+    // Score
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(...cc);
+    doc.text(String(score), margin + 120, y + 5);
+
+    // Conceito pill
+    doc.setFillColor(cc[0], cc[1], cc[2], 0.15);
+    doc.setDrawColor(...cc);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin + 126, y + 0.5, 42, 6, 2, 2, 'FD');
+    doc.setTextColor(...cc);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.text(cl, margin + 147, y + 4.8, {align:'center'});
+
+    y += 9;
+  });
+
+  y += 6;
+
+  // ── PRIORITY AREAS ──
+  const needsMelhoria = letters.filter(l => byArea[l] >= 4).sort((a,b) => byArea[b]-byArea[a]);
+  if (needsMelhoria.length > 0) {
+    checkPage(20);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(12);
+    doc.setTextColor(...navy);
+    doc.text('Áreas Prioritárias para Desenvolver', margin, y);
+    y += 10;
+
+    needsMelhoria.forEach(l => {
+      const score = byArea[l];
+      const cc = conceitoColor(score);
+      const tip = areaTips[l];
+      const tipLines = doc.splitTextToSize(tip, W - margin*2 - 14);
+      const boxH = 10 + tipLines.length * 5;
+      checkPage(boxH + 6);
+
+      doc.setFillColor(cc[0], cc[1], cc[2], 0.08);
+      doc.setDrawColor(...cc);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(margin, y, W - margin*2, boxH, 3, 3, 'FD');
+
+      // Side accent bar
+      doc.setFillColor(...cc);
+      doc.roundedRect(margin, y, 3, boxH, 1.5, 1.5, 'F');
+
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...cc);
+      doc.text(`${l} – ${areaNames[l]}  (${score} pontos)`, margin + 8, y + 7);
+
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(60, 80, 90);
+      doc.text(tipLines, margin + 8, y + 13);
+
+      y += boxH + 6;
+    });
+  }
+
+  // ── FOOTER ON EACH PAGE ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setFillColor(...navy);
+    doc.rect(0, 287, W, 10, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com', W/2, 293, {align:'center'});
+  }
+
+  doc.save(`resultado-administracao-tempo-${date.replace(/\//g,'-')}.pdf`);
+}
+
+function getResultDesc(total) {
+  if (total <= 16) return 'Você demonstra boas práticas de gestão do tempo no trabalho.';
+  if (total <= 36) return 'Há espaço para melhorar em algumas áreas específicas.';
+  if (total <= 56) return 'Pode estar gerando desperdício de tempo próprio e da equipe.';
+  if (total <= 76) return 'Está desperdiçando seu próprio tempo e o das pessoas com quem trabalha.';
+  return 'Tem atuado de acordo com os acontecimentos, prejudicando os resultados.';
+}
+</script>
+</body>
+</html>

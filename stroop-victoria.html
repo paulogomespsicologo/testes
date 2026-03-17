@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stroop Victoria – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --red:#C03A3A;--amber:#E8943A;
+  --cA:#4AABAB;--cB:#8B6FBE;--cC:#D4607A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+
+/* ── EXAMINER PANEL (top bar) ── */
+.examiner-bar{background:var(--navy);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+.eb-brand{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;font-style:italic;color:rgba(255,255,255,.8);}
+.eb-brand strong{font-style:normal;font-weight:600;color:#fff;}
+.eb-center{display:flex;align-items:center;gap:10px;}
+.card-badge{padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.eb-right{display:flex;align-items:center;gap:10px;}
+
+/* ── TIMER ── */
+.timer-display{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:#fff;line-height:1;min-width:90px;text-align:center;}
+.timer-display.running{color:#7ECECE;}
+.timer-display.stopped{color:var(--gold);}
+
+.btn-timer{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;}
+.btn-start{background:var(--green);color:#fff;}
+.btn-start:hover{background:#5cb33a;}
+.btn-stop{background:var(--amber);color:#fff;}
+.btn-stop:hover{background:#d47a20;}
+.btn-reset{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);}
+.btn-reset:hover{background:rgba(255,255,255,.25);}
+
+/* ── ERROR COUNTER ── */
+.error-panel{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:7px 12px;}
+.err-label{font-size:11px;color:rgba(255,255,255,.6);}
+.err-count{font-family:'Cormorant Garamond',serif;font-size:28px;color:#fff;line-height:1;min-width:28px;text-align:center;}
+.btn-err{width:30px;height:30px;border-radius:7px;border:none;cursor:pointer;font-size:16px;font-weight:700;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.btn-err-add{background:rgba(192,58,58,.7);color:#fff;}
+.btn-err-add:hover{background:#c03a3a;}
+.btn-err-sub{background:rgba(255,255,255,.15);color:#fff;}
+.btn-err-sub:hover{background:rgba(255,255,255,.25);}
+
+/* ── SCREENS ── */
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 60px;}
+.screen{display:none;animation:rise .35s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── INTRO ── */
+.intro-hero{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);border-radius:20px;padding:40px 32px;color:#fff;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;}
+.intro-hero::before{content:'';position:absolute;width:260px;height:260px;border-radius:50%;top:-70px;right:-50px;background:radial-gradient(circle,rgba(139,111,190,.2) 0%,transparent 70%);}
+.ih-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.ih-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,46px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;}
+.ih-title strong{font-style:normal;font-weight:600;}
+.ih-sub{color:rgba(255,255,255,.65);font-size:14px;line-height:1.7;max-width:500px;margin:0 auto 20px;}
+.credit{font-size:11px;color:rgba(255,255,255,.3);}
+
+.cards-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.cp-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px 16px;text-align:center;}
+.cp-letter{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;line-height:1;margin-bottom:6px;}
+.cp-name{font-size:12px;font-weight:500;margin-bottom:4px;}
+.cp-desc{font-size:11px;color:var(--muted);line-height:1.55;}
+.cp-tag{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:600;letter-spacing:.5px;}
+
+.instructions-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;}
+.instructions-box h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:12px;}
+.inst-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;font-size:13px;line-height:1.6;color:var(--muted);}
+.inst-n{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;text-align:center;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#B8924A);color:#fff;}
+
+/* ── CARD VIEW ── */
+.card-view{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:16px;}
+.cv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.cv-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;}
+.cv-subtitle{font-size:13px;color:var(--muted);margin-top:2px;}
+.cv-instruction{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;line-height:1.7;color:var(--ink);}
+.cv-instruction strong{color:var(--navy);}
+
+/* CARTÃO A — retângulos coloridos */
+.grid-rect{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.rect-item{height:44px;border-radius:8px;}
+
+/* CARTÃO B — palavras neutras coloridas */
+.grid-words{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 10px;}
+.word-item{font-size:18px;font-weight:700;text-align:center;padding:8px 4px;line-height:1.2;}
+
+/* CARTÃO C — nomes de cores com cor incongruente */
+.grid-color-words{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 10px;}
+.cw-item{font-size:18px;font-weight:700;text-align:center;padding:8px 4px;line-height:1.2;}
+
+.nav-btns{display:flex;gap:10px;justify-content:space-between;margin-top:20px;flex-wrap:wrap;}
+.nav-btns .btn{min-width:120px;text-align:center;}
+
+/* ── RESULTS ── */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(139,111,190,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;font-style:italic;line-height:1.2;margin-bottom:4px;}
+.rh-sub{color:rgba(255,255,255,.6);font-size:13px;line-height:1.65;}
+
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.rg-card{border-radius:16px;padding:18px;border:1.5px solid var(--border);background:var(--card);}
+.rg-letter{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;line-height:1;}
+.rg-name{font-size:12px;font-weight:500;margin:4px 0 10px;}
+.rg-time{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;line-height:1;}
+.rg-unit{font-size:11px;color:var(--muted);}
+.rg-err{margin-top:8px;font-size:12px;color:var(--muted);}
+.rg-err span{font-weight:500;color:var(--red);}
+
+.interf-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.interf-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:6px;}
+.interf-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.interf-value{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;}
+.interf-unit{font-size:13px;color:var(--muted);}
+.interf-desc{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+.obs-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.obs-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:10px;}
+.obs-card textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);resize:vertical;min-height:80px;outline:none;transition:border-color .2s;}
+.obs-card textarea:focus{border-color:var(--teal-d);}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:20px;font-size:13px;margin-top:40px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){
+  .cards-preview{grid-template-columns:1fr;}
+  .result-grid{grid-template-columns:1fr;}
+  .examiner-bar{padding:10px 12px;gap:8px;}
+  .timer-display{font-size:32px;}
+  .grid-rect,.grid-words,.grid-color-words{grid-template-columns:repeat(4,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     EXAMINER BAR (always visible)
+══════════════════════════════════ -->
+<div class="examiner-bar" id="examinerBar" style="display:none">
+  <div class="eb-brand"><strong>Stroop</strong> Victoria</div>
+  <div class="eb-center">
+    <div class="card-badge" id="cardBadge" style="background:#4AABAB22;color:#4AABAB">Cartão A</div>
+    <div class="timer-display" id="timerDisplay">0.0</div>
+    <button class="btn-timer btn-start" id="btnStart" onclick="timerStart()">▶ Iniciar</button>
+    <button class="btn-timer btn-stop" id="btnStop" onclick="timerStop()" style="display:none">■ Parar</button>
+    <button class="btn-timer btn-reset" onclick="timerReset()">↺</button>
+  </div>
+  <div class="eb-right">
+    <div class="error-panel">
+      <span class="err-label">Erros</span>
+      <button class="btn-err btn-err-sub" onclick="errChange(-1)">−</button>
+      <span class="err-count" id="errCount">0</span>
+      <button class="btn-err btn-err-add" onclick="errChange(1)">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREENS
+══════════════════════════════════ -->
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-hero">
+    <div class="ih-eyebrow">Avaliação Neuropsicológica</div>
+    <div class="ih-title">Teste de <strong>Stroop</strong><br>Versão Victoria</div>
+    <div class="ih-sub">Avaliação de atenção seletiva, velocidade de processamento e controle inibitório através de três cartões cronometrados.</div>
+    <div class="credit">Paulo Gomes, Neuropsicólogo · CRP-11/13235</div>
+  </div>
+
+  <div class="cards-preview">
+    <div class="cp-card">
+      <div class="cp-letter" style="color:var(--cA)">A</div>
+      <div class="cp-name">Cartão de Cores</div>
+      <div class="cp-desc">Nomear a cor de 24 retângulos coloridos em sequência.</div>
+      <span class="cp-tag" style="background:rgba(74,171,171,.12);color:var(--cA)">Velocidade de nomeação</span>
+    </div>
+    <div class="cp-card">
+      <div class="cp-letter" style="color:var(--cB)">B</div>
+      <div class="cp-name">Cartão de Palavras</div>
+      <div class="cp-desc">Nomear a cor da tinta de palavras neutras, ignorando seu conteúdo.</div>
+      <span class="cp-tag" style="background:rgba(139,111,190,.12);color:var(--cB)">Atenção seletiva</span>
+    </div>
+    <div class="cp-card">
+      <div class="cp-letter" style="color:var(--cC)">C</div>
+      <div class="cp-name">Cartão de Interferência</div>
+      <div class="cp-desc">Nomear a cor da tinta de nomes de cores incongruentes.</div>
+      <span class="cp-tag" style="background:rgba(212,96,122,.12);color:var(--cC)">Controle inibitório</span>
+    </div>
+  </div>
+
+  <div class="instructions-box">
+    <h3>Instruções para o examinador</h3>
+    <div class="inst-row"><span class="inst-n">1</span><span>Apresente cada cartão ao paciente um de cada vez, em ordem A → B → C.</span></div>
+    <div class="inst-row"><span class="inst-n">2</span><span>Leia a instrução do cartão em voz alta antes de iniciar.</span></div>
+    <div class="inst-row"><span class="inst-n">3</span><span>Pressione <strong>▶ Iniciar</strong> quando o paciente começar a responder.</span></div>
+    <div class="inst-row"><span class="inst-n">4</span><span>Pressione <strong>■ Parar</strong> ao término. Use <strong>＋ Erros</strong> a cada erro ou autocorreção observado.</span></div>
+    <div class="inst-row"><span class="inst-n">5</span><span>Ao terminar os 3 cartões, clique em <strong>Ver resultado</strong> para calcular o índice de interferência.</span></div>
+    <div class="inst-row"><span class="inst-n">6</span><span>Você pode baixar o resultado em PDF ao final para anexar ao prontuário.</span></div>
+  </div>
+
+  <button class="btn btn-primary" onclick="goCard('A')">Iniciar avaliação — Cartão A →</button>
+</div>
+
+<!-- CARTÃO A -->
+<div class="screen" id="s-cardA">
+  <div class="card-view">
+    <div class="cv-header">
+      <div>
+        <div class="cv-title" style="color:var(--cA)">Cartão A — Cores</div>
+        <div class="cv-subtitle">24 retângulos · Nomear a cor de cada um, da esquerda para a direita</div>
+      </div>
+    </div>
+    <div class="cv-instruction">
+      <strong>Instrução ao paciente:</strong> "Neste cartão, você deve nomear as cores dos retângulos, através da linha, da esquerda para a direita, sem pular, o mais rápido possível."
+    </div>
+    <div class="grid-rect" id="gridA"></div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" style="width:auto;padding:14px 28px" onclick="saveAndNext('A','B')">Salvar tempo e erros → Cartão B</button>
+  </div>
+</div>
+
+<!-- CARTÃO B -->
+<div class="screen" id="s-cardB">
+  <div class="card-view">
+    <div class="cv-header">
+      <div>
+        <div class="cv-title" style="color:var(--cB)">Cartão B — Palavras Neutras</div>
+        <div class="cv-subtitle">24 palavras · Nomear a cor da tinta, ignorando o significado</div>
+      </div>
+    </div>
+    <div class="cv-instruction">
+      <strong>Instrução ao paciente:</strong> "Neste cartão, você deve nomear as cores das impressões, ignorando ler os nomes das palavras. Também em sequência, sem pular, da esquerda para a direita, o mais rápido possível."
+    </div>
+    <div class="grid-words" id="gridB"></div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-outline" onclick="goCard('A')">← Cartão A</button>
+    <button class="btn btn-primary" style="width:auto;padding:14px 28px" onclick="saveAndNext('B','C')">Salvar tempo e erros → Cartão C</button>
+  </div>
+</div>
+
+<!-- CARTÃO C -->
+<div class="screen" id="s-cardC">
+  <div class="card-view">
+    <div class="cv-header">
+      <div>
+        <div class="cv-title" style="color:var(--cC)">Cartão C — Interferência</div>
+        <div class="cv-subtitle">24 itens · Nomear a cor da tinta, ignorando o nome da cor escrito</div>
+      </div>
+    </div>
+    <div class="cv-instruction">
+      <strong>Instrução ao paciente:</strong> "Neste cartão, você deve nomear as cores das impressões, ignorando ler os nomes das cores. Também em sequência, sem pular, da esquerda para a direita, o mais rápido possível."
+    </div>
+    <div class="grid-color-words" id="gridC"></div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-outline" onclick="goCard('B')">← Cartão B</button>
+    <button class="btn btn-gold" style="width:auto;padding:14px 28px" onclick="saveAndShowResults()">Salvar e ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">Stroop Victoria — Resultado</div>
+    <div class="rh-title" id="rhTitle">Avaliação concluída</div>
+    <div class="rh-sub" id="rhSub">—</div>
+  </div>
+
+  <div class="result-grid" id="resultGrid"></div>
+  <div class="interf-card" id="interfCard"></div>
+
+  <div class="obs-card">
+    <h3>Observações clínicas</h3>
+    <textarea id="obsText" placeholder="Registre aqui observações sobre o comportamento do paciente durante a tarefa: hesitações, estratégias, autocorreções, nível de esforço, ansiedade observada…"></textarea>
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+    <button class="btn btn-primary" style="flex:1" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" style="flex:1" onclick="novaAvaliacao()">Nova avaliação</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// DATA — Cartão A (retângulos)
+// ══════════════════════════════════
+var COLORS_A = [
+  'azul','verde','rosa','marrom','azul','verde',
+  'rosa','marrom','verde','azul','marrom','rosa',
+  'azul','rosa','marrom','verde','rosa','azul',
+  'verde','marrom','azul','verde','rosa','marrom'
+];
+var COLOR_MAP = {
+  'azul':'#3A7CC5','verde':'#3DAB5E','rosa':'#D4607A','marrom':'#8B5A2B'
+};
+
+// Cartão B — palavras neutras
+var WORDS_B = [
+  'cada','hoje','nunca','tudo','cada','nunca',
+  'nunca','tudo','cada','hoje','nunca','tudo',
+  'hoje','nunca','tudo','cada','hoje','cada',
+  'tudo','cada','hoje','nunca','tudo','hoje'
+];
+var COLORS_B = [
+  'azul','verde','rosa','marrom','rosa','azul',
+  'verde','marrom','azul','rosa','marrom','verde',
+  'azul','marrom','verde','rosa','verde','azul',
+  'marrom','rosa','azul','verde','rosa','marrom'
+];
+
+// Cartão C — nomes de cores (incongruentes)
+var WORDS_C = [
+  'marrom','azul','marrom','verde','marrom','rosa',
+  'azul','verde','rosa','azul','verde','azul',
+  'rosa','marrom','verde','rosa','azul','verde',
+  'verde','rosa','azul','marrom','rosa','marrom'
+];
+// Cor da tinta é DIFERENTE do nome
+var COLORS_C = [
+  'azul','rosa','verde','azul','rosa','marrom',
+  'rosa','marrom','azul','verde','marrom','rosa',
+  'verde','azul','rosa','marrom','rosa','marrom',
+  'azul','verde','marrom','rosa','verde','azul'
+];
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+var results = {A:{time:null,errors:0}, B:{time:null,errors:0}, C:{time:null,errors:0}};
+var currentCard = null;
+
+// Timer
+var timerInterval = null;
+var timerMs = 0;
+var timerRunning = false;
+
+function timerStart(){
+  if(timerRunning) return;
+  timerRunning = true;
+  var start = Date.now() - timerMs;
+  timerInterval = setInterval(function(){
+    timerMs = Date.now() - start;
+    updateTimerDisplay();
+  }, 50);
+  document.getElementById('btnStart').style.display='none';
+  document.getElementById('btnStop').style.display='inline-block';
+  document.getElementById('timerDisplay').className='timer-display running';
+}
+
+function timerStop(){
+  if(!timerRunning) return;
+  clearInterval(timerInterval); timerRunning=false;
+  document.getElementById('btnStart').style.display='inline-block';
+  document.getElementById('btnStop').style.display='none';
+  document.getElementById('timerDisplay').className='timer-display stopped';
+}
+
+function timerReset(){
+  timerStop();
+  timerMs=0; updateTimerDisplay();
+  document.getElementById('timerDisplay').className='timer-display';
+  document.getElementById('errCount').textContent='0';
+  currentErrors=0;
+}
+
+function updateTimerDisplay(){
+  document.getElementById('timerDisplay').textContent = (timerMs/1000).toFixed(1);
+}
+
+var currentErrors = 0;
+function errChange(d){
+  currentErrors = Math.max(0, currentErrors+d);
+  document.getElementById('errCount').textContent = currentErrors;
+}
+
+// ══════════════════════════════════
+// BUILD GRIDS
+// ══════════════════════════════════
+function buildGridA(){
+  var g=document.getElementById('gridA'); g.innerHTML='';
+  COLORS_A.forEach(function(c){
+    var d=document.createElement('div');
+    d.className='rect-item';
+    d.style.background=COLOR_MAP[c];
+    g.appendChild(d);
+  });
+}
+
+function buildGridB(){
+  var g=document.getElementById('gridB'); g.innerHTML='';
+  WORDS_B.forEach(function(w,i){
+    var d=document.createElement('div');
+    d.className='word-item';
+    d.style.color=COLOR_MAP[COLORS_B[i]];
+    d.textContent=w;
+    g.appendChild(d);
+  });
+}
+
+function buildGridC(){
+  var g=document.getElementById('gridC'); g.innerHTML='';
+  WORDS_C.forEach(function(w,i){
+    var d=document.createElement('div');
+    d.className='cw-item';
+    d.style.color=COLOR_MAP[COLORS_C[i]];
+    d.textContent=w;
+    g.appendChild(d);
+  });
+}
+
+// ══════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goIntro(){
+  document.getElementById('examinerBar').style.display='none';
+  timerReset();
+  showScreen('s-intro');
+}
+
+var CARD_COLORS={'A':'#4AABAB','B':'#8B6FBE','C':'#D4607A'};
+var CARD_NAMES={'A':'Cartão A','B':'Cartão B','C':'Cartão C'};
+
+function goCard(c){
+  currentCard=c;
+  timerReset();
+  document.getElementById('examinerBar').style.display='flex';
+  var badge=document.getElementById('cardBadge');
+  badge.textContent=CARD_NAMES[c];
+  badge.style.background=CARD_COLORS[c]+'22';
+  badge.style.color=CARD_COLORS[c];
+  if(c==='A') buildGridA();
+  if(c==='B') buildGridB();
+  if(c==='C') buildGridC();
+  showScreen('s-card'+c);
+}
+
+function saveAndNext(from, to){
+  timerStop();
+  results[from].time = timerMs/1000;
+  results[from].errors = currentErrors;
+  goCard(to);
+}
+
+function saveAndShowResults(){
+  timerStop();
+  results['C'].time = timerMs/1000;
+  results['C'].errors = currentErrors;
+  document.getElementById('examinerBar').style.display='none';
+  buildResults();
+  showScreen('s-results');
+}
+
+// ══════════════════════════════════
+// RESULTS
+// ══════════════════════════════════
+function fmtTime(s){
+  if(s===null) return '—';
+  return s.toFixed(1)+'s';
+}
+
+function buildResults(){
+  var tA=results.A.time, tB=results.B.time, tC=results.C.time;
+
+  // Subtitle
+  var allDone = tA!==null && tB!==null && tC!==null;
+  document.getElementById('rhSub').textContent = allDone
+    ? 'Todos os três cartões foram concluídos. Veja abaixo os tempos, erros e o índice de interferência.'
+    : 'Alguns cartões não foram cronometrados. Complete os três para calcular o índice de interferência.';
+
+  // Result grid
+  var rg=document.getElementById('resultGrid'); rg.innerHTML='';
+  ['A','B','C'].forEach(function(k){
+    var r=results[k], col=CARD_COLORS[k];
+    var names={A:'Cores',B:'Palavras Neutras',C:'Interferência'};
+    rg.innerHTML+=
+      '<div class="rg-card" style="border-color:'+col+'33">'+
+        '<div class="rg-letter" style="color:'+col+'">'+k+'</div>'+
+        '<div class="rg-name">'+names[k]+'</div>'+
+        '<div class="rg-time" style="color:'+col+'">'+fmtTime(r.time)+'</div>'+
+        '<div class="rg-unit">tempo total</div>'+
+        '<div class="rg-err">Erros: <span>'+r.errors+'</span></div>'+
+      '</div>';
+  });
+
+  // Interference
+  var ic=document.getElementById('interfCard');
+  if(tB!==null && tC!==null){
+    var interf = tC - tB;
+    var interfAbs = Math.abs(interf).toFixed(1);
+    var interfSign = interf >= 0 ? '+' : '-';
+    var color = interf <= 10 ? '#6DC44A' : interf <= 20 ? '#E8943A' : '#C03A3A';
+    var desc = interf <= 10
+      ? 'O índice de interferência está dentro do esperado, sugerindo controle inibitório preservado. A diferença entre os Cartões B e C é pequena.'
+      : interf <= 20
+      ? 'O índice de interferência sugere moderada dificuldade de controle inibitório. O paciente levou consideravelmente mais tempo para suprimir a leitura automática no Cartão C.'
+      : 'O índice de interferência é elevado, indicando dificuldade significativa de controle inibitório. A diferença expressiva entre B e C merece atenção clínica.';
+    ic.innerHTML=
+      '<h3>Índice de Interferência (C − B)</h3>'+
+      '<p>Diferença de tempo entre o Cartão C (interferência) e o Cartão B (linha de base). Quanto maior, maior a dificuldade de inibição da resposta automática de leitura.</p>'+
+      '<div style="display:flex;align-items:baseline;gap:4px;margin:8px 0 4px">'+
+        '<span class="interf-value" style="color:'+color+'">'+interfSign+interfAbs+'</span>'+
+        '<span class="interf-unit">segundos</span>'+
+      '</div>'+
+      '<div style="height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);margin:10px 0 4px">'+
+        '<div style="height:100%;width:'+Math.min(Math.abs(interf)/40*100,100)+'%;background:'+color+';border-radius:99px;transition:width 1s ease"></div>'+
+      '</div>'+
+      '<div class="interf-desc">'+desc+'</div>';
+  } else {
+    ic.innerHTML='<h3>Índice de Interferência</h3><p style="color:var(--muted);font-size:13px">Complete os três cartões para calcular o índice de interferência (C − B).</p>';
+  }
+}
+
+function novaAvaliacao(){
+  results={A:{time:null,errors:0},B:{time:null,errors:0},C:{time:null,errors:0}};
+  timerReset(); currentErrors=0;
+  showScreen('s-intro');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ══════════════════════════════════
+// PDF
+// ══════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      cA=[74,171,171],cB=[139,111,190],cC=[212,96,122];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var tA=results.A.time, tB=results.B.time, tC=results.C.time;
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO NEUROPSICOLÓGICA  ·  STROOP VICTORIA',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(22);
+  doc.text('Teste de Stroop — Versão Victoria',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // Cards summary
+  chk(28);
+  var cols=[{k:'A',c:cA,name:'Cores'},{k:'B',c:cB,name:'Palavras Neutras'},{k:'C',c:cC,name:'Interferência'}];
+  var cw=(W-M*2)/3;
+  cols.forEach(function(col,i){
+    var r=results[col.k], x=M+i*cw;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(x,y,cw-3,30,3,3,'FD');
+    sf(col.c);doc.setFont('helvetica','bold');doc.setFontSize(18);st(col.c);
+    doc.text(col.k,x+8,y+12);
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text(col.name,x+cw/2-1.5,y+18,{align:'center'});
+    st(col.c);doc.setFont('helvetica','bold');doc.setFontSize(14);
+    doc.text(r.time?r.time.toFixed(1)+'s':'—',x+cw/2-1.5,y+26,{align:'center'});
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+    doc.text('Erros: '+r.errors,x+cw/2-1.5,y+32,{align:'center'});
+  });
+  y+=42;
+
+  // Interference index
+  if(tB!==null && tC!==null){
+    chk(30);
+    var interf=tC-tB;
+    var interfColor=interf<=10?green:interf<=20?[232,148,58]:[192,58,58];
+    sf(interfColor);doc.rect(M,y,3,26,'F');
+    st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);
+    doc.text('Índice de Interferência (C − B)',M+8,y+8);
+    st(interfColor);doc.setFont('helvetica','bold');doc.setFontSize(22);
+    doc.text((interf>=0?'+':'')+interf.toFixed(1)+' segundos',M+8,y+20);
+    y+=34;
+    var desc=interf<=10
+      ?'Índice dentro do esperado — controle inibitório preservado.'
+      :interf<=20
+      ?'Interferência moderada — dificuldade intermediária de controle inibitório.'
+      :'Interferência elevada — dificuldade significativa de controle inibitório. Merece atenção clínica.';
+    chk(14);st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    var dlines=doc.splitTextToSize(desc,W-M*2);doc.text(dlines,M,y);y+=dlines.length*4.5+10;
+  }
+
+  // Observations
+  var obs=document.getElementById('obsText').value;
+  if(obs&&obs.trim()){
+    chk(16);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);
+    doc.text('Observações clínicas',M,y);y+=7;
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    var olines=doc.splitTextToSize(obs,W-M*2);doc.text(olines,M,y);y+=olines.length*4.5+8;
+  }
+
+  // CTA
+  chk(22);y+=6;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Paulo Gomes, Neuropsicólogo',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com  ·  CRP-11/13235',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('stroop-victoria-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste de Flanker – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+#s-practice.active,#s-test.active,#s-break.active{display:flex;flex-direction:column;}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+
+/* ══════════════════
+   INTRO
+══════════════════ */
+#s-intro.active{display:block;background:var(--bg);animation:rise .4s ease both;}
+.intro-header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.intro-header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(139,111,190,.2) 0%,transparent 70%);}
+.intro-header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(109,196,74,.12) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.intro-header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,5vw,52px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.intro-header h1 strong{font-weight:600;font-style:normal;}
+.intro-header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.3);position:relative;z-index:1;}
+
+.intro-body{max-width:680px;margin:0 auto;padding:32px 16px 60px;width:100%;}
+
+/* Flanker demo */
+.demo-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;margin-bottom:16px;box-shadow:0 4px 20px rgba(27,58,92,.07);}
+.demo-box h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:16px;color:var(--navy);}
+.demo-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+.demo-label{font-size:12px;font-weight:500;min-width:90px;color:var(--muted);}
+.demo-arrows{font-size:32px;letter-spacing:4px;font-weight:700;line-height:1;}
+.demo-tag{margin-left:auto;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;}
+
+.inst-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;}
+.inst-box h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:12px;}
+.inst-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;font-size:13px;line-height:1.65;color:var(--muted);}
+.inst-n{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+
+.stats-row{display:flex;gap:12px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#B8924A);color:#fff;}
+
+/* ══════════════════
+   PRACTICE / TEST
+══════════════════ */
+#s-practice,#s-test{
+  background:#0D1B2E;
+  align-items:center;justify-content:center;
+  position:relative;
+  user-select:none;
+}
+
+.task-header{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;}
+.th-badge{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.th-progress{font-size:12px;color:rgba(255,255,255,.4);}
+
+/* Fixation cross */
+.fixation{color:rgba(255,255,255,.4);font-size:36px;font-weight:300;animation:fadeIn .2s ease;}
+
+/* Flanker stimulus */
+.stimulus-wrap{text-align:center;animation:pop .25s ease both;}
+.flanker-row{font-size:clamp(48px,10vw,72px);font-weight:700;letter-spacing:6px;line-height:1;color:#fff;font-family:'DM Sans',sans-serif;}
+
+/* Feedback flash */
+.feedback-flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;animation:pop .25s ease both;pointer-events:none;}
+
+/* Response buttons */
+.response-btns{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;gap:20px;}
+.rb{width:80px;height:80px;border-radius:16px;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);font-size:32px;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.rb:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);}
+.rb:active{background:rgba(255,255,255,.3);transform:scale(.95);}
+.rb.flash-correct{background:rgba(109,196,74,.5);border-color:#6DC44A;}
+.rb.flash-wrong{background:rgba(192,58,58,.5);border-color:#C03A3A;}
+
+/* Break screen */
+#s-break{background:#0D1B2E;align-items:center;justify-content:center;}
+.break-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:40px 32px;text-align:center;max-width:400px;}
+.break-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:#fff;margin-bottom:10px;}
+.break-card p{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:24px;}
+.break-stats{display:flex;gap:16px;justify-content:center;margin-bottom:24px;}
+.bs-item{text-align:center;}
+.bs-item strong{display:block;font-family:'Cormorant Garamond',serif;font-size:32px;color:#fff;}
+.bs-item span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;}
+
+/* ══════════════════
+   RESULTS
+══════════════════ */
+#s-results.active{display:block;background:var(--bg);animation:rise .4s ease both;}
+.results-wrap{max-width:720px;margin:0 auto;padding:28px 16px 60px;width:100%;}
+
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(139,111,190,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,32px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;max-width:500px;}
+.hero-metrics{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
+.hm{text-align:left;}
+.hm strong{display:block;font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:#fff;line-height:1;}
+.hm span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;}
+
+/* Effect card */
+.effect-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.06);}
+.effect-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:6px;}
+.effect-card .ec-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.effect-value{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;line-height:1;}
+.effect-unit{font-size:14px;color:var(--muted);}
+.effect-bar-wrap{margin:12px 0;}
+.effect-bar-bg{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.effect-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.effect-interp{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* Comparison table */
+.cmp-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.cmp-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:14px;}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:10px;}
+.cmp-cell{padding:10px 12px;font-size:13px;border-right:1px solid var(--border);}
+.cmp-cell:last-child{border-right:none;}
+.cmp-head{background:var(--bg);font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.4px;}
+
+/* RT distribution */
+.dist-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.dist-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:14px;}
+.dist-bars{display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:6px;}
+.dist-bar{flex:1;border-radius:3px 3px 0 0;transition:height .8s ease;min-height:2px;}
+.dist-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:20px;font-size:13px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:500px){
+  .demo-arrows{font-size:24px;letter-spacing:2px;}
+  .flanker-row{font-size:48px;letter-spacing:3px;}
+  .rb{width:64px;height:64px;font-size:24px;}
+  .intro-body{padding:20px 12px 40px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     INTRO
+══════════════════════════════════════ -->
+<div class="screen active" id="s-intro">
+  <div class="intro-header">
+    <div class="eyebrow">Avaliação Neuropsicológica</div>
+    <h1>Teste de <strong>Flanker</strong><br>Atenção Seletiva</h1>
+    <p>Avaliação do controle inibitório e da capacidade de filtrar distrações através do paradigma clássico de Eriksen.</p>
+    <div class="credit">Paulo Gomes, Neuropsicólogo · CRP-11/13235</div>
+  </div>
+
+  <div class="intro-body">
+    <div class="demo-box">
+      <h3>Como funciona o teste</h3>
+      <div class="demo-row">
+        <span class="demo-label" style="color:var(--green)">Congruente</span>
+        <span class="demo-arrows" style="color:var(--green)">← ← ← ← ←</span>
+        <span class="demo-tag" style="background:rgba(109,196,74,.12);color:var(--green)">Fácil</span>
+      </div>
+      <div class="demo-row">
+        <span class="demo-label" style="color:var(--red)">Incongruente</span>
+        <span class="demo-arrows" style="color:var(--red)">← ← → ← ←</span>
+        <span class="demo-tag" style="background:rgba(192,58,58,.12);color:var(--red)">Difícil</span>
+      </div>
+      <div class="demo-row">
+        <span class="demo-label" style="color:var(--muted)">Neutro</span>
+        <span class="demo-arrows" style="color:var(--muted)">— — → — —</span>
+        <span class="demo-tag" style="background:rgba(90,122,138,.1);color:var(--muted)">Linha de base</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6;">
+        Responda sempre <strong>pela seta do meio</strong>. As setas laterais estão lá para distrair — ignore-as.
+      </div>
+    </div>
+
+    <div class="inst-box">
+      <h3>Instruções</h3>
+      <div class="inst-row"><span class="inst-n">1</span><span>Uma fileira de 5 setas aparecerá na tela. Foque apenas na <strong>seta do meio</strong>.</span></div>
+      <div class="inst-row"><span class="inst-n">2</span><span>Pressione <strong>← (esquerda)</strong> ou <strong>→ (direita)</strong> indicando para onde a seta do meio aponta.</span></div>
+      <div class="inst-row"><span class="inst-n">3</span><span>Responda o mais rápido e corretamente possível. O próximo item aparece automaticamente.</span></div>
+      <div class="inst-row"><span class="inst-n">4</span><span>Você fará <strong>8 tentativas de prática</strong> antes do teste real (60 tentativas).</span></div>
+      <div class="inst-row"><span class="inst-n">5</span><span>Use os botões na tela ou as <strong>teclas de seta do teclado</strong>.</span></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><strong>60</strong><span>tentativas</span></div>
+      <div class="stat"><strong>~5 min</strong><span>duração</span></div>
+      <div class="stat"><strong>ms</strong><span>precisão temporal</span></div>
+      <div class="stat"><strong>3</strong><span>tipos de trial</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startPractice()">Iniciar prática (8 tentativas) →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PRACTICE
+══════════════════════════════════════ -->
+<div class="screen" id="s-practice">
+  <div class="task-header">
+    <span class="th-badge">Prática</span>
+    <span class="th-progress" id="practiceProgress">1 / 8</span>
+  </div>
+  <div id="practiceContent" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;"></div>
+  <div class="response-btns">
+    <button class="rb" id="rb-left-p" onclick="respond('left','practice')">←</button>
+    <button class="rb" id="rb-right-p" onclick="respond('right','practice')">→</button>
+  </div>
+</div>
+
+<!-- BREAK -->
+<div class="screen" id="s-break">
+  <div class="break-card">
+    <h2>Prática concluída!</h2>
+    <p>Você completou as tentativas de prática. Agora começa o teste real com <strong>60 tentativas</strong>.</p>
+    <div class="break-stats">
+      <div class="bs-item"><strong id="brkAcc">—</strong><span>ACERTOS</span></div>
+      <div class="bs-item"><strong id="brkRT">—</strong><span>TR MÉDIO (ms)</span></div>
+    </div>
+    <p style="font-size:13px;color:rgba(255,255,255,.5);">Lembre-se: foque na seta do meio e responda o mais rápido possível.</p>
+    <button class="btn btn-primary" onclick="startTest()" style="margin-top:8px">Iniciar teste →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TEST
+══════════════════════════════════════ -->
+<div class="screen" id="s-test">
+  <div class="task-header">
+    <span class="th-badge">Teste</span>
+    <span class="th-progress" id="testProgress">1 / 60</span>
+  </div>
+  <div id="testContent" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;"></div>
+  <div class="response-btns">
+    <button class="rb" id="rb-left-t" onclick="respond('left','test')">←</button>
+    <button class="rb" id="rb-right-t" onclick="respond('right','test')">→</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     RESULTS
+══════════════════════════════════════ -->
+<div class="screen" id="s-results">
+  <div class="results-wrap">
+    <div class="results-hero">
+      <div class="rh-eyebrow">Teste de Flanker — Resultado</div>
+      <div class="rh-title" id="rhTitle">—</div>
+      <div class="rh-sub" id="rhSub">—</div>
+      <div class="hero-metrics" id="heroMetrics"></div>
+    </div>
+
+    <div class="effect-card" id="effectCard"></div>
+    <div class="cmp-card" id="cmpCard"></div>
+    <div class="dist-card" id="distCard"></div>
+
+    <div class="cta-box">
+      <p>Quer interpretar esses resultados em contexto clínico e aprofundar a avaliação neuropsicológica?</p>
+      <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar relatório em PDF</button>
+      <button class="btn btn-outline" onclick="restartTest()">Refazer teste</button>
+    </div>
+  </div>
+  <div class="site-footer">
+    <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+    <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// TRIAL GENERATOR
+// ══════════════════════════════════
+// Types: congruent (CON), incongruent (INC), neutral (NEU)
+// direction: left | right
+function makeTrial(type, dir) {
+  var arrow = dir === 'left' ? '←' : '→';
+  var opp   = dir === 'left' ? '→' : '←';
+  var neu   = '—';
+  var flankers;
+  if (type === 'CON') flankers = [arrow, arrow, arrow, arrow, arrow];
+  else if (type === 'INC') flankers = [opp, opp, arrow, opp, opp];
+  else flankers = [neu, neu, arrow, neu, neu];
+  return { type: type, dir: dir, flankers: flankers };
+}
+
+function shuffleArray(a) {
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function generateTrials(n) {
+  // equal distribution of types and directions
+  var types = ['CON','CON','INC','INC','NEU','NEU'];
+  var dirs  = ['left','right'];
+  var trials = [];
+  var perGroup = Math.ceil(n / (types.length));
+  for (var t = 0; t < types.length; t++) {
+    for (var d = 0; d < dirs.length; d++) {
+      for (var k = 0; k < perGroup; k++) {
+        trials.push(makeTrial(types[t], dirs[d]));
+      }
+    }
+  }
+  return shuffleArray(trials).slice(0, n);
+}
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+var practiceTrials = [];
+var testTrials = [];
+var practiceResults = [];
+var testResults = [];
+var currentTrialIdx = 0;
+var trialStart = 0;
+var waitingResponse = false;
+var currentMode = null; // 'practice' | 'test'
+var currentTrial = null;
+var stimulusTimeout = null;
+var itiTimeout = null;
+
+var ITI_MIN = 400;
+var ITI_MAX = 800;
+var STIMULUS_TIMEOUT = 2000; // max wait for response
+
+// ══════════════════════════════════
+// SCREENS
+// ══════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+// ══════════════════════════════════
+// PRACTICE
+// ══════════════════════════════════
+function startPractice() {
+  practiceTrials = generateTrials(8);
+  practiceResults = [];
+  currentTrialIdx = 0;
+  currentMode = 'practice';
+  showScreen('s-practice');
+  // keyboard
+  document.addEventListener('keydown', handleKey);
+  nextTrial();
+}
+
+function startTest() {
+  testTrials = generateTrials(60);
+  testResults = [];
+  currentTrialIdx = 0;
+  currentMode = 'test';
+  showScreen('s-test');
+  nextTrial();
+}
+
+function nextTrial() {
+  var trials = currentMode === 'practice' ? practiceTrials : testTrials;
+  var progress = currentMode === 'practice'
+    ? document.getElementById('practiceProgress')
+    : document.getElementById('testProgress');
+  var content = currentMode === 'practice'
+    ? document.getElementById('practiceContent')
+    : document.getElementById('testContent');
+  var max = trials.length;
+
+  if (currentTrialIdx >= max) {
+    if (currentMode === 'practice') showBreak();
+    else showResults();
+    return;
+  }
+
+  if (progress) progress.textContent = (currentTrialIdx + 1) + ' / ' + max;
+
+  currentTrial = trials[currentTrialIdx];
+  waitingResponse = false;
+
+  // Show fixation
+  content.innerHTML = '<div class="fixation">+</div>';
+
+  var iti = ITI_MIN + Math.random() * (ITI_MAX - ITI_MIN);
+  itiTimeout = setTimeout(function() {
+    showStimulus(content);
+  }, iti);
+}
+
+function showStimulus(content) {
+  content.innerHTML =
+    '<div class="stimulus-wrap">' +
+      '<div class="flanker-row">' + currentTrial.flankers.join(' ') + '</div>' +
+    '</div>';
+  trialStart = performance.now();
+  waitingResponse = true;
+
+  // Auto-miss after timeout
+  stimulusTimeout = setTimeout(function() {
+    if (waitingResponse) recordResponse(null, currentMode);
+  }, STIMULUS_TIMEOUT);
+}
+
+// ══════════════════════════════════
+// RESPONSE
+// ══════════════════════════════════
+function handleKey(e) {
+  if (e.key === 'ArrowLeft')  respond('left',  currentMode);
+  if (e.key === 'ArrowRight') respond('right', currentMode);
+}
+
+function respond(dir, mode) {
+  if (!waitingResponse) return;
+  if (mode !== currentMode) return;
+  clearTimeout(stimulusTimeout);
+  recordResponse(dir, mode);
+}
+
+function recordResponse(dir, mode) {
+  waitingResponse = false;
+  var rt = dir ? Math.round(performance.now() - trialStart) : null;
+  var correct = dir === currentTrial.dir;
+  var result = {
+    trial: currentTrialIdx,
+    type: currentTrial.type,
+    dir: currentTrial.dir,
+    response: dir,
+    rt: rt,
+    correct: dir ? correct : false,
+    miss: dir === null
+  };
+
+  if (mode === 'practice') practiceResults.push(result);
+  else testResults.push(result);
+
+  // Flash feedback (practice only)
+  if (mode === 'practice') {
+    var content = document.getElementById('practiceContent');
+    content.innerHTML = '<div class="feedback-flash">' + (correct ? '✓' : '✗') + '</div>';
+    var btnL = document.getElementById('rb-left-p');
+    var btnR = document.getElementById('rb-right-p');
+    if (btnL && btnR) {
+      var fb = correct ? 'flash-correct' : 'flash-wrong';
+      var btn = dir === 'left' ? btnL : btnR;
+      btn.classList.add(fb);
+      setTimeout(function(){ btnL.classList.remove('flash-correct','flash-wrong'); btnR.classList.remove('flash-correct','flash-wrong'); }, 300);
+    }
+    setTimeout(function(){ currentTrialIdx++; nextTrial(); }, 400);
+  } else {
+    // Test: no feedback, fast ITI
+    currentTrialIdx++;
+    setTimeout(function(){ nextTrial(); }, 200);
+  }
+}
+
+// ══════════════════════════════════
+// BREAK
+// ══════════════════════════════════
+function showBreak() {
+  var acc = practiceResults.filter(function(r){ return r.correct; }).length;
+  var rts = practiceResults.filter(function(r){ return r.rt && !r.miss; }).map(function(r){ return r.rt; });
+  var avgRt = rts.length ? Math.round(rts.reduce(function(a,b){ return a+b; },0)/rts.length) : '—';
+  document.getElementById('brkAcc').textContent = acc + '/' + practiceResults.length;
+  document.getElementById('brkRT').textContent = avgRt;
+  showScreen('s-break');
+}
+
+// ══════════════════════════════════
+// RESULTS CALCULATION
+// ══════════════════════════════════
+function calcResults() {
+  var valid = testResults.filter(function(r){ return !r.miss && r.rt > 100; }); // exclude anticipations
+  function group(type) {
+    return valid.filter(function(r){ return r.type === type; });
+  }
+  function avgRT(arr) {
+    var ts = arr.filter(function(r){ return r.correct; }).map(function(r){ return r.rt; });
+    return ts.length ? Math.round(ts.reduce(function(a,b){ return a+b; },0)/ts.length) : null;
+  }
+  function acc(arr) {
+    return arr.length ? Math.round(arr.filter(function(r){ return r.correct; }).length/arr.length*100) : 0;
+  }
+  var con = group('CON'), inc = group('INC'), neu = group('NEU');
+  var rtCon = avgRT(con), rtInc = avgRT(inc), rtNeu = avgRT(neu);
+  var accCon = acc(con), accInc = acc(inc), accNeu = acc(neu);
+  var flankerEffect = (rtCon && rtInc) ? rtInc - rtCon : null;
+  var totalAcc = acc(valid);
+  var allRTs = valid.filter(function(r){ return r.correct; }).map(function(r){ return r.rt; });
+  var medianRT = allRTs.length ? allRTs.sort(function(a,b){return a-b;})[Math.floor(allRTs.length/2)] : null;
+  var misses = testResults.filter(function(r){ return r.miss; }).length;
+  return { rtCon:rtCon, rtInc:rtInc, rtNeu:rtNeu, accCon:accCon, accInc:accInc, accNeu:accNeu,
+    flankerEffect:flankerEffect, totalAcc:totalAcc, medianRT:medianRT, misses:misses,
+    allRTs:allRTs, con:con, inc:inc, neu:neu, valid:valid };
+}
+
+function showResults() {
+  document.removeEventListener('keydown', handleKey);
+  var r = calcResults();
+
+  // Hero
+  var perfLabel = r.totalAcc >= 90 ? 'Excelente desempenho'
+    : r.totalAcc >= 75 ? 'Bom desempenho'
+    : r.totalAcc >= 60 ? 'Desempenho moderado'
+    : 'Desempenho abaixo da média';
+  document.getElementById('rhTitle').textContent = perfLabel;
+  document.getElementById('rhSub').textContent =
+    'Acurácia geral de ' + r.totalAcc + '% com TR mediano de ' + (r.medianRT||'—') + ' ms. ' +
+    'O Efeito Flanker calculado foi de ' + (r.flankerEffect !== null ? r.flankerEffect + ' ms' : '—') + '.';
+
+  document.getElementById('heroMetrics').innerHTML =
+    '<div class="hm"><strong>' + r.totalAcc + '%</strong><span>ACURÁCIA</span></div>' +
+    '<div class="hm"><strong>' + (r.medianRT||'—') + '</strong><span>TR MEDIANO (ms)</span></div>' +
+    '<div class="hm"><strong>' + (r.flankerEffect !== null ? (r.flankerEffect > 0 ? '+' : '') + r.flankerEffect : '—') + '</strong><span>EFEITO FLANKER (ms)</span></div>' +
+    '<div class="hm"><strong>' + r.misses + '</strong><span>OMISSÕES</span></div>';
+
+  // Flanker effect card
+  var fe = r.flankerEffect;
+  var feColor = fe === null ? '#aaa' : fe <= 30 ? '#6DC44A' : fe <= 60 ? '#E8943A' : '#C03A3A';
+  var feLabel = fe === null ? '—'
+    : fe <= 30 ? 'Leve'
+    : fe <= 60 ? 'Moderado'
+    : 'Elevado';
+  var feDesc = fe === null ? 'Dados insuficientes para calcular o Efeito Flanker.'
+    : fe <= 30
+    ? 'O Efeito Flanker está dentro de parâmetros normativos, sugerindo boa capacidade de controle inibitório e filtragem de distrações.'
+    : fe <= 60
+    ? 'O Efeito Flanker é moderado. Há alguma dificuldade em suprimir a interferência dos estímulos distratores, o que pode indicar redução na eficiência do controle atencional.'
+    : 'O Efeito Flanker é elevado, indicando dificuldade significativa de controle inibitório. Os estímulos incongruentes causaram interferência considerável no tempo de reação, o que merece atenção clínica.';
+
+  document.getElementById('effectCard').innerHTML =
+    '<h3>Efeito Flanker <span style="font-size:14px;color:var(--muted);font-family:DM Sans,sans-serif">(TR Incongruente − TR Congruente)</span></h3>' +
+    '<div class="ec-sub">Medida central do controle inibitório: quanto maior, maior a interferência dos distratores.</div>' +
+    '<div style="display:flex;align-items:baseline;gap:6px">' +
+      '<span class="effect-value" style="color:'+feColor+'">' + (fe !== null ? fe : '—') + '</span>' +
+      '<span class="effect-unit">ms &nbsp;·&nbsp; ' + feLabel + '</span>' +
+    '</div>' +
+    '<div class="effect-bar-wrap"><div class="effect-bar-bg"><div class="effect-bar-fill" style="width:'+Math.min((fe||0)/100*100,100)+'%;background:'+feColor+'"></div></div></div>' +
+    '<div class="effect-interp">'+feDesc+'</div>';
+
+  // Comparison table
+  document.getElementById('cmpCard').innerHTML =
+    '<h3>Comparativo por Tipo de Tentativa</h3>' +
+    '<div class="cmp-row">' +
+      '<div class="cmp-cell cmp-head">Tipo</div>' +
+      '<div class="cmp-cell cmp-head">TR Médio (ms)</div>' +
+      '<div class="cmp-cell cmp-head">Acurácia</div>' +
+      '<div class="cmp-cell cmp-head">N</div>' +
+    '</div>' +
+    makeRow('Congruente','CON',r.rtCon,r.accCon,r.con.length,'#6DC44A') +
+    makeRow('Neutro','NEU',r.rtNeu,r.accNeu,r.neu.length,'#5A7A8A') +
+    makeRow('Incongruente','INC',r.rtInc,r.accInc,r.inc.length,'#C03A3A');
+
+  // RT distribution
+  buildDistribution(r.allRTs);
+
+  showScreen('s-results');
+}
+
+function makeRow(label, type, rt, acc, n, color) {
+  return '<div class="cmp-row">' +
+    '<div class="cmp-cell" style="font-weight:500;color:'+color+'">'+label+'</div>' +
+    '<div class="cmp-cell">'+( rt||'—')+'</div>' +
+    '<div class="cmp-cell">'+acc+'%</div>' +
+    '<div class="cmp-cell" style="color:var(--muted)">'+n+'</div>' +
+  '</div>';
+}
+
+function buildDistribution(rts) {
+  if (!rts.length) { document.getElementById('distCard').style.display='none'; return; }
+  var min = Math.min.apply(null,rts), max = Math.max.apply(null,rts);
+  var bins = 12;
+  var binSize = (max-min)/bins || 1;
+  var counts = new Array(bins).fill(0);
+  rts.forEach(function(rt){ var i=Math.min(Math.floor((rt-min)/binSize),bins-1); counts[i]++; });
+  var maxCount = Math.max.apply(null,counts)||1;
+  var bars = counts.map(function(c,i){
+    var h = Math.max(4, Math.round((c/maxCount)*72));
+    return '<div class="dist-bar" style="height:'+h+'px;background:var(--teal-d);opacity:'+(0.4+c/maxCount*0.6)+'"></div>';
+  }).join('');
+  document.getElementById('distCard').innerHTML =
+    '<h3>Distribuição dos Tempos de Reação</h3>' +
+    '<div class="dist-bars">'+bars+'</div>' +
+    '<div class="dist-labels"><span>'+min+' ms</span><span>'+Math.round((min+max)/2)+' ms</span><span>'+max+' ms</span></div>';
+}
+
+function restartTest() {
+  practiceResults=[]; testResults=[];
+  currentTrialIdx=0; currentMode=null;
+  document.removeEventListener('keydown',handleKey);
+  showScreen('s-intro');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ══════════════════════════════════
+// PDF
+// ══════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      red=[192,58,58],amber=[232,148,58];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var r=calcResults();
+  var fe=r.flankerEffect;
+  var feColor=fe===null?muted:fe<=30?green:fe<=60?amber:red;
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO NEUROPSICOLÓGICA  ·  PARADIGMA DE ERIKSEN',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Teste de Flanker — Atenção Seletiva',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // Summary row
+  chk(28);
+  var metrics=[
+    {label:'ACURÁCIA',val:r.totalAcc+'%'},
+    {label:'TR MEDIANO',val:(r.medianRT||'—')+' ms'},
+    {label:'EFEITO FLANKER',val:(fe!==null?(fe>0?'+':'')+fe:' — ')+' ms'},
+    {label:'OMISSÕES',val:String(r.misses)}
+  ];
+  var mw=(W-M*2)/4;
+  metrics.forEach(function(m,i){
+    var x=M+i*mw;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(x,y,mw-3,22,3,3,'FD');
+    st(navy);doc.setFont('helvetica','bold');doc.setFontSize(14);
+    doc.text(m.val,x+mw/2-1.5,y+12,{align:'center'});
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7);
+    doc.text(m.label,x+mw/2-1.5,y+19,{align:'center'});
+  });
+  y+=32;
+
+  // Flanker effect
+  chk(30);
+  sf(feColor);doc.rect(M,y,3,24,'F');
+  st(feColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text('Efeito Flanker (INC − CON)',M+8,y+8);
+  doc.setFontSize(20);
+  doc.text((fe!==null?(fe>0?'+':'')+fe+' ms':'—'),M+8,y+20);
+  y+=32;
+  var feDesc=fe===null?'Dados insuficientes.':fe<=30?'Leve — controle inibitório dentro do esperado.':fe<=60?'Moderado — alguma dificuldade na filtragem de distrações.':'Elevado — dificuldade significativa de controle inibitório.';
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text(feDesc,M,y);y+=8;
+
+  // Comparison table
+  chk(14);y+=4;
+  st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text('Comparativo por Tipo de Tentativa',M,y);y+=8;
+  var cols=['Tipo','TR Médio (ms)','Acurácia','N'];
+  var cws=[50,40,30,20];
+  var startX=M;
+  // Header
+  sf(bg);doc.roundedRect(M,y,W-M*2,8,2,2,'F');
+  cols.forEach(function(c,i){st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(c,startX+2,y+5.5);startX+=cws[i];});
+  y+=10;
+  var rows=[
+    {label:'Congruente',rt:r.rtCon,acc:r.accCon,n:r.con.length,c:green},
+    {label:'Neutro',    rt:r.rtNeu,acc:r.accNeu,n:r.neu.length,c:muted},
+    {label:'Incongruente',rt:r.rtInc,acc:r.accInc,n:r.inc.length,c:red}
+  ];
+  rows.forEach(function(row){
+    chk(10);
+    var x=M;
+    st(row.c);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(row.label,x+2,y+4);x+=cws[0];
+    st(ink);doc.setFont('helvetica','normal');doc.text(row.rt?String(row.rt):'—',x+2,y+4);x+=cws[1];
+    doc.text(row.acc+'%',x+2,y+4);x+=cws[2];
+    st(muted);doc.text(String(row.n),x+2,y+4);
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+7,W-M,y+7);
+    y+=9;
+  });
+  y+=4;
+
+  // CTA
+  chk(22);
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('flanker-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

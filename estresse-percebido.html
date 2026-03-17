@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala de Estresse – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F4F8F8; --card:#FFFFFF; --navy:#1B3A5C; --teal:#7ECECE; --teal-d:#4AABAB;
+  --green:#6DC44A; --border:#D6E8E8; --muted:#5A7A8A; --ink:#1B3A5C;
+  --gold:#C8A96E; --amber:#E8943A; --rose:#D4607A; --red:#C03A3A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.header{background:linear-gradient(150deg,#0D2640 0%,var(--navy) 55%,#1A4060 100%);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-70px;background:radial-gradient(circle,rgba(232,148,58,.18) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-60px;left:-40px;background:radial-gradient(circle,rgba(126,206,206,.12) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--amber);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,6vw,52px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:14px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:660px;margin:0 auto;padding:32px 16px 0;}
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:28px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:24px;}
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+.notice{background:rgba(232,148,58,.08);border:1.5px solid rgba(232,148,58,.3);border-radius:12px;padding:14px 16px;font-size:13px;color:#7A4A10;line-height:1.65;margin-bottom:24px;text-align:left;}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-full{width:100%;text-align:center;padding:16px;}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 20px;margin-bottom:12px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 3px 14px rgba(27,58,92,.07);}
+.q-num{font-size:11px;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.65;color:var(--ink);margin-bottom:18px;font-weight:400;}
+.q-period{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:14px;margin-top:-10px;}
+.scale-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.sbt{padding:12px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.35;}
+.sbt:hover{border-color:var(--teal-d);color:var(--ink);}
+.sbt .sv{font-size:16px;font-weight:300;display:block;margin-bottom:2px;}
+.sbt.sel{color:#fff;border-color:transparent;}
+
+/* RESULTS */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;margin:28px 0 24px;position:relative;}
+.gauge-svg{width:260px;height:140px;}
+.gauge-score{position:absolute;bottom:8px;text-align:center;}
+.gauge-score .gs-num{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;line-height:1;display:block;}
+.gauge-score .gs-max{font-size:14px;color:var(--muted);}
+.gauge-band{display:inline-block;padding:7px 20px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.rc-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.result-card p{font-size:14px;line-height:1.75;color:var(--muted);}
+
+/* ITEM BREAKDOWN */
+.breakdown{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.breakdown h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:16px;}
+.bd-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:13px;}
+.bd-n{width:20px;text-align:right;color:var(--muted);font-size:11px;flex-shrink:0;}
+.bd-bar-bg{flex:1;height:7px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.bd-bar-fill{height:100%;border-radius:99px;transition:width .8s ease;}
+.bd-val{width:22px;text-align:center;font-weight:500;font-size:12px;flex-shrink:0;}
+.bd-rev{font-size:10px;color:var(--muted);flex-shrink:0;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;text-align:center;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){.scale-row{grid-template-columns:repeat(5,1fr);}.sbt{font-size:10px;padding:10px 2px;}.intro-card{padding:28px 18px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Avaliação Psicológica</div>
+  <h1>Escala de<br><strong>Estresse Percebido</strong></h1>
+  <p>Avalie como você tem se sentido e pensado durante os últimos 30 dias.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 10</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como está seu nível de estresse?</h2>
+    <p>Este instrumento mede o quanto as situações da sua vida têm sido percebidas como estressantes no último mês. Para cada pergunta, escolha com que frequência você se sentiu ou pensou assim.</p>
+    <div class="notice">
+      ⏱ As perguntas se referem sempre aos <strong>últimos 30 dias</strong>. Responda com base em como você realmente se sentiu — não como gostaria de ter se sentido.
+    </div>
+    <div class="intro-stats">
+      <div class="stat"><strong>10</strong><span>perguntas</span></div>
+      <div class="stat"><strong>~5 min</strong><span>para completar</span></div>
+      <div class="stat"><strong>0–40</strong><span>pontuação total</span></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+
+  <div style="text-align:center;margin-top:8px;">
+    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:6px;">EPS-10 — Resultado</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;color:var(--navy);margin-bottom:4px;">Seu nível de estresse percebido</div>
+  </div>
+
+  <div class="gauge-wrap">
+    <svg class="gauge-svg" viewBox="0 0 260 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- background arc -->
+      <path d="M20,130 A110,110 0 0,1 240,130" stroke="#D6E8E8" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <!-- colored arc segments -->
+      <path id="arcLow"    d="M20,130 A110,110 0 0,1 240,130" stroke="#6DC44A" stroke-width="18" stroke-linecap="round" fill="none" stroke-dasharray="0 346"/>
+      <path id="arcMed"    d="M20,130 A110,110 0 0,1 240,130" stroke="#E8943A" stroke-width="18" stroke-linecap="round" fill="none" stroke-dasharray="0 346"/>
+      <path id="arcHigh"   d="M20,130 A110,110 0 0,1 240,130" stroke="#C03A3A" stroke-width="18" stroke-linecap="round" fill="none" stroke-dasharray="0 346"/>
+      <!-- needle -->
+      <line id="needle" x1="130" y1="130" x2="130" y2="35" stroke="#1B3A5C" stroke-width="3" stroke-linecap="round" transform="rotate(0,130,130)"/>
+      <circle cx="130" cy="130" r="6" fill="#1B3A5C"/>
+    </svg>
+    <div class="gauge-score">
+      <span class="gs-num" id="gsNum">—</span>
+      <span class="gs-max">/40</span>
+    </div>
+    <div class="gauge-band" id="gaugeBand">—</div>
+  </div>
+
+  <div class="result-card" id="interpCard">
+    <h3><span class="rc-dot" id="rcDot"></span><span id="rcTitle">—</span></h3>
+    <p id="rcText">—</p>
+  </div>
+
+  <div class="breakdown">
+    <h3>Detalhamento por questão</h3>
+    <div id="bdContent"></div>
+  </div>
+
+  <div class="cta-box">
+    <p>Quer entender melhor como o estresse afeta sua vida e trabalhar estratégias personalizadas?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer o teste</button>
+  </div>
+
+</div>
+
+</div><!-- /wrap -->
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var QUESTIONS = [
+  {n:1,  rev:false, text:'Com que frequência você ficou aborrecido por causa de algo que aconteceu inesperadamente?'},
+  {n:2,  rev:false, text:'Com que frequência você sentiu que foi incapaz de controlar coisas importantes na sua vida?'},
+  {n:3,  rev:false, text:'Com que frequência você esteve nervoso ou estressado?'},
+  {n:4,  rev:true,  text:'Com que frequência você esteve confiante em sua capacidade de lidar com seus problemas pessoais?'},
+  {n:5,  rev:true,  text:'Com que frequência você sentiu que as coisas aconteceram da maneira que você esperava?'},
+  {n:6,  rev:false, text:'Com que frequência você achou que não conseguiria lidar com todas as coisas que tinha por fazer?'},
+  {n:7,  rev:true,  text:'Com que frequência você foi capaz de controlar irritações na sua vida?'},
+  {n:8,  rev:true,  text:'Com que frequência você sentiu que todos os aspectos de sua vida estavam sob controle?'},
+  {n:9,  rev:false, text:'Com que frequência você esteve bravo por causa de coisas que estiveram fora de seu controle?'},
+  {n:10, rev:false, text:'Com que frequência você sentiu que os problemas acumularam tanto que você não conseguiria resolvê-los?'}
+];
+
+var LABELS = ['Nunca','Quase Nunca','Às Vezes','Pouco Frequente','Muito Frequente'];
+var COLORS_SEL = ['#4AABAB','#7ECECE','#E8943A','#D4607A','#C03A3A'];
+
+var answers = {};
+
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML='';
+  QUESTIONS.forEach(function(q,i){
+    var html = '<div class="q-card'+(answers[i]!==undefined?' answered':'')+'" id="qc-'+i+'">' +
+      '<div class="q-num">Questão '+q.n+(q.rev?' <span style="font-size:10px;color:var(--green);font-weight:500">↺ item positivo</span>':'')+' <span style="font-size:10px;color:var(--muted)">(últimos 30 dias)</span></div>' +
+      '<div class="q-text">'+q.text+'</div>' +
+      '<div class="scale-row">';
+    for(var v=0;v<=4;v++){
+      var isSel = answers[i]===v;
+      html+='<button class="sbt'+(isSel?' sel':'')+'" id="sbt-'+i+'-'+v+'" style="'+(isSel?'background:'+COLORS_SEL[v]+';':'')+'" onclick="setAns('+i+','+v+')">' +
+        '<span class="sv">'+v+'</span>'+LABELS[v]+'</button>';
+    }
+    html+='</div></div>';
+    c.innerHTML+=html;
+  });
+  updateProg();
+}
+
+function setAns(idx,val){
+  answers[idx]=val;
+  for(var v=0;v<=4;v++){
+    var b=document.getElementById('sbt-'+idx+'-'+v);
+    if(!b) continue;
+    if(v===val){b.className='sbt sel';b.style.background=COLORS_SEL[v];}
+    else{b.className='sbt';b.style.background='';}
+  }
+  var card=document.getElementById('qc-'+idx);
+  if(card) card.className='q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n=Object.keys(answers).length;
+  var pct=n/10*100;
+  document.getElementById('progFill').style.width=pct+'%';
+  // Color gradient based on progress
+  document.getElementById('progFill').style.background='linear-gradient(90deg,var(--teal-d),var(--green))';
+  document.getElementById('progTxt').textContent=n+' / 10';
+  document.getElementById('pgInfo').textContent=n+' de 10 respondidas';
+}
+
+function calcScore(){
+  var total=0, details=[];
+  QUESTIONS.forEach(function(q,i){
+    var raw=answers[i]!==undefined?answers[i]:0;
+    var score=q.rev?(4-raw):raw;
+    total+=score;
+    details.push({n:q.n,raw:raw,score:score,rev:q.rev,text:q.text});
+  });
+  return{total:total,details:details};
+}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function goIntro(){document.getElementById('progBar').style.display='none';showScreen('s-intro');}
+function startTest(){buildQuestions();document.getElementById('progBar').style.display='flex';showScreen('s-questions');}
+function restartTest(){answers={};document.getElementById('progBar').style.display='none';showScreen('s-intro');}
+
+function showResults(){
+  var r=calcScore();
+  var total=r.total;
+
+  // Gauge
+  document.getElementById('gsNum').textContent=total;
+  var pct=total/40;
+  // Arc total length ~346
+  var arcLen=346;
+  var filled=pct*arcLen;
+
+  // Bands: 0-13 low, 14-26 mod, 27-40 high
+  var lowEnd=Math.min(filled,(13/40)*arcLen);
+  var medEnd=total>13?Math.min(filled-lowEnd,((26-13)/40)*arcLen):0;
+  var highEnd=total>26?filled-lowEnd-medEnd:0;
+
+  function setArc(id,len,offset){
+    var el=document.getElementById(id);
+    el.setAttribute('stroke-dasharray',len+' '+(arcLen-len));
+    el.setAttribute('stroke-dashoffset',-offset);
+  }
+  setArc('arcLow',lowEnd,0);
+  setArc('arcMed',medEnd,lowEnd);
+  setArc('arcHigh',highEnd,lowEnd+medEnd);
+
+  // Needle: -90deg = 0, +90deg = 40
+  var angle=-90+(pct*180);
+  document.getElementById('needle').setAttribute('transform','rotate('+angle+',130,130)');
+
+  // Band
+  var band,bandColor,title,text;
+  if(total<=13){
+    band='Estresse baixo';bandColor='#6DC44A';
+    title='Seu nível de estresse está baixo';
+    text='Você apresenta poucos sinais de estresse percebido no último mês. Isso indica que tem conseguido lidar bem com as demandas do dia a dia e que sente um razoável senso de controle sobre sua vida. Continue cultivando as práticas que contribuem para esse equilíbrio.';
+  } else if(total<=26){
+    band='Estresse moderado';bandColor='#E8943A';
+    title='Seu nível de estresse é moderado';
+    text='Você apresenta um nível intermediário de estresse percebido. Alguns aspectos da sua vida têm sido sentidos como fora de controle ou sobrecarregados. Este é um bom momento para identificar os principais estressores e desenvolver estratégias de manejo antes que se intensifiquem.';
+  } else {
+    band='Estresse elevado';bandColor='#C03A3A';
+    title='Seu nível de estresse está elevado';
+    text='Você apresenta sinais significativos de estresse percebido no último mês. Isso indica que muitas situações têm sido vivenciadas como difíceis de controlar ou gerenciar. Buscar apoio profissional pode ser muito benéfico neste momento para desenvolver estratégias eficazes de regulação emocional e manejo do estresse.';
+  }
+
+  var bandEl=document.getElementById('gaugeBand');
+  bandEl.textContent=band;bandEl.style.background=bandColor+'22';bandEl.style.color=bandColor;bandEl.style.border='1px solid '+bandColor+'44';
+  document.getElementById('rcDot').style.background=bandColor;
+  document.getElementById('rcTitle').textContent=title;
+  document.getElementById('rcText').textContent=text;
+
+  // Breakdown
+  var bd=document.getElementById('bdContent');bd.innerHTML='';
+  r.details.forEach(function(d){
+    var barColor=d.rev?'#6DC44A':'#E8943A';
+    if(d.score>2) barColor=d.rev?'#4AABAB':'#C03A3A';
+    bd.innerHTML+='<div class="bd-row">' +
+      '<span class="bd-n">'+d.n+'</span>' +
+      '<div class="bd-bar-bg"><div class="bd-bar-fill" style="width:'+(d.score/4*100)+'%;background:'+barColor+'"></div></div>' +
+      '<span class="bd-val" style="color:'+barColor+'">'+d.score+'</span>' +
+      (d.rev?'<span class="bd-rev">↺</span>':'<span class="bd-rev"></span>') +
+    '</div>';
+  });
+  bd.innerHTML+='<div style="font-size:11px;color:var(--muted);margin-top:10px;">↺ Itens positivos com pontuação revertida (4, 5, 7 e 8)</div>';
+
+  showScreen('s-results');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],amber=[232,148,58],red=[192,58,58],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],gold=[200,169,110];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var r=calcScore(); var total=r.total;
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  var bandColor,bandText,interpTitle,interpText;
+  if(total<=13){bandColor=green;bandText='Estresse baixo';interpTitle='Nível de estresse baixo';interpText='Você apresenta poucos sinais de estresse percebido no último mês, com bom senso de controle sobre sua vida.';}
+  else if(total<=26){bandColor=amber;bandText='Estresse moderado';interpTitle='Nível de estresse moderado';interpText='Você apresenta um nível intermediário de estresse. Alguns aspectos têm sido sentidos como fora de controle, sendo um bom momento para desenvolver estratégias de manejo.';}
+  else{bandColor=red;bandText='Estresse elevado';interpTitle='Nível de estresse elevado';interpText='Você apresenta sinais significativos de estresse percebido. Buscar apoio profissional pode ser muito benéfico para desenvolver estratégias eficazes de regulação emocional.';}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(amber);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO PSICOLÓGICA  ·  EPS-10',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(22);
+  doc.text('Escala de Estresse Percebido',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // Score hero
+  chk(38);
+  sf(navy);doc.roundedRect(M,y,W-M*2,32,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('PONTUAÇÃO TOTAL (EPS-10)',W/2,y+8,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(36);
+  doc.text(String(total),W/2-6,y+23,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(14);
+  doc.text('/40',W/2-4,y+23);
+  sf(bandColor);doc.roundedRect(W/2+10,y+14,52,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text(bandText,W/2+36,y+21,{align:'center'});
+  y+=42;
+
+  // Gauge bar
+  chk(20);
+  var barW=W-M*2;
+  // background
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(M,y,barW,10,4,4,'FD');
+  // low segment (0-13)
+  var lowW=(13/40)*barW;
+  var medW=(13/40)*barW;
+  var hiW=(14/40)*barW;
+  sf(green);doc.roundedRect(M,y,lowW,10,4,4,'F');
+  sf(amber);doc.rect(M+lowW,y,medW,10,'F');
+  sf(red);doc.roundedRect(M+lowW+medW,y,hiW,10,0,4,'F');
+  // dot
+  var dotX=M+(total/40)*barW;
+  sf(white);doc.circle(dotX,y+5,4,'F');
+  sf(bandColor);doc.circle(dotX,y+5,2.5,'F');
+  // labels
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0',M,y+17);
+  doc.text('Baixo',M+5,y+17);
+  doc.text('Moderado',M+lowW+3,y+17);
+  doc.text('Elevado',M+lowW+medW+3,y+17);
+  doc.text('40',W-M,y+17,{align:'right'});
+  y+=24;
+
+  // Interpretation
+  chk(30);
+  sf(bandColor);doc.rect(M,y,3,24,'F');
+  st(bandColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text(interpTitle,M+8,y+8);
+  st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var itLines=doc.splitTextToSize(interpText,W-M*2-10);
+  doc.text(itLines,M+8,y+16);
+  y+=itLines.length*4.8+16;
+
+  // Item breakdown
+  chk(12);
+  st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text('Detalhamento por questão',M,y);y+=8;
+  var bW=(W-M*2-30);
+  r.details.forEach(function(d){
+    chk(11);
+    var bc=d.rev?(d.score<=2?green:teal):(d.score<=1?green:d.score<=2?amber:red);
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text('Q'+d.n+(d.rev?' ↺':'   '),M,y+4);
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(M+12,y,bW,6,2,2,'FD');
+    sf(bc);doc.roundedRect(M+12,y,(d.score/4)*bW,6,2,2,'F');
+    st(ink);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text(String(d.score),W-M,y+5,{align:'right'});
+    y+=10;
+  });
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('↺ Itens positivos com pontuação revertida (questões 4, 5, 7 e 8)',M,y+4);y+=10;
+
+  // CTA
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  // Footer
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('estresse-percebido-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

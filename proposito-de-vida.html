@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propósito de Vida – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F4F8F8; --card:#FFFFFF; --navy:#1B3A5C; --teal:#7ECECE; --teal-d:#4AABAB;
+  --green:#6DC44A; --border:#D6E8E8; --muted:#5A7A8A; --ink:#1B3A5C;
+  --gold:#C8A96E; --gold-l:#F2E8D5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.header{background:linear-gradient(160deg,#0D2640 0%,var(--navy) 55%,#1E4A6E 100%);color:#fff;padding:56px 24px 48px;text-align:center;position:relative;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;pointer-events:none;}
+.o1{width:320px;height:320px;top:-100px;right:-80px;background:radial-gradient(circle,rgba(126,206,206,.18) 0%,transparent 70%);}
+.o2{width:220px;height:220px;bottom:-60px;left:-50px;background:radial-gradient(circle,rgba(200,169,110,.12) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,6vw,58px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:14px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--green));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:680px;margin:0 auto;padding:32px 16px 0;}
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:28px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:24px;}
+.modules{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+.mod{border-radius:14px;padding:18px 16px;text-align:left;border:1.5px solid var(--border);}
+.mod-n{font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1;margin-bottom:6px;}
+.mod-title{font-size:13px;font-weight:500;margin-bottom:4px;}
+.mod-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+.stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;}
+.stat span{font-size:11px;color:var(--muted);}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-full{width:100%;text-align:center;padding:16px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#B8924A);color:#fff;}
+.btn-gold:hover{opacity:.9;}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+
+/* SECTION BANNER */
+.sbanner{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:14px;margin:28px 0 20px;}
+.sbanner-n{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;line-height:1;opacity:.35;}
+.sbanner h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;}
+.sbanner p{font-size:12px;margin-top:2px;color:var(--muted);}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* PIL QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:12px;}
+.q-meta{font-size:11px;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.q-factor{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:500;}
+.q-text{font-size:14px;line-height:1.6;margin-bottom:16px;}
+.opts{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.opt-btn{padding:10px 2px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3;}
+.opt-btn:hover{border-color:var(--teal-d);color:var(--ink);}
+.opt-btn.sel{background:var(--navy);border-color:var(--navy);color:#fff;}
+.opt-lbl{font-size:9px;font-weight:300;display:block;margin-top:2px;}
+
+/* MISSION */
+.mis-q{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:12px;}
+.mis-q textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--bg);resize:vertical;min-height:72px;outline:none;transition:border-color .2s;}
+.mis-q textarea:focus{border-color:var(--teal-d);}
+.mis-q textarea::placeholder{color:#aac0c0;}
+.verb-hint{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.verb-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.vchip{padding:6px 12px;border-radius:99px;font-size:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .15s;}
+.vchip.pk{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* SENSITIVITY */
+.sens{background:#FFF5F5;border:1.5px solid #FFCCCC;border-radius:12px;padding:16px 18px;margin-bottom:20px;font-size:13px;color:#7A2020;line-height:1.6;}
+.sens strong{display:block;margin-bottom:4px;}
+
+/* RESULTS */
+.hero-r{background:linear-gradient(160deg,#0D2640,var(--navy));border-radius:20px;padding:36px;text-align:center;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.hero-r::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(126,206,206,.2) 0%,transparent 70%);}
+.hero-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.hero-score{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;line-height:1;}
+.hero-max{font-size:18px;color:rgba(255,255,255,.45);margin-left:2px;}
+.hero-band{display:inline-block;margin:10px auto;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;}
+.hero-desc{font-size:13px;color:rgba(255,255,255,.65);max-width:400px;margin:10px auto 0;line-height:1.7;}
+
+.factors-c{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.factors-c h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:18px;}
+.f-row{margin-bottom:14px;}
+.f-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.f-name{font-size:13px;font-weight:500;}
+.f-score{font-size:13px;color:var(--muted);}
+.f-track{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.f-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+
+.mis-sum{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.mis-sum h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:16px;}
+.mtable{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px;}
+.mtable th{background:var(--bg);padding:8px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--border);}
+.mtable td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;}
+.mtable tr:last-child td{border-bottom:none;}
+.sec-ttl{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;}
+.txt-block{background:var(--bg);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:14px 16px;font-size:14px;line-height:1.75;font-style:italic;margin-bottom:8px;}
+.ms-box{background:linear-gradient(135deg,var(--gold-l),#FFF8EC);border:1.5px solid var(--gold);border-radius:14px;padding:24px;text-align:center;margin-bottom:16px;}
+.ms-box p{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;font-style:italic;line-height:1.7;}
+.ms-box .ms-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;text-align:center;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:520px){.modules{grid-template-columns:1fr;}.opt-btn{font-size:10px;padding:8px 1px;}.intro-card{padding:28px 20px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="eyebrow">Logoterapia · Viktor Frankl</div>
+  <h1>Seu <strong>Propósito</strong><br>de Vida</h1>
+  <p>Uma jornada em dois momentos: descubra onde você está e escreva quem você quer ser.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 20</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Encontre o que move você</h2>
+    <p>Esta jornada combina o Teste PIL — instrumento baseado na Logoterapia de Viktor Frankl — com um exercício guiado de descoberta da sua missão pessoal.</p>
+    <div class="modules">
+      <div class="mod" style="border-color:#4AABAB44;background:rgba(74,171,171,.04)">
+        <div class="mod-n" style="color:var(--teal-d)">01</div>
+        <div class="mod-title">Teste PIL</div>
+        <div class="mod-desc">20 perguntas. Avalie seu senso atual de propósito e significado.</div>
+      </div>
+      <div class="mod" style="border-color:#C8A96E44;background:rgba(200,169,110,.04)">
+        <div class="mod-n" style="color:var(--gold)">02</div>
+        <div class="mod-title">Missão de Vida</div>
+        <div class="mod-desc">14 reflexões. Escreva a versão 1.0 do seu propósito pessoal.</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>34</strong><span>questões no total</span></div>
+      <div class="stat"><strong>~25 min</strong><span>para completar</span></div>
+      <div class="stat"><strong>PDF</strong><span>ao final</span></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="startPIL()">Começar a jornada →</button>
+  </div>
+</div>
+
+<!-- PIL P1 -->
+<div class="screen" id="s-pil1">
+  <div class="sbanner" style="background:rgba(74,171,171,.08);border:1px solid rgba(74,171,171,.25)">
+    <span class="sbanner-n" style="color:var(--teal-d)">01</span>
+    <div><h3 style="color:var(--teal-d)">Teste PIL — Propósito de Vida</h3><p>Escolha o número que melhor descreve você. Confie na primeira resposta.</p></div>
+  </div>
+  <div id="pil-p1"></div>
+  <div class="pg-info" id="info-p1"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="goPIL2()">Próxima →</button>
+  </div>
+</div>
+
+<!-- PIL P2 -->
+<div class="screen" id="s-pil2">
+  <div class="sbanner" style="background:rgba(74,171,171,.08);border:1px solid rgba(74,171,171,.25)">
+    <span class="sbanner-n" style="color:var(--teal-d)">01</span>
+    <div><h3 style="color:var(--teal-d)">Teste PIL — Parte 2 de 2</h3><p>Continue respondendo com sinceridade.</p></div>
+  </div>
+  <div class="sens">
+    <strong>Nota importante</strong>A questão 16 aborda o tema do suicídio como parte do instrumento clínico original. Se você estiver passando por um momento difícil, pode pular essa questão ou procurar apoio. O CVV atende 24h pelo telefone <strong>188</strong>.
+  </div>
+  <div id="pil-p2"></div>
+  <div class="pg-info" id="info-p2"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="showScreen('s-pil1')">← Voltar</button>
+    <button class="btn btn-primary" onclick="goMission()">Próxima parte →</button>
+  </div>
+</div>
+
+<!-- MISSION P1 -->
+<div class="screen" id="s-mis1">
+  <div class="sbanner" style="background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.3)">
+    <span class="sbanner-n" style="color:var(--gold)">02</span>
+    <div><h3 style="color:#8A6030">Descobrindo sua Missão de Vida</h3><p>Parte A — Reflexão (1 de 2). Responda com calma e sinceridade.</p></div>
+  </div>
+  <div id="mis-p1"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="showScreen('s-pil2')">← Voltar</button>
+    <button class="btn btn-primary" onclick="goMis2()">Próxima →</button>
+  </div>
+</div>
+
+<!-- MISSION P2 -->
+<div class="screen" id="s-mis2">
+  <div class="sbanner" style="background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.3)">
+    <span class="sbanner-n" style="color:var(--gold)">02</span>
+    <div><h3 style="color:#8A6030">Descobrindo sua Missão de Vida</h3><p>Parte A — Reflexão (2 de 2).</p></div>
+  </div>
+  <div id="mis-p2"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="showScreen('s-mis1')">← Voltar</button>
+    <button class="btn btn-primary" onclick="goMis3()">Escrever minha missão →</button>
+  </div>
+</div>
+
+<!-- MISSION P3 -->
+<div class="screen" id="s-mis3">
+  <div class="sbanner" style="background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.3)">
+    <span class="sbanner-n" style="color:var(--gold)">02</span>
+    <div><h3 style="color:#8A6030">Parte B e C — Síntese e Missão</h3><p>Selecione palavras-chave e escreva sua declaração de missão.</p></div>
+  </div>
+  <div class="mis-q">
+    <div class="q-meta">Parte B · Síntese</div>
+    <div class="q-text">Releia suas respostas. Selecione <strong>até 5 verbos</strong> que mais definem sua essência.</div>
+    <div class="verb-hint" id="vcount">0 de 5 selecionados</div>
+    <div class="verb-grid" id="verbGrid"></div>
+  </div>
+  <div class="mis-q">
+    <div class="q-meta">Parte B · Resumo pessoal</div>
+    <div class="q-text">Em uma frase, quem é você e o que você faz pelo mundo? (Síntese das perguntas 1 e 6)</div>
+    <textarea id="mis-resumo" rows="2" placeholder="Ex: Sou alguém que conecta pessoas e transforma realidades através do conhecimento…"></textarea>
+  </div>
+  <div class="mis-q" style="border-color:var(--gold);background:rgba(200,169,110,.04)">
+    <div class="q-meta" style="color:var(--gold)">Parte C · Declaração de Missão</div>
+    <div class="q-text">Usando suas respostas e palavras-chave, escreva sua missão. Comece com <strong>"Meu propósito de vida é…"</strong></div>
+    <textarea id="mis-stmt" rows="4" placeholder="Meu propósito de vida é…"></textarea>
+  </div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="showScreen('s-mis2')">← Voltar</button>
+    <button class="btn btn-gold" onclick="showResults()">Ver meu propósito completo →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="hero-r">
+    <div class="hero-label">Teste PIL — Pontuação Total</div>
+    <div><span class="hero-score" id="rScore">—</span><span class="hero-max">/140</span></div>
+    <div class="hero-band" id="rBand">—</div>
+    <div class="hero-desc" id="rDesc">—</div>
+  </div>
+  <div class="factors-c"><h3>Dimensões do Propósito</h3><div id="fBars"></div></div>
+  <div id="misResult"></div>
+  <div class="cta-box">
+    <p>Quer aprofundar sua jornada de propósito com acompanhamento personalizado?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartAll()">Recomeçar</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var PIL=[
+  {n:1,f:'PS',t:'Geralmente me encontro:',o:['Completamente entediado','Pouco entediado','Sem direção','Neutro / Indiferente','Interessado no que faço','Motivado','Exuberante / Entusiasmado']},
+  {n:2,f:'ES',t:'A vida me parece:',o:['Completamente rotineira','Pouco interessante no geral','Sem grandes novidades','Indiferente','Interessante','Envolvente','Emocionante']},
+  {n:3,f:'OT',t:'Na vida, tenho:',o:['Nenhuma meta ou objetivo','Pouca clareza sobre metas','Sensação de estar sem direção','Neutralidade','Alguns interessantes','Motivações','Muitas metas e objetivos definidos']},
+  {n:4,f:'PS',t:'Minha existência pessoal é:',o:['Sem sentido, nem propósito','Pouco significativa','Confusa, sem clareza de propósito','Neutra / Indefinida','Relativamente significativa','Rica em aprendizados e com direção','Cheia de sentido e propósito']},
+  {n:5,f:'ES',t:'Cada dia é:',o:['Exatamente igual','Pouco interessante','Repetitivo, mas com pequenas diferenças','Nem bom, nem ruim','Interessante','Motivador e cheio de possibilidades','Sempre novo e diferente']},
+  {n:6,f:'DL',t:'Se eu pudesse escolher:',o:['Nunca teria nascido','Viveria uma vida totalmente diferente','Mudaria muitos aspectos da minha vida','Manteria algumas coisas e mudaria outras','Ficaria satisfeito com boa parte da minha vida','Repetiria quase tudo novamente','Teria outras nove vidas iguais a esta']},
+  {n:7,f:'OT',t:'Após me aposentar:',o:['Ficaria de preguiça pelo resto da vida','Evitaria compromissos e responsabilidades','Faria apenas o básico para passar o tempo','Não sei ao certo o que faria','Manteria algumas atividades regulares','Me dedicaria a atividades significativas','Faria as coisas emocionantes que sempre quis fazer']},
+  {n:8,f:'OT',t:'Sobre a conquista de minhas metas de vida:',o:['Não consegui nenhum progresso','Consegui avanços mínimos','Progredi pouco, mas avancei','Tenho progresso moderado','Estou satisfeito com boa parte das minhas conquistas','Consegui grande parte do que planejei','Alcancei a realização completa']},
+  {n:9,f:'ES',t:'Minha vida é:',o:['Vazia e cheia de desespero','Insatisfatória','Confusa, com poucas coisas positivas','Neutra','Satisfatória e com bons momentos','Rica em experiências positivas','Um conjunto de coisas boas e emocionantes']},
+  {n:10,f:'PS',t:'Se eu morresse hoje, minha vida teria sido:',o:['Um lixo','Desperdiçada em grande parte','Razoável, porém sem muita realização','Mediana','Valiosa em vários aspectos','Muito significativa','Muito valiosa']},
+  {n:11,f:'ES',t:'Ao pensar sobre minha própria vida:',o:['Frequentemente me pergunto por que existo','Às vezes não vejo sentido nas minhas ações','Tenho dúvidas constantes sobre meu propósito','Me sinto neutro em relação ao meu propósito','Encontro algum sentido em minhas experiências','Frequentemente percebo motivos para continuar','Sempre encontro razões para viver']},
+  {n:12,f:'PS',t:'Vejo o mundo, em relação com a minha vida:',o:['Muito confuso','Confuso','Um pouco confuso','Neutro','Um pouco claro','Claro','Adapta-se de forma significativa à minha vida']},
+  {n:13,f:'OT',t:'Me considero:',o:['Uma pessoa irresponsável','Pouco responsável','Às vezes responsável','Medianamente responsável','Responsável','Bem responsável','Uma pessoa muito responsável']},
+  {n:14,f:'DL',t:'Sobre a liberdade para fazer suas próprias escolhas, acredito que o homem é:',o:['Completamente escravo das limitações da herança e do ambiente','Muito limitado','Limitado','Parcialmente limitado','Relativamente livre','Livre','Totalmente livre para fazer suas escolhas de vida']},
+  {n:15,f:'DL',t:'Com respeito à morte, estou:',o:['Despreparado e aterrorizado','Muito assustado','Assustado','Neutro','Relativamente tranquilo','Tranquilo','Preparado e sem medo']},
+  {n:16,f:'DL',t:'Com respeito ao suicídio:',o:['Já considerei seriamente como uma saída da minha situação','Já pensei algumas vezes','Pensei raramente','Pensei superficialmente','Quase nunca pensei','Não penso nisso','Nunca dediquei um segundo de pensamento']},
+  {n:17,f:'PS',t:'Considero que minha capacidade de encontrar um significado, um propósito na vida é:',o:['Praticamente nula','Muito baixa','Baixa','Mediana','Boa','Alta','Muito grande']},
+  {n:18,f:'ES',t:'Minha vida está:',o:['Fora de minhas mãos e controlada por fatores externos','Quase sempre fora do meu controle','Frequentemente fora do meu controle','Às vezes sob meu controle','Frequentemente sob meu controle','Quase sempre sob meu controle','Em minhas mãos e sob meu controle']},
+  {n:19,f:'OT',t:'Enfrentar minhas tarefas diárias significa:',o:['Uma experiência dolorosa e chata','Muito cansativa','Cansativa','Neutra','Moderadamente agradável','Agradável','Uma fonte de prazer e satisfação']},
+  {n:20,f:'DL',t:'Descobri:',o:['Nenhuma missão ou propósito em minha vida','Quase nenhum propósito','Pouco propósito','Propósito moderado','Propósito razoável','Bom propósito','Metas claras e um propósito satisfatório para a minha vida']}
+];
+
+var FC={PS:{name:'Percepção de Sentido',c:'#4AABAB'},ES:{name:'Experiência de Sentido',c:'#6DC44A'},OT:{name:'Objetivos e Tarefas',c:'#C8A96E'},DL:{name:'Destino / Liberdade',c:'#7B9BC8'}};
+
+var MQ=[
+  {n:1,t:'Descreva em poucas palavras quem é você.',p:'Ex: Sou uma pessoa curiosa, acolhedora, que ama aprender e conectar…'},
+  {n:2,t:'Quais são suas cinco principais qualidades ou dons?',p:'Liste uma por linha ou separadas por vírgula…'},
+  {n:3,t:'Quais são as cinco coisas que você mais valoriza na sua vida?',p:'Ex: família, liberdade, criatividade, saúde, impacto…'},
+  {n:4,t:'Liste as cinco qualidades que você mais admira nas pessoas.',p:'Ex: honestidade, coragem, generosidade…'},
+  {n:5,t:'O que você mais gosta de fazer? Quando se sente completamente feliz e realizado?',p:'Ex: Quando estou ensinando algo novo, criando, cuidando de pessoas…'},
+  {n:6,t:'Se você pudesse fazer qualquer coisa, o que faria por você e pela sua comunidade?',p:'Ex: Criaria espaços de cura, ensinaria habilidades de vida…'},
+  {n:7,t:'Selecione até 5 verbos que mais te estimulam ou motivam:',p:'',verbs:true},
+  {n:8,t:'Existe alguma frase, pensamento ou ditado que lhe inspire? Qual?',p:'Ex: "Ser, não parecer." / "A vida pede coragem."…'},
+  {n:9,t:'Existe alguma música ou filme que tenha marcado sua vida? Que mensagem deixou para você?',p:'Ex: O filme X me ensinou que… / A música Y me lembra que…'},
+  {n:10,t:'O que mais emociona você?',p:'Ex: Ver alguém superar um obstáculo, contemplar a natureza…'},
+  {n:11,t:'A que causa, grupo ou princípio você estaria disposto a dedicar sua vida?',p:'Ex: Saúde mental, educação, meio ambiente, justiça social…'},
+  {n:12,t:'Imagine que, graças a você, o mundo se transformou em um lugar melhor. Como conseguiu isso?',p:'Ex: Ajudando pessoas a se conhecerem melhor, criando comunidades…'},
+  {n:13,t:'Que agradecimento você gostaria de ouvir de Deus (ou do universo) por seus atos?',p:'Ex: "Você iluminou os que precisavam, sem pedir nada em troca."…'},
+  {n:14,t:'Como você gostaria de ser lembrado após sua morte?',p:'Ex: Como alguém que fez as pessoas se sentirem vistas e amadas…'}
+];
+
+var VERBS=['abraçar','acender','acreditar','agrupar','amar','ampliar','apreciar','apoiar','afetar','afirmar','aproximar','aprender','avaliar','ajudar','chamar','brincar','buscar','comandar','compreender','comunicar','compartilhar','conectar','confiar','criar','curar','dar','decidir','defender','descobrir','dirigir','educar','elevar','entusiasmar','esperar','extrair','facilitar','fornecer','ganhar','iluminar','inspirar','induzir','jogar','liderar','libertar','motivar','nutrir','organizar','partilhar','perdoar','planejar','promover','refletir','relaxar','resistir','respeitar','ressoar','reunir','rir','salvar','ser','servir','sonhar','valorizar','viver'];
+
+var pA={}, mA={}, pV=[];
+
+function buildPIL(cid,from,to){
+  var c=document.getElementById(cid); c.innerHTML='';
+  for(var i=from-1;i<to;i++){
+    var q=PIL[i],fc=FC[q.f].c;
+    var h='<div class="q-card"><div class="q-meta">Questão '+q.n+' <span class="q-factor" style="background:'+fc+'22;color:'+fc+'">'+FC[q.f].name+'</span></div>'+
+      '<div class="q-text">'+q.t+'</div><div class="opts">';
+    for(var v=1;v<=7;v++) h+='<button class="opt-btn'+(pA[i]===v?' sel':'')+'" id="ob-'+i+'-'+v+'" onclick="setPIL('+i+','+v+')">'+v+'<span class="opt-lbl">'+q.o[v-1]+'</span></button>';
+    h+='</div></div>'; c.innerHTML+=h;
+  }
+}
+
+function buildMis(cid,from,to){
+  var c=document.getElementById(cid); c.innerHTML='';
+  for(var i=from-1;i<to;i++){
+    var q=MQ[i];
+    if(q.verbs){
+      c.innerHTML+='<div class="mis-q"><div class="q-meta">Pergunta '+q.n+'</div><div class="q-text">'+q.t+'</div>'+
+        '<div class="verb-hint" id="vh">'+pV.length+' de 5 selecionados</div><div class="verb-grid" id="vgi"></div></div>';
+    } else {
+      c.innerHTML+='<div class="mis-q"><div class="q-meta">Pergunta '+q.n+'</div><div class="q-text">'+q.t+'</div>'+
+        '<textarea id="ma-'+i+'" rows="3" placeholder="'+q.p+'">'+(mA[i]||'')+'</textarea></div>';
+    }
+  }
+  var vgi=document.getElementById('vgi'); if(vgi) buildVG(vgi);
+  for(var i=from-1;i<to;i++){
+    (function(idx){var ta=document.getElementById('ma-'+idx);if(ta) ta.addEventListener('input',function(){mA[idx]=this.value;});})(i);
+  }
+}
+
+function buildVG(c){
+  c.innerHTML='';
+  VERBS.forEach(function(v){
+    var ch=document.createElement('button'); ch.className='vchip'+(pV.indexOf(v)>=0?' pk':'');
+    ch.textContent=v; ch.onclick=function(){toggleV(v);}; c.appendChild(ch);
+  });
+}
+
+function toggleV(v){
+  var idx=pV.indexOf(v);
+  if(idx>=0) pV.splice(idx,1);
+  else { if(pV.length>=5){showToast('Máximo 5 verbos');return;} pV.push(v); }
+  var vgi=document.getElementById('vgi'),vg=document.getElementById('verbGrid');
+  if(vgi) buildVG(vgi); if(vg) buildVG(vg);
+  var vh=document.getElementById('vh'),vc=document.getElementById('vcount');
+  var msg=pV.length+' de 5 selecionados'; if(vh) vh.textContent=msg; if(vc) vc.textContent=msg;
+}
+
+function setPIL(idx,val){
+  pA[idx]=val;
+  for(var v=1;v<=7;v++){var b=document.getElementById('ob-'+idx+'-'+v);if(b)b.className='opt-btn'+(v===val?' sel':'');}
+  updateProg(); updateInfo();
+}
+
+function updateProg(){var n=Object.keys(pA).length;document.getElementById('progFill').style.width=(n/20*100)+'%';document.getElementById('progTxt').textContent=n+' / 20';}
+function updateInfo(){
+  var p1=0,p2=0;
+  for(var i=0;i<10;i++) if(pA[i]!==undefined) p1++;
+  for(var i=10;i<20;i++) if(pA[i]!==undefined) p2++;
+  var e1=document.getElementById('info-p1'),e2=document.getElementById('info-p2');
+  if(e1) e1.textContent=p1+' de 10 respondidas'; if(e2) e2.textContent=p2+' de 10 respondidas';
+}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function goIntro(){document.getElementById('progBar').style.display='none';showScreen('s-intro');}
+function startPIL(){buildPIL('pil-p1',1,10);updateProg();updateInfo();document.getElementById('progBar').style.display='flex';showScreen('s-pil1');}
+function goPIL2(){buildPIL('pil-p2',11,20);updateInfo();showScreen('s-pil2');}
+function goMission(){buildMis('mis-p1',1,7);showScreen('s-mis1');}
+function goMis2(){for(var i=0;i<7;i++){var ta=document.getElementById('ma-'+i);if(ta)mA[i]=ta.value;}buildMis('mis-p2',8,14);showScreen('s-mis2');}
+function goMis3(){
+  for(var i=7;i<14;i++){var ta=document.getElementById('ma-'+i);if(ta)mA[i]=ta.value;}
+  buildVG(document.getElementById('verbGrid'));
+  document.getElementById('vcount').textContent=pV.length+' de 5 selecionados';
+  var r=document.getElementById('mis-resumo'),s=document.getElementById('mis-stmt');
+  if(r&&mA.resumo)r.value=mA.resumo; if(s&&mA.stmt)s.value=mA.stmt;
+  showScreen('s-mis3');
+}
+
+function calcPIL(){
+  var total=0,factors={PS:0,ES:0,OT:0,DL:0},counts={PS:0,ES:0,OT:0,DL:0};
+  PIL.forEach(function(q,i){var v=pA[i]||0;total+=v;factors[q.f]+=v;counts[q.f]++;});
+  return {total:total,factors:factors,counts:counts};
+}
+
+function showResults(){
+  var r=document.getElementById('mis-resumo'),s=document.getElementById('mis-stmt');
+  if(r) mA.resumo=r.value; if(s) mA.stmt=s.value;
+  var pil=calcPIL();
+  document.getElementById('rScore').textContent=pil.total;
+  var band,bc,desc;
+  if(pil.total<90){band='Vazio existencial';bc='#E05A2B';desc='Você pode estar passando por um momento de falta de sentido e direção. Isso é mais comum do que parece — e é justamente para isso que a Logoterapia oferece caminhos.';}
+  else if(pil.total<=105){band='Indefinição de propósito';bc='#C8A96E';desc='Você percebe a vida com algum sentido, mas ainda há uma busca por clareza e direção. Você está em um momento de transição e descoberta.';}
+  else{band='Presença clara de propósito';bc='#6DC44A';desc='Você demonstra um senso consistente de propósito e significado. Continue cultivando e aprofundando essa consciência.';}
+  var be=document.getElementById('rBand'); be.textContent=band; be.style.background=bc+'22'; be.style.color=bc; be.style.border='1px solid '+bc+'44';
+  document.getElementById('rDesc').textContent=desc;
+
+  var fb=document.getElementById('fBars'); fb.innerHTML='';
+  ['PS','ES','OT','DL'].forEach(function(f){
+    var max=pil.counts[f]*7,pct=max>0?Math.round((pil.factors[f]/max)*100):0;
+    fb.innerHTML+='<div class="f-row"><div class="f-top"><span class="f-name">'+FC[f].name+'</span><span class="f-score">'+pil.factors[f]+'/'+max+'</span></div>'+
+      '<div class="f-track"><div class="f-fill" style="width:'+pct+'%;background:'+FC[f].c+'"></div></div></div>';
+  });
+
+  var mr=document.getElementById('misResult'); mr.innerHTML='';
+  var stmt=mA.stmt||'';
+  var refLabels=['Quem sou eu','Qualidades e dons','O que valorizo','O que admiro','O que me realiza','O que faria pelo mundo'];
+  var hasRef=refLabels.some(function(l,i){return mA[i];});
+  if(stmt||hasRef||pV.length){
+    var html='';
+    if(stmt) html+='<div class="ms-box"><div class="ms-lbl">Meu Propósito de Vida</div><p>'+stmt+'</p></div>';
+    if(hasRef){
+      html+='<div class="mis-sum"><h3>Sua Jornada de Missão</h3>';
+      html+='<table class="mtable"><thead><tr><th>Reflexão</th><th>Resposta</th></tr></thead><tbody>';
+      refLabels.forEach(function(l,i){var v=mA[i]||'—';html+='<tr><td style="white-space:nowrap;font-weight:500;color:var(--muted)">'+l+'</td><td>'+v+'</td></tr>';});
+      html+='</tbody></table>';
+      if(pV.length){
+        html+='<div class="sec-ttl">Verbos que me movem</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">';
+        pV.forEach(function(v){html+='<span style="padding:4px 12px;background:var(--navy);color:#fff;border-radius:99px;font-size:12px">'+v+'</span>';});
+        html+='</div>';
+      }
+      var insLabels=['Frase inspiradora','Música ou filme','O que me emociona','Causa que defenderia','Transformação no mundo','Agradecimento','Como quer ser lembrado'];
+      var hasIns=insLabels.some(function(l,i){return mA[i+7];});
+      if(hasIns){
+        html+='<div class="sec-ttl">Palavras e frases que me inspiram</div>';
+        insLabels.forEach(function(l,i){var v=mA[i+7]||'';if(v)html+='<div class="txt-block"><span style="font-size:10px;font-style:normal;font-weight:500;color:var(--muted);letter-spacing:1px">'+l.toUpperCase()+'</span><br>'+v+'</div>';});
+      }
+      if(mA.resumo) html+='<div class="sec-ttl">Resumo pessoal</div><div class="txt-block">'+mA.resumo+'</div>';
+      html+='</div>';
+    }
+    mr.innerHTML=html;
+  }
+  showScreen('s-results');
+}
+
+function restartAll(){pA={};mA={};pV=[];document.getElementById('progBar').style.display='none';showScreen('s-intro');}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var pil=calcPIL();
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('LOGOTERAPIA  ·  VIKTOR FRANKL',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(22);
+  doc.text('Propósito de Vida',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // PIL score
+  var bc,bt;
+  if(pil.total<90){bc=[224,90,43];bt='Vazio existencial';}
+  else if(pil.total<=105){bc=[200,169,110];bt='Indefinição de propósito';}
+  else{bc=[109,196,74];bt='Presença clara de propósito';}
+  chk(38);
+  sf(navy);doc.roundedRect(M,y,W-M*2,32,4,4,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('TESTE PIL — PONTUAÇÃO TOTAL',W/2,y+8,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(34);
+  doc.text(String(pil.total),W/2-6,y+23,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(14);
+  doc.text('/140',W/2-4,y+23);
+  sf(bc);doc.roundedRect(W/2+12,y+15,48,9,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(bt,W/2+36,y+21,{align:'center'});
+  y+=40;
+
+  // Factor bars
+  chk(10);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text('Dimensões do Propósito',M,y);y+=8;
+  var fc2={PS:teal,ES:green,OT:gold,DL:[123,155,200]};
+  ['PS','ES','OT','DL'].forEach(function(f){
+    chk(14);var max=pil.counts[f]*7,pct=max>0?Math.round((pil.factors[f]/max)*100):0;
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(FC[f].name,M,y+5);
+    st(muted);doc.setFontSize(8);doc.text(pil.factors[f]+'/'+max,W-M,y+5,{align:'right'});
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(M,y+7,W-M*2,5,2,2,'FD');
+    sf(fc2[f]);doc.roundedRect(M,y+7,(W-M*2)*(pct/100),5,2,2,'F');
+    y+=16;
+  });y+=4;
+
+  // Statement
+  var stmt=mA.stmt||'';
+  if(stmt){
+    chk(30);sf(gold);doc.rect(M,y,3,26,'F');
+    st(gold);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('MEU PROPÓSITO DE VIDA',M+7,y+7);
+    st(ink);doc.setFont('helvetica','italic');doc.setFontSize(11);
+    var sl=doc.splitTextToSize(stmt,W-M*2-10);doc.text(sl,M+7,y+14);
+    y+=sl.length*5+20;
+  }
+
+  // Reflections
+  var rls=[{k:0,l:'Quem sou eu'},{k:1,l:'Qualidades e dons'},{k:2,l:'O que valorizo'},{k:3,l:'O que admiro'},{k:4,l:'O que me realiza'},{k:5,l:'O que faria pelo mundo'}];
+  var hasR=rls.some(function(r){return mA[r.k];});
+  if(hasR){
+    chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text('Reflexões de Missão',M,y);y+=8;
+    rls.forEach(function(r){
+      var v=mA[r.k]; if(!v) return; chk(14);
+      st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(r.l.toUpperCase(),M,y+4);
+      st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+      var ls=doc.splitTextToSize(v,W-M*2);doc.text(ls,M,y+10);y+=ls.length*4.5+10;
+    });
+  }
+  if(pV.length){
+    chk(18);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Verbos que me movem',M,y);y+=7;
+    var vx=M;
+    pV.forEach(function(v){var vw=doc.getTextWidth(v)+8;if(vx+vw>W-M){vx=M;y+=9;chk(10);}sf(navy);doc.roundedRect(vx,y-5,vw,8,2,2,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(v,vx+4,y+0.5);vx+=vw+5;});
+    y+=14;
+  }
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+  doc.save('proposito-de-vida-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

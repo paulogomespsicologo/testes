@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste RIASEC – Qual carreira é ideal para você?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F8F8;
+    --ink: #1B3A5C;
+    --muted: #5A7A8A;
+    --card: #FFFFFF;
+    --border: #D6E8E8;
+    --green: #6DC44A;
+    --teal: #7ECECE;
+    --teal-dark: #4AABAB;
+    --navy: #1B3A5C;
+    --R: #E05A2B; --R-light: #FEF0EA;
+    --I: #1B3A5C; --I-light: #EAF0F8;
+    --A: #8E44AD; --A-light: #F5EEF8;
+    --S: #6DC44A; --S-light: #F0FAE8;
+    --E: #E6A022; --E-light: #FEF6E7;
+    --C: #4AABAB; --C-light: #E8F7F7;
+    --accent: #6DC44A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #2A5580 100%);
+    color: #fff;
+    padding: 52px 24px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(126,206,206,.15);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(109,196,74,.1);
+  }
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 6vw, 50px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .header p {
+    color: rgba(255,255,255,.75);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-bar-bg {
+    flex: 1;
+    height: 7px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--green));
+    border-radius: 99px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 16px 0;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; animation: fadeIn .4s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── QUESTION CARD ── */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    user-select: none;
+  }
+  .question-card:hover { border-color: var(--teal-dark); box-shadow: 0 4px 16px rgba(74,171,171,.12); }
+  .question-card.selected {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+  .question-card.selected .q-text { color: #fff; }
+  .question-card.selected .q-num { color: rgba(255,255,255,.4); }
+  .check-circle {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .2s, background .2s;
+  }
+  .question-card:hover .check-circle { border-color: var(--teal-dark); }
+  .question-card.selected .check-circle {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .check-circle svg { display: none; }
+  .question-card.selected .check-circle svg { display: block; }
+  .q-num { font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px; }
+  .q-text { font-size: 15px; line-height: 1.55; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal-dark);
+    padding: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── NAV BUTTONS ── */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: flex-end;
+  }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 28px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-primary {
+    background: var(--green);
+    color: #fff;
+  }
+  .btn-primary:hover { opacity: .88; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--navy);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-large {
+    padding: 16px 40px;
+    font-size: 15px;
+    width: 100%;
+    text-align: center;
+    letter-spacing: .5px;
+  }
+
+  /* ── INTRO SCREEN ── */
+  .intro-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+    margin-top: 24px;
+    box-shadow: 0 4px 24px rgba(27,58,92,.07);
+  }
+  .intro-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    margin-bottom: 12px;
+    color: var(--navy);
+  }
+  .intro-box p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .riasec-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .chip {
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── RESULTS ── */
+  .results-header {
+    text-align: center;
+    padding: 40px 0 24px;
+  }
+  .results-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 5vw, 38px);
+    margin-bottom: 8px;
+    color: var(--navy);
+  }
+  .results-header p { color: var(--muted); font-size: 15px; }
+
+  .code-display {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 28px 0;
+    flex-wrap: wrap;
+  }
+  .code-letter {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .score-bars {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(27,58,92,.06);
+  }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .score-row:last-child { margin-bottom: 0; }
+  .score-label {
+    width: 110px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .score-label span {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .bar-bg {
+    flex: 1;
+    height: 10px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s cubic-bezier(.22,.68,0,1.2);
+    width: 0%;
+  }
+  .score-num {
+    width: 24px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .result-cards { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+  .result-card {
+    border-radius: 16px;
+    padding: 24px;
+    border: 1.5px solid transparent;
+  }
+  .result-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .result-card .badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+  }
+  .result-card p { font-size: 14px; line-height: 1.65; color: var(--muted); margin-bottom: 14px; }
+  .careers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .career-tag {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-weight: 400;
+  }
+
+  .restart-row { text-align: center; margin-top: 40px; padding-bottom: 20px; }
+  .restart-row p { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+  .site-footer {
+    background: var(--navy);
+    color: rgba(255,255,255,.7);
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    margin-top: 48px;
+  }
+  .site-footer a { color: var(--teal); text-decoration: none; }
+  .site-footer strong { color: #fff; }
+
+  /* ── PAGE INDICATOR ── */
+  .page-info {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+
+  /* responsive */
+  @media (max-width: 480px) {
+    .question-card { padding: 20px 16px; }
+    .intro-box { padding: 28px 20px; }
+    .score-label { width: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Psicologia Vocacional</div>
+  <h1>Qual carreira é<br>ideal para você?</h1>
+  <p>O teste RIASEC ajuda a descobrir seus interesses e mapear as carreiras mais alinhadas ao seu perfil.</p>
+</div>
+
+<div class="progress-wrap" id="progressWrap" style="display:none">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 42</div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-box">
+      <h2>Teste RIASEC</h2>
+      <p>Responda 42 afirmações simples. Marque aquelas com as quais você concorda. Não existem respostas certas ou erradas — seja honesto!</p>
+      <div class="riasec-chips">
+        <span class="chip" style="background:var(--R-light);color:var(--R)">R Realista</span>
+        <span class="chip" style="background:var(--I-light);color:var(--I)">I Investigativo</span>
+        <span class="chip" style="background:var(--A-light);color:var(--A)">A Artístico</span>
+        <span class="chip" style="background:var(--S-light);color:var(--S)">S Social</span>
+        <span class="chip" style="background:var(--E-light);color:var(--E)">E Empreendedor</span>
+        <span class="chip" style="background:var(--C-light);color:var(--C)">C Convencional</span>
+      </div>
+      <button class="btn btn-primary btn-large" onclick="startTest()">Começar o teste →</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS PAGE 1 (Q1–21) -->
+  <div class="screen" id="screen-p1">
+    <div class="section-title">Afirmações 1 – 21</div>
+    <div id="questions-p1"></div>
+    <div class="page-info" id="page1-info"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goIntro()">← Voltar</button>
+      <button class="btn btn-primary" onclick="goPage2()">Próxima página →</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS PAGE 2 (Q22–42) -->
+  <div class="screen" id="screen-p2">
+    <div class="section-title">Afirmações 22 – 42</div>
+    <div id="questions-p2"></div>
+    <div class="page-info" id="page2-info"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goPage1()">← Voltar</button>
+      <button class="btn btn-primary" onclick="showResults()">Ver meus resultados →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="results-header">
+      <h2>Seu código de interesses</h2>
+      <p>As três áreas com maior pontuação formam seu perfil.</p>
+    </div>
+    <div class="code-display" id="codeDisplay"></div>
+    <div class="score-bars" id="scoreBars"></div>
+    <div class="result-cards" id="resultCards"></div>
+    <div class="restart-row">
+      <button class="btn btn-secondary" onclick="restartTest()">Refazer o teste</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+
+<script>
+const questions = [
+  { id:1,  text:"Eu gosto de trabalhar com carros." },
+  { id:2,  text:"Eu gosto de fazer quebra-cabeças." },
+  { id:3,  text:"Eu sou bom em trabalhar de forma independente." },
+  { id:4,  text:"Eu gosto de trabalhar em equipe." },
+  { id:5,  text:"Sou uma pessoa ambiciosa; estabeleço metas para mim mesmo." },
+  { id:6,  text:"Eu gosto de organizar coisas (arquivos, mesas/escritórios)." },
+  { id:7,  text:"Eu gosto de construir coisas." },
+  { id:8,  text:"Eu gosto de ler sobre arte e música." },
+  { id:9,  text:"Eu gosto de ter instruções claras para seguir." },
+  { id:10, text:"Eu gosto de tentar influenciar ou persuadir pessoas." },
+  { id:11, text:"Eu gosto de fazer experimentos." },
+  { id:12, text:"Eu gosto de ensinar ou treinar pessoas." },
+  { id:13, text:"Eu gosto de tentar ajudar as pessoas a resolver seus problemas." },
+  { id:14, text:"Eu gosto de cuidar de animais." },
+  { id:15, text:"Eu não me importaria em trabalhar 8 horas por dia em um escritório." },
+  { id:16, text:"Eu gosto de vender coisas." },
+  { id:17, text:"Eu gosto de escrita criativa." },
+  { id:18, text:"Eu gosto de ciência." },
+  { id:19, text:"Eu assumo novas responsabilidades com rapidez." },
+  { id:20, text:"Eu me interesso por curar pessoas." },
+  { id:21, text:"Eu gosto de tentar descobrir como as coisas funcionam." },
+  { id:22, text:"Eu gosto de montar coisas ou encaixar peças." },
+  { id:23, text:"Eu sou uma pessoa criativa." },
+  { id:24, text:"Eu presto atenção nos detalhes." },
+  { id:25, text:"Eu gosto de arquivar documentos ou digitar." },
+  { id:26, text:"Eu gosto de analisar coisas (problemas/situações)." },
+  { id:27, text:"Eu gosto de tocar instrumentos ou cantar." },
+  { id:28, text:"Eu gosto de aprender sobre outras culturas." },
+  { id:29, text:"Eu gostaria de abrir meu próprio negócio." },
+  { id:30, text:"Eu gosto de cozinhar." },
+  { id:31, text:"Eu gosto de atuar em peças de teatro." },
+  { id:32, text:"Eu sou uma pessoa prática." },
+  { id:33, text:"Eu gosto de trabalhar com números ou gráficos." },
+  { id:34, text:"Eu gosto de entrar em discussões sobre temas ou questões." },
+  { id:35, text:"Sou bom em manter registros do meu trabalho." },
+  { id:36, text:"Eu gosto de liderar." },
+  { id:37, text:"Eu gosto de trabalhar ao ar livre." },
+  { id:38, text:"Eu gostaria de trabalhar em um escritório." },
+  { id:39, text:"Eu sou bom em matemática." },
+  { id:40, text:"Eu gosto de ajudar pessoas." },
+  { id:41, text:"Eu gosto de desenhar." },
+  { id:42, text:"Eu gosto de fazer discursos / falar em público." },
+];
+
+const mapping = {
+  R: [1,7,14,22,30,32,37],
+  I: [2,11,18,21,26,33,39],
+  A: [3,8,17,23,27,31,41],
+  S: [4,12,13,20,28,34,40],
+  E: [5,10,16,19,29,36,42],
+  C: [6,9,15,24,35,35,38]
+};
+
+const typeInfo = {
+  R: {
+    name: "Realista",
+    color: "var(--R)", light: "var(--R-light)",
+    desc: "Pessoas realistas geralmente são boas em trabalhos mecânicos ou físicos. Gostam de trabalhar com ferramentas, máquinas, animais ou ao ar livre.",
+    careers: ["Agricultura","Auxiliar de saúde","Computação","Construção","Mecânico","Engenheiro","Hospitalidade"]
+  },
+  I: {
+    name: "Investigativo",
+    color: "var(--I)", light: "var(--I-light)",
+    desc: "Pessoas investigativas gostam de observar, aprender, analisar e resolver problemas. São curiosas, independentes e orientadas à análise.",
+    careers: ["Biologia marinha","Engenharia","Química","Zoologia","Medicina","Psicologia","Economia"]
+  },
+  A: {
+    name: "Artístico",
+    color: "var(--A)", light: "var(--A-light)",
+    desc: "Pessoas artísticas preferem trabalhar em situações menos estruturadas, onde podem usar sua criatividade e expressar suas ideias.",
+    careers: ["Comunicação","Cosmetologia","Artes visuais","Fotografia","Rádio e TV","Design de interiores","Arquitetura"]
+  },
+  S: {
+    name: "Social",
+    color: "var(--S)", light: "var(--S-light)",
+    desc: "Pessoas sociais gostam de trabalhar com outras pessoas, mais do que com coisas. São empáticas, comunicativas e orientadas a ajudar.",
+    careers: ["Aconselhamento","Enfermagem","Fisioterapia","Turismo","Publicidade","Relações públicas","Educação"]
+  },
+  E: {
+    name: "Empreendedor",
+    color: "var(--E)", light: "var(--E-light)",
+    desc: "Pessoas empreendedoras gostam de trabalhar com outras pessoas e apreciam persuadir, liderar e se apresentar. São ambiciosas e enérgicas.",
+    careers: ["Moda e Merchandising","Imobiliário","Marketing e vendas","Direito","Ciência política","Comércio internacional","Finanças"]
+  },
+  C: {
+    name: "Convencional",
+    color: "var(--C)", light: "var(--C-light)",
+    desc: "Pessoas convencionais são muito organizadas, detalhistas e gostam de trabalhar com dados. Preferem ambientes estruturados e previsíveis.",
+    careers: ["Contabilidade","Tribunais","Seguros","Administração","Registros médicos","Bancos","Processamento de dados"]
+  }
+};
+
+const selected = new Set();
+
+function buildQuestions(container, from, to) {
+  container.innerHTML = '';
+  for (let i = from; i <= to; i++) {
+    const q = questions[i-1];
+    const card = document.createElement('div');
+    card.className = 'question-card' + (selected.has(q.id) ? ' selected' : '');
+    card.id = 'q' + q.id;
+    card.innerHTML = `
+      <div class="check-circle">
+        <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+          <path d="M1 5L4.5 8.5L11 1" stroke="#1A1A18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="q-num">Nº ${q.id}</div>
+        <div class="q-text">${q.text}</div>
+      </div>`;
+    card.onclick = () => toggleQ(q.id, card);
+    container.appendChild(card);
+  }
+}
+
+function toggleQ(id, card) {
+  if (selected.has(id)) { selected.delete(id); card.classList.remove('selected'); }
+  else { selected.add(id); card.classList.add('selected'); }
+  updateProgress();
+  updatePageInfo();
+}
+
+function updateProgress() {
+  const pct = (selected.size / 42) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = selected.size + ' / 42';
+}
+
+function updatePageInfo() {
+  const p1 = [...selected].filter(id => id <= 21).length;
+  const p2 = [...selected].filter(id => id > 21).length;
+  const el1 = document.getElementById('page1-info');
+  const el2 = document.getElementById('page2-info');
+  if (el1) el1.textContent = p1 + ' de 21 marcadas';
+  if (el2) el2.textContent = p2 + ' de 21 marcadas';
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startTest() {
+  buildQuestions(document.getElementById('questions-p1'), 1, 21);
+  updateProgress();
+  updatePageInfo();
+  document.getElementById('progressWrap').style.display = 'flex';
+  showScreen('screen-p1');
+}
+
+function goIntro() {
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-intro');
+}
+
+function goPage2() {
+  buildQuestions(document.getElementById('questions-p2'), 22, 42);
+  updatePageInfo();
+  showScreen('screen-p2');
+}
+
+function goPage1() { showScreen('screen-p1'); }
+
+function calcScores() {
+  const scores = {};
+  for (const [type, ids] of Object.entries(mapping)) {
+    scores[type] = ids.filter(id => selected.has(id)).length;
+  }
+  return scores;
+}
+
+function showResults() {
+  const scores = calcScores();
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const top3 = sorted.slice(0,3).map(e => e[0]);
+  const maxScore = 7;
+
+  // Code display
+  const codeEl = document.getElementById('codeDisplay');
+  codeEl.innerHTML = top3.map(t => `
+    <div class="code-letter" style="background:${typeInfo[t].color}">${t}</div>
+  `).join('');
+
+  // Score bars
+  const barsEl = document.getElementById('scoreBars');
+  barsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;font-weight:500">Pontuação por área</div>' +
+    sorted.map(([t, score]) => `
+      <div class="score-row">
+        <div class="score-label"><span>${t}</span> – ${typeInfo[t].name}</div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-${t}" style="background:${typeInfo[t].color}"></div></div>
+        <div class="score-num">${score}</div>
+      </div>
+    `).join('');
+
+  // Result cards (top 3)
+  const cardsEl = document.getElementById('resultCards');
+  cardsEl.innerHTML = top3.map((t,i) => {
+    const info = typeInfo[t];
+    return `
+      <div class="result-card" style="background:${info.light};border-color:${info.color}22">
+        <h3>
+          <span class="badge" style="background:${info.color}">${t}</span>
+          ${info.name}${i===0 ? ' <span style="font-size:13px;font-weight:400;color:var(--muted);font-family:\'DM Sans\',sans-serif"> — perfil dominante</span>' : ''}
+        </h3>
+        <p>${info.desc}</p>
+        <div class="careers-list">
+          ${info.careers.map(c => `<span class="career-tag" style="background:white;color:${info.color};border:1px solid ${info.color}33">${c}</span>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  showScreen('screen-results');
+
+  // Animate bars after render
+  setTimeout(() => {
+    sorted.forEach(([t, score]) => {
+      const bar = document.getElementById('bar-' + t);
+      if (bar) bar.style.width = ((score / maxScore) * 100) + '%';
+    });
+  }, 100);
+}
+
+function restartTest() {
+  selected.clear();
+  updateProgress();
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
