@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionário de Pfeffer – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(200,169,110,.18) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(109,196,74,.12) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,5vw,48px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:500px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--green));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:680px;margin:0 auto;padding:32px 16px 0;}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:28px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:20px;}
+.scale-legend{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:24px;text-align:left;}
+.scale-legend h4{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.scale-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:13px;}
+.scale-row:last-child{margin-bottom:0;}
+.scale-badge{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.notice{background:rgba(200,169,110,.08);border:1.5px solid rgba(200,169,110,.3);border-radius:12px;padding:14px 16px;font-size:13px;color:#7A5010;line-height:1.65;margin-bottom:24px;text-align:left;}
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* RESPONDENTE SELECTOR */
+.resp-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+.resp-card h4{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:10px;}
+.resp-opts{display:flex;gap:8px;flex-wrap:wrap;}
+.resp-btn{padding:8px 16px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--muted);cursor:pointer;transition:all .15s;}
+.resp-btn:hover{border-color:var(--teal-d);color:var(--ink);}
+.resp-btn.sel{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:12px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 3px 16px rgba(27,58,92,.08);}
+.q-num{font-size:11px;color:var(--muted);letter-spacing:.6px;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.65;margin-bottom:16px;font-weight:400;}
+.q-note{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:14px;margin-top:-8px;line-height:1.55;}
+.opts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+.opt-btn{padding:11px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:var(--muted);cursor:pointer;transition:all .15s;text-align:left;line-height:1.45;display:flex;align-items:flex-start;gap:8px;}
+.opt-btn:hover{border-color:var(--teal-d);color:var(--ink);}
+.opt-btn.sel{color:#fff;border-color:transparent;}
+.opt-score{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;}
+
+/* RESULTS */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(200,169,110,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.hero-score{display:flex;align-items:baseline;gap:6px;margin-top:16px;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#fff;line-height:1;}
+.hs-max{font-size:18px;color:rgba(255,255,255,.4);}
+.hero-band{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+
+/* item breakdown */
+.bd-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.bd-label{font-size:12px;flex:1;line-height:1.4;color:var(--ink);}
+.bd-bar-bg{width:100px;height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;}
+.bd-bar-fill{height:100%;border-radius:99px;transition:width .8s ease;}
+.bd-score{font-size:12px;font-weight:600;min-width:28px;text-align:right;flex-shrink:0;}
+
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.norm-bar-bg{height:12px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);position:relative;margin:10px 0 4px;}
+.norm-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.norm-marker{position:absolute;top:-4px;width:3px;height:20px;border-radius:99px;transform:translateX(-50%);}
+.norm-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+
+.alert-card{background:#FFF8EC;border:1.5px solid rgba(200,169,110,.4);border-radius:12px;padding:16px 18px;margin-bottom:16px;font-size:13px;color:#7A5010;line-height:1.65;}
+.alert-card strong{display:block;margin-bottom:4px;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){.opts-grid{grid-template-columns:1fr;}.intro-card{padding:28px 18px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Avaliação Funcional Geriátrica</div>
+  <h1>Questionário de<br><strong>Atividades Funcionais</strong><br>de Pfeffer</h1>
+  <p>PFAQ — Avaliação da capacidade funcional em atividades instrumentais da vida diária, com foco em identificar declínio cognitivo-funcional.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baseado em Pfeffer et al. (1982)</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 10</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Avaliação das atividades do dia a dia</h2>
+    <p>Este questionário avalia a capacidade de realizar atividades cotidianas que exigem raciocínio e organização. Pode ser respondido pelo próprio paciente ou por um <strong>familiar/cuidador</strong> que conviva com ele.</p>
+
+    <div class="scale-legend">
+      <h4>Como pontuar cada atividade</h4>
+      <div class="scale-row">
+        <div class="scale-badge" style="background:rgba(109,196,74,.15);color:#3A8A20">0</div>
+        <span style="color:var(--ink)"><strong>Normal</strong> — Realiza sozinho sem dificuldade</span>
+      </div>
+      <div class="scale-row">
+        <div class="scale-badge" style="background:rgba(74,171,171,.15);color:#2A7A7A">1</div>
+        <span style="color:var(--ink)"><strong>Dificuldade</strong> — Realiza sozinho, mas com dificuldade</span>
+      </div>
+      <div class="scale-row">
+        <div class="scale-badge" style="background:rgba(232,148,58,.15);color:#A05010">2</div>
+        <span style="color:var(--ink)"><strong>Precisa de ajuda</strong> — Só realiza com auxílio de terceiros</span>
+      </div>
+      <div class="scale-row">
+        <div class="scale-badge" style="background:rgba(192,58,58,.15);color:#A02020">3</div>
+        <span style="color:var(--ink)"><strong>Incapaz</strong> — Não consegue realizar nem com ajuda</span>
+      </div>
+    </div>
+
+    <div class="notice">
+      📋 Este questionário é respondido com base no comportamento habitual da pessoa nos <strong>últimos meses</strong> — não em um dia específico. Se a atividade nunca foi realizada pelo paciente (ex.: nunca cozinhou), marque como <em>"Nunca fez / Não se aplica"</em>.
+    </div>
+
+    <div class="intro-stats">
+      <div class="stat"><strong>10</strong><span>atividades</span></div>
+      <div class="stat"><strong>0–30</strong><span>pontuação total</span></div>
+      <div class="stat"><strong>≥ 6</strong><span>ponto de corte</span></div>
+      <div class="stat"><strong>~10 min</strong><span>para completar</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div class="resp-card">
+    <h4>Quem está respondendo este questionário?</h4>
+    <div class="resp-opts">
+      <button class="resp-btn sel" id="resp-proprio" onclick="setRespondente('proprio')">O próprio paciente</button>
+      <button class="resp-btn" id="resp-familiar" onclick="setRespondente('familiar')">Familiar / Cuidador</button>
+    </div>
+  </div>
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">PFAQ — Resultado</div>
+    <div class="rh-title" id="rhTitle">—</div>
+    <div class="rh-sub" id="rhSub">—</div>
+    <div class="hero-score">
+      <span class="hs-num" id="hsNum">—</span>
+      <span class="hs-max">/30</span>
+    </div>
+    <div class="hero-band" id="heroBand">—</div>
+  </div>
+
+  <div class="result-card" id="interpCard"></div>
+  <div class="alert-card" id="alertCard" style="display:none">
+    <strong>⚠️ Atenção clínica</strong>
+    Pontuação acima do ponto de corte (≥ 6) indica possível comprometimento funcional associado a declínio cognitivo. Recomenda-se avaliação neuropsicológica e clínica abrangente para investigação diagnóstica.
+  </div>
+  <div class="result-card" id="detailCard"></div>
+
+  <div class="cta-box">
+    <p>Quer uma avaliação neuropsicológica completa e acompanhamento especializado?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// PFAQ QUESTIONS
+// ═══════════════════════════════════════
+var QUESTIONS = [
+  {
+    n:1,
+    text:'Manusear dinheiro (pagar contas, trocos, cheques)',
+    note:'Considere: pagar compras, receber troco, controlar gastos do dia a dia.'
+  },
+  {
+    n:2,
+    text:'Fazer compras sozinho (supermercado, farmácia, etc.)',
+    note:'Considere: escolher produtos, pagar e trazer para casa sem ajuda.'
+  },
+  {
+    n:3,
+    text:'Esquentar água para café, desligar o fogão',
+    note:'Considere: tarefas simples de cozinha sem risco de esquecer o fogão ligado.'
+  },
+  {
+    n:4,
+    text:'Preparar uma refeição completa',
+    note:'Considere: planejar o cardápio, reunir ingredientes e cozinhar uma refeição.'
+  },
+  {
+    n:5,
+    text:'Manter-se atualizado sobre notícias, fatos recentes',
+    note:'Considere: lembrar e comentar eventos recentes da televisão, rádio ou jornal.'
+  },
+  {
+    n:6,
+    text:'Prestar atenção, entender e discutir um programa de TV, livro ou revista',
+    note:'Considere: acompanhar uma série, novela ou artigo e conversar sobre o conteúdo.'
+  },
+  {
+    n:7,
+    text:'Lembrar compromissos, acontecimentos familiares, feriados',
+    note:'Considere: lembrar consultas marcadas, aniversários e datas importantes.'
+  },
+  {
+    n:8,
+    text:'Sair de casa para locais próximos (vizinhança, bairro)',
+    note:'Considere: ir a pé ou de transporte para lugares conhecidos sem se perder.'
+  },
+  {
+    n:9,
+    text:'Tomar os próprios remédios corretamente (dose e horário)',
+    note:'Considere: tomar a medicação certa, na dose e horário corretos, sem esquecimentos.'
+  },
+  {
+    n:10,
+    text:'Cuidar das próprias finanças (pagar contas, ir ao banco)',
+    note:'Considere: controlar renda, pagar contas, interagir com banco de forma independente.'
+  }
+];
+
+var OPTS = [
+  {value:0, label:'Normal — faz sozinho sem dificuldade',        color:'#6DC44A', bg:'rgba(109,196,74,.12)'},
+  {value:1, label:'Com dificuldade — faz sozinho, mas com esforço', color:'#4AABAB', bg:'rgba(74,171,171,.12)'},
+  {value:2, label:'Precisa de ajuda — só faz com auxílio',       color:'#E8943A', bg:'rgba(232,148,58,.12)'},
+  {value:3, label:'Incapaz — não consegue realizar',             color:'#C03A3A', bg:'rgba(192,58,58,.12)'},
+  {value:9, label:'Nunca fez / Não se aplica',                   color:'#8B6FBE', bg:'rgba(139,111,190,.1)'}
+];
+
+var answers = {};
+var respondente = 'proprio';
+
+function setRespondente(val){
+  respondente = val;
+  document.getElementById('resp-proprio').className = 'resp-btn'+(val==='proprio'?' sel':'');
+  document.getElementById('resp-familiar').className = 'resp-btn'+(val==='familiar'?' sel':'');
+}
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML = '';
+  QUESTIONS.forEach(function(q, i){
+    var ans = answers[i];
+    var optsHtml = OPTS.map(function(o){
+      var isSel = ans === o.value;
+      var selStyle = isSel ? 'background:'+o.color+';border-color:'+o.color+';' : '';
+      var selTxt = isSel ? 'color:#fff;' : 'color:var(--muted);';
+      return '<button class="opt-btn'+(isSel?' sel':'')+'" id="ob-'+i+'-'+o.value+'" '+
+        'style="'+selStyle+selTxt+'" onclick="setAns('+i+','+o.value+')">'+
+        '<div class="opt-score" style="background:'+(isSel?'rgba(255,255,255,.25)':o.bg)+';color:'+(isSel?'#fff':o.color)+'">'+
+          (o.value===9?'—':o.value)+
+        '</div>'+
+        o.label+
+      '</button>';
+    }).join('');
+    c.innerHTML +=
+      '<div class="q-card'+(ans!==undefined?' answered':'')+'" id="qc-'+i+'">' +
+        '<div class="q-num">Atividade '+q.n+' de 10</div>' +
+        '<div class="q-text">'+q.text+'</div>' +
+        '<div class="q-note">'+q.note+'</div>' +
+        '<div class="opts-grid">'+optsHtml+'</div>' +
+      '</div>';
+  });
+  updateProg();
+}
+
+function setAns(idx, val){
+  answers[idx] = val;
+  // Refresh only this card's buttons
+  OPTS.forEach(function(o){
+    var btn = document.getElementById('ob-'+idx+'-'+o.value);
+    if(!btn) return;
+    var isSel = val === o.value;
+    btn.className = 'opt-btn'+(isSel?' sel':'');
+    btn.style.background = isSel ? o.color : '';
+    btn.style.borderColor = isSel ? o.color : '';
+    btn.style.color = isSel ? '#fff' : 'var(--muted)';
+    var scoreEl = btn.querySelector('.opt-score');
+    if(scoreEl){
+      scoreEl.style.background = isSel ? 'rgba(255,255,255,.25)' : o.bg;
+      scoreEl.style.color = isSel ? '#fff' : o.color;
+    }
+  });
+  document.getElementById('qc-'+idx).className = 'q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n = Object.keys(answers).length;
+  document.getElementById('progFill').style.width = (n/10*100)+'%';
+  document.getElementById('progTxt').textContent = n+' / 10';
+  document.getElementById('pgInfo').textContent = n+' de 10 respondidas';
+}
+
+function calcScore(){
+  // Itens com "nunca fez" (9) = pontuam como 1 (leve dificuldade, conforme convenção)
+  var total = 0;
+  QUESTIONS.forEach(function(q, i){
+    var v = answers[i];
+    if(v === undefined) return;
+    if(v === 9) total += 1; // nunca fez = equivale a dificuldade
+    else total += v;
+  });
+  return total;
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goIntro(){ document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+function startTest(){
+  buildQuestions();
+  document.getElementById('progBar').style.display = 'flex';
+  showScreen('s-questions');
+}
+
+function restartTest(){ answers={}; respondente='proprio'; document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+// ═══════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════
+function showResults(){
+  var score = calcScore();
+  var respLabel = respondente==='familiar' ? 'Respondido por familiar/cuidador' : 'Respondido pelo próprio paciente';
+
+  // Classification
+  var band, bandColor, title, desc;
+  if(score < 6){
+    band='Funcionalidade preservada'; bandColor='#6DC44A';
+    title='Sem indicativo de comprometimento funcional';
+    desc='A pontuação está abaixo do ponto de corte (< 6), sugerindo que as atividades funcionais instrumentais estão preservadas. Isso não exclui outros aspectos que possam merecer investigação clínica.';
+  } else if(score <= 15){
+    band='Comprometimento funcional moderado'; bandColor='#E8943A';
+    title='Indicativo de comprometimento funcional';
+    desc='A pontuação está acima do ponto de corte (≥ 6), indicando dificuldades funcionais nas atividades instrumentais da vida diária. Recomenda-se avaliação neuropsicológica e clínica abrangente.';
+  } else {
+    band='Comprometimento funcional importante'; bandColor='#C03A3A';
+    title='Comprometimento funcional significativo';
+    desc='A pontuação elevada indica perda funcional importante nas atividades instrumentais, podendo estar associada a quadro demencial ou declínio cognitivo avançado. Avaliação especializada urgente é recomendada.';
+  }
+
+  document.getElementById('hsNum').textContent = score;
+  document.getElementById('rhTitle').textContent = title;
+  document.getElementById('rhSub').textContent = 'Pontuação '+score+'/30 · '+band+' · '+respLabel;
+
+  var bandEl = document.getElementById('heroBand');
+  bandEl.textContent = band;
+  bandEl.style.background = bandColor+'22';
+  bandEl.style.color = bandColor;
+  bandEl.style.border = '1px solid '+bandColor+'44';
+
+  document.getElementById('alertCard').style.display = score >= 6 ? 'block' : 'none';
+
+  // Interp card with bar
+  var pct = score/30*100;
+  document.getElementById('interpCard').innerHTML =
+    '<h3>Interpretação da Pontuação</h3>' +
+    '<div class="rc-sub">PFAQ — Pfeffer et al. (1982). Ponto de corte brasileiro: ≥ 6 pontos para comprometimento funcional.</div>' +
+    '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">' +
+      '<span style="font-family:Cormorant Garamond,serif;font-size:56px;font-weight:300;line-height:1;color:'+bandColor+'">'+score+'</span>' +
+      '<span style="font-size:14px;color:var(--muted)">/30 pontos · '+band+'</span>' +
+    '</div>' +
+    '<div class="norm-bar-bg">' +
+      '<div class="norm-bar-fill" style="width:'+pct+'%;background:'+bandColor+'"></div>' +
+      '<div class="norm-marker" style="left:'+(6/30*100)+'%;background:#E8943A;opacity:.8"></div>' +
+      '<div class="norm-marker" style="left:'+(16/30*100)+'%;background:#C03A3A;opacity:.8"></div>' +
+    '</div>' +
+    '<div class="norm-labels"><span>0</span><span style="color:#E8943A">Corte ≥ 6</span><span style="color:#C03A3A">Moderado ≥ 16</span><span>30</span></div>' +
+    '<div class="interp-text">'+desc+'</div>';
+
+  // Detail breakdown
+  var detHtml = '<h3>Detalhamento por atividade</h3>' +
+    '<div class="rc-sub">Pontuação individual em cada uma das 10 atividades avaliadas.</div>';
+  QUESTIONS.forEach(function(q, i){
+    var v = answers[i];
+    var displayV = v === undefined ? '—' : v === 9 ? '1*' : String(v);
+    var scoreV = v === undefined ? 0 : v === 9 ? 1 : v;
+    var barColor = scoreV===0?'#6DC44A':scoreV===1?'#4AABAB':scoreV===2?'#E8943A':'#C03A3A';
+    var barPct = scoreV/3*100;
+    var optLabel = v===undefined?'Não respondido':OPTS.find(function(o){return o.value===v;})?OPTS.find(function(o){return o.value===v;}).label:'—';
+    detHtml +=
+      '<div class="bd-row">' +
+        '<div class="bd-label"><strong style="font-size:11px;color:var(--muted)">'+q.n+'.</strong> '+q.text+'<br>'+
+          '<span style="font-size:11px;color:'+barColor+'">'+optLabel+'</span>'+
+        '</div>' +
+        '<div class="bd-bar-bg"><div class="bd-bar-fill" style="width:'+barPct+'%;background:'+barColor+'"></div></div>' +
+        '<div class="bd-score" style="color:'+barColor+'">'+displayV+'</div>' +
+      '</div>';
+  });
+  if(Object.values(answers).indexOf(9) >= 0){
+    detHtml += '<div style="font-size:11px;color:var(--muted);margin-top:8px;">* Itens "nunca fez / não se aplica" foram computados como 1 ponto.</div>';
+  }
+  document.getElementById('detailCard').innerHTML = detHtml;
+
+  showScreen('s-results');
+}
+
+function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 2500); }
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){
+    var sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload=gerarPDF; document.head.appendChild(sc);
+  } else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var score=calcScore();
+  var bandColor=score<6?green:score<=15?amber:red;
+  var bandText=score<6?'Funcionalidade preservada':score<=15?'Comprometimento moderado':'Comprometimento importante';
+  var respLabel=respondente==='familiar'?'Familiar / Cuidador':'Próprio paciente';
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO FUNCIONAL GERIÁTRICA  ·  PFAQ',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text('Questionário de Atividades Funcionais de Pfeffer',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('Respondente: '+respLabel+' · paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // Score hero
+  chk(34);
+  sf(navy);doc.roundedRect(M,y,W-M*2,28,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('PONTUAÇÃO TOTAL (PFAQ)',W/2,y+7,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(32);
+  doc.text(String(score),W/2-6,y+21,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(13);
+  doc.text('/30',W/2-4,y+21);
+  sf(bandColor);doc.roundedRect(W/2+10,y+13,60,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(bandText,W/2+40,y+20,{align:'center'});
+  y+=36;
+
+  // Score bar
+  chk(20);
+  var barW=W-M*2;
+  sf(green);doc.setGState(new doc.GState({opacity:0.7}));doc.roundedRect(M,y,barW*(6/30),8,3,3,'F');
+  sf(amber);doc.rect(M+barW*(6/30),y,barW*(10/30),8,'F');
+  sf(red);doc.roundedRect(M+barW*(16/30),y,barW*(14/30),8,0,3,'F');
+  doc.setGState(new doc.GState({opacity:1}));
+  var mx=M+(score/30)*barW;
+  sf(navy);doc.triangle(mx-3,y-4,mx+3,y-4,mx,y-1,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0',M,y+13);doc.text('Corte ≥ 6',M+barW*(6/30),y+13,{align:'center'});
+  doc.text('Mod. ≥ 16',M+barW*(16/30),y+13,{align:'center'});doc.text('30',W-M,y+13,{align:'right'});
+  y+=22;
+
+  // Interpretation
+  chk(26);
+  sf(bandColor);doc.rect(M,y,3,20,'F');
+  st(bandColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text(bandText,M+8,y+8);
+  st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var interpP=score<6?'Pontuação abaixo do ponto de corte — funcionalidade instrumental preservada.':score<=15?'Pontuação acima do ponto de corte (≥ 6). Recomenda-se avaliação neuropsicológica e clínica completa.':'Comprometimento funcional significativo. Avaliação especializada urgente recomendada.';
+  var il=doc.splitTextToSize(interpP,W-M*2-10);doc.text(il,M+8,y+15);
+  y+=il.length*4.5+18;
+
+  // Item detail
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Detalhamento por Atividade',M,y);y+=8;
+  QUESTIONS.forEach(function(q,i){
+    chk(12);
+    var v=answers[i]; var sv=v===undefined?0:v===9?1:v;
+    var bc=sv===0?green:sv===1?teal:sv===2?amber:red;
+    var bw=W-M*2-50;
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    var qlabel=q.n+'. '+q.text.substring(0,55)+(q.text.length>55?'…':'');
+    doc.text(qlabel,M,y+4);
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(W-M-40,y,40,6,2,2,'FD');
+    sf(bc);doc.roundedRect(W-M-40,y,(sv/3)*40,6,2,2,'F');
+    st(bc);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    var vLabel=v===undefined?'—':v===9?'N/A':['Normal','Dificuldade','C/ Ajuda','Incapaz'][v]||'—';
+    doc.text(vLabel,W-M,y+4.5,{align:'right'});
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+9,W-M,y+9);
+    y+=11;
+  });
+  y+=4;
+
+  // Alert
+  if(score>=6){
+    chk(16);
+    sf([255,248,236]);sd([200,169,110]);doc.setLineWidth(0.4);doc.roundedRect(M,y,W-M*2,14,3,3,'FD');
+    st([122,80,16]);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text('Pontuação ≥ 6: indica possível comprometimento funcional-cognitivo.',M+6,y+7);
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+    doc.text('Avaliação neuropsicológica e clínica abrangente recomendada.',M+6,y+12);
+    y+=22;
+  }
+
+  // CTA
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('pfaq-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

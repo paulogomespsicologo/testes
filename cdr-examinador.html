@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDR – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+  --c0:#6DC44A;--c05:#4AABAB;--c1:#E8943A;--c2:#D4607A;--c3:#C03A3A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;padding-bottom:80px;}
+
+/* HEADER */
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:44px 24px 36px;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(192,58,58,.18) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(109,196,74,.12) 0%,transparent 70%);}
+.header-inner{max-width:900px;margin:0 auto;position:relative;z-index:1;}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,4vw,42px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:8px;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.6);font-size:13px;max-width:520px;line-height:1.65;}
+.header-badge{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:6px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;font-size:11px;color:rgba(255,255,255,.7);}
+
+/* SCORE BAR */
+.score-bar{position:sticky;top:0;z-index:200;background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.2);flex-wrap:wrap;}
+.sb-item{text-align:center;}
+.sb-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#fff;display:block;line-height:1;}
+.sb-lbl{font-size:9px;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;display:block;}
+.sb-divider{width:1px;height:32px;background:rgba(255,255,255,.15);flex-shrink:0;}
+.sb-global{display:flex;align-items:center;gap:8px;}
+.sb-global-val{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:#fff;line-height:1;}
+.sb-global-badge{padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;}
+.sb-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;background:var(--green);color:#fff;white-space:nowrap;}
+.sb-btn:hover{background:#5cb33a;}
+
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 0;}
+
+/* PATIENT */
+.patient-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.patient-panel h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:16px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+.form-group input,.form-group select{padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal-d);}
+
+/* DOMAIN CARDS */
+.domains-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;margin-bottom:20px;}
+.domain-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.dc-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
+.dc-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;display:flex;align-items:center;gap:10px;}
+.dc-icon{font-size:20px;}
+.dc-score-badge{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;min-width:36px;text-align:right;}
+.dc-body{padding:0 16px 16px;}
+
+/* Score buttons */
+.score-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.sc-btn{flex:1;min-width:52px;padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3;}
+.sc-btn:hover{border-color:var(--teal-d);color:var(--ink);}
+.sc-btn .sv{font-size:16px;font-weight:600;display:block;margin-bottom:2px;font-family:'Cormorant Garamond',serif;}
+.sc-btn.sel{color:#fff;border-color:transparent;}
+
+/* Level descriptions */
+.level-desc{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.6;border:1px solid var(--border);background:var(--bg);}
+.level-desc strong{display:block;margin-bottom:3px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
+
+/* Algorithm info */
+.algo-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;}
+.algo-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:12px;}
+.algo-note{font-size:13px;color:var(--muted);line-height:1.7;padding:12px 16px;background:var(--bg);border-radius:10px;border-left:3px solid var(--gold);}
+
+/* CDR-SB stages */
+.sb-stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
+.sb-stage{border-radius:12px;padding:10px 8px;text-align:center;border:1.5px solid var(--border);}
+.sb-stage .ss-range{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;display:block;line-height:1;margin-bottom:4px;}
+.sb-stage .ss-label{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;display:block;}
+
+/* Result summary */
+.result-summary{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:18px;padding:28px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;}
+.result-summary::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(192,58,58,.2) 0%,transparent 70%);}
+.rs-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.rs-row{display:flex;align-items:flex-end;gap:24px;margin-bottom:12px;flex-wrap:wrap;}
+.rs-main{text-align:center;}
+.rs-val{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;line-height:1;display:block;}
+.rs-unit{font-size:14px;color:rgba(255,255,255,.5);}
+.rs-label{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:6px;}
+.rs-sb{text-align:center;}
+.rs-sb-val{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;color:#fff;display:block;}
+.rs-sb-lbl{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;}
+.rs-desc{font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;max-width:500px;margin-top:14px;}
+.rs-domains{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.rs-dom{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:7px 12px;text-align:center;}
+.rs-dom-val{font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;display:block;line-height:1;}
+.rs-dom-lbl{font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.5px;display:block;margin-top:2px;}
+
+.obs-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:20px;}
+.obs-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:10px;}
+.obs-area{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);resize:vertical;min-height:70px;outline:none;transition:border-color .2s;}
+.obs-area:focus{border-color:var(--teal-d);}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-row .btn{flex:1;text-align:center;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:13px;margin-top:40px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:600px){.domains-grid{grid-template-columns:1fr;}.sb-stages{grid-template-columns:repeat(3,1fr);}.sb-divider{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Avaliação Clínica de Demências · Examinador</div>
+    <h1><strong>CDR</strong> — Clinical<br>Dementia Rating</h1>
+    <p>Ferramenta de registro para o examinador. Classifique cada domínio com base na entrevista estruturada com o paciente e informante. O CDR Global e CDR-SB são calculados automaticamente.</p>
+    <div class="header-badge">⚠ Uso exclusivo do examinador · Requer entrevista clínica estruturada</div>
+  </div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar" id="scoreBar">
+  <div class="sb-global">
+    <div>
+      <span class="sb-val" style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase">CDR GLOBAL</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:2px;">
+        <span class="sb-global-val" id="sbGlobal">—</span>
+        <span class="sb-global-badge" id="sbGlobalBadge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)">—</span>
+      </div>
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-item">
+    <span class="sb-val" id="sbSB">—</span>
+    <span class="sb-lbl">CDR-SB (0–18)</span>
+  </div>
+  <div class="sb-divider"></div>
+  <div style="display:flex;gap:10px;" id="sbDomains"></div>
+  <button class="sb-btn" onclick="scrollToResult()">Ver resultado ↓</button>
+</div>
+
+<div class="wrap">
+
+<!-- PATIENT -->
+<div class="patient-panel">
+  <h3>Dados do Paciente</h3>
+  <div class="form-grid">
+    <div class="form-group" style="grid-column:span 2"><label>Nome completo</label><input type="text" id="pat-nome" placeholder="Nome do paciente"></div>
+    <div class="form-group"><label>Data de nascimento</label><input type="date" id="pat-nasc"></div>
+    <div class="form-group"><label>Data da avaliação</label><input type="date" id="pat-data"></div>
+    <div class="form-group"><label>Informante</label><input type="text" id="pat-informante" placeholder="Nome e relação"></div>
+    <div class="form-group"><label>Diagnóstico provável</label><input type="text" id="pat-diag" placeholder="Ex: Doença de Alzheimer"></div>
+  </div>
+</div>
+
+<!-- DOMAINS -->
+<div class="domains-grid" id="domainsGrid"></div>
+
+<!-- ALGORITHM INFO -->
+<div class="algo-card">
+  <h3>CDR-SB — Sum of Boxes</h3>
+  <div class="algo-note">
+    A CDR-SB é calculada pela <strong>soma direta dos 6 domínios</strong> (variando de 0 a 18). É uma medida contínua mais sensível para monitorar progressão clínica ao longo do tempo, especialmente em ensaios clínicos e acompanhamento longitudinal.
+  </div>
+  <div class="sb-stages">
+    <div class="sb-stage" style="border-color:#6DC44A33;background:rgba(109,196,74,.06)"><span class="ss-range" style="color:#6DC44A">0</span><span class="ss-label" style="color:#6DC44A">Normal</span></div>
+    <div class="sb-stage" style="border-color:#4AABAB33;background:rgba(74,171,171,.06)"><span class="ss-range" style="color:#4AABAB">0,5–4</span><span class="ss-label" style="color:#4AABAB">Questionável</span></div>
+    <div class="sb-stage" style="border-color:#E8943A33;background:rgba(232,148,58,.06)"><span class="ss-range" style="color:#E8943A">4,5–9</span><span class="ss-label" style="color:#E8943A">Leve</span></div>
+    <div class="sb-stage" style="border-color:#D4607A33;background:rgba(212,96,122,.06)"><span class="ss-range" style="color:#D4607A">9,5–15,5</span><span class="ss-label" style="color:#D4607A">Moderada</span></div>
+    <div class="sb-stage" style="border-color:#C03A3A33;background:rgba(192,58,58,.06)"><span class="ss-range" style="color:#C03A3A">16–18</span><span class="ss-label" style="color:#C03A3A">Grave</span></div>
+  </div>
+</div>
+
+<!-- RESULT SUMMARY -->
+<div class="result-summary" id="resultSummary">
+  <div class="rs-eyebrow">Resultado — CDR</div>
+  <div class="rs-row">
+    <div class="rs-main">
+      <span class="rs-val" id="rsGlobal">—</span>
+      <span class="rs-unit">CDR Global</span>
+      <div><span class="rs-label" id="rsLabel" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)">—</span></div>
+    </div>
+    <div class="rs-sb">
+      <span class="rs-sb-val" id="rsSB">—</span>
+      <span class="rs-sb-lbl">CDR-SB /18</span>
+    </div>
+  </div>
+  <div class="rs-desc" id="rsDesc">—</div>
+  <div class="rs-domains" id="rsDomains"></div>
+</div>
+
+<!-- OBS -->
+<div class="obs-card">
+  <h3>Observações clínicas</h3>
+  <textarea class="obs-area" id="obsGeral" rows="4" placeholder="Registre observações sobre a entrevista, nível de cooperação, qualidade das informações do informante, inconsistências, contexto clínico relevante…"></textarea>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" onclick="downloadPDF()">⬇ Gerar relatório em PDF</button>
+  <button class="btn btn-outline" onclick="resetForm()">↺ Nova avaliação</button>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// CDR DOMAIN DEFINITIONS
+// ═══════════════════════════════════════
+var SCORE_VALUES = [0, 0.5, 1, 2, 3];
+var SCORE_LABELS = ['0','0,5','1','2','3'];
+var SCORE_COLORS = {
+  0:'#6DC44A', 0.5:'#4AABAB', 1:'#E8943A', 2:'#D4607A', 3:'#C03A3A'
+};
+var SCORE_NAMES = {
+  0:'Normal', 0.5:'Questionável', 1:'Leve', 2:'Moderado', 3:'Grave'
+};
+
+var DOMAINS = [
+  {
+    id:'mem', name:'Memória', icon:'🧠',
+    isMemory: true, // domínio principal do algoritmo
+    levels: {
+      0:   'Sem perda de memória ou esquecimentos leves e inconsistentes.',
+      0.5: 'Esquecimentos leves, consistentes; lembrança parcial de eventos; "esquecimento benigno".',
+      1:   'Perda de memória moderada, mais acentuada para eventos recentes; interfere nas atividades cotidianas.',
+      2:   'Perda de memória grave; apenas material muito aprendido é retido; material novo é rapidamente perdido.',
+      3:   'Perda de memória grave; apenas fragmentos permanecem.'
+    }
+  },
+  {
+    id:'ori', name:'Orientação', icon:'🧭',
+    isMemory: false,
+    levels: {
+      0:   'Completamente orientado.',
+      0.5: 'Totalmente orientado, com ligeira dificuldade nas relações temporais.',
+      1:   'Dificuldade moderada com relações temporais; orientado para lugar no exame, mas pode ter desorientação geográfica.',
+      2:   'Dificuldade grave com relações temporais; geralmente desorientado no tempo, frequentemente no lugar.',
+      3:   'Orientado apenas em relação à pessoa.'
+    }
+  },
+  {
+    id:'jul', name:'Julgamento e Resolução de Problemas', icon:'⚖️',
+    isMemory: false,
+    levels: {
+      0:   'Resolve bem problemas cotidianos; julgamento bom em relação ao desempenho anterior.',
+      0.5: 'Ligeira dificuldade em resolver problemas, semelhanças e diferenças.',
+      1:   'Dificuldade moderada em lidar com problemas; julgamento social geralmente mantido.',
+      2:   'Dificuldade grave em lidar com problemas; julgamento social geralmente prejudicado.',
+      3:   'Incapaz de fazer julgamentos ou resolver problemas.'
+    }
+  },
+  {
+    id:'com', name:'Função Comunitária', icon:'🏙️',
+    isMemory: false,
+    levels: {
+      0:   'Função independente no nível habitual de emprego, compras, voluntariado, grupos sociais.',
+      0.5: 'Ligeiro comprometimento nestas atividades.',
+      1:   'Incapaz de funcionar independentemente nessas atividades, embora ainda possa realizar algumas; parece normal para observadores casuais.',
+      2:   'Não há pretensão de funcionamento independente fora do lar; parece suficientemente bem para ser levado a atividades fora do lar.',
+      3:   'Não há pretensão de funcionamento independente fora do lar; parece muito doente para ser levado a atividades fora do lar.'
+    }
+  },
+  {
+    id:'dom', name:'Atividades Domésticas e de Lazer', icon:'🏠',
+    isMemory: false,
+    levels: {
+      0:   'Vida em casa, passatempos e interesses intelectuais bem mantidos.',
+      0.5: 'Vida em casa, passatempos e interesses intelectuais ligeiramente comprometidos.',
+      1:   'Dificuldade leve em casa; tarefas mais difíceis abandonadas; hobbies mais complexos e interesses abandonados.',
+      2:   'Apenas tarefas simples preservadas; interesses muito restritos e mal mantidos.',
+      3:   'Nenhuma função significativa em casa.'
+    }
+  },
+  {
+    id:'cui', name:'Cuidado Pessoal', icon:'🪥',
+    isMemory: false,
+    levels: {
+      0:   'Totalmente capaz de cuidar de si mesmo.',
+      0.5: 'Totalmente capaz de cuidar de si mesmo.',
+      1:   'Necessita de orientação ocasional.',
+      2:   'Requer assistência ao se vestir, higiene e cuidados pessoais.',
+      3:   'Necessita de muita ajuda com cuidado pessoal; frequentemente incontinente.'
+    }
+  }
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+var scores = {mem:null, ori:null, jul:null, com:null, dom:null, cui:null};
+
+// ═══════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════
+function buildDomains(){
+  var g = document.getElementById('domainsGrid'); g.innerHTML='';
+  DOMAINS.forEach(function(d){
+    var card = document.createElement('div');
+    card.className = 'domain-card';
+    card.id = 'dom-'+d.id;
+    var currentScore = scores[d.id];
+    var scoreColor = currentScore!==null ? SCORE_COLORS[currentScore] : 'var(--muted)';
+    var btnHtml = SCORE_VALUES.map(function(v){
+      var isSel = currentScore===v;
+      var c = SCORE_COLORS[v];
+      return '<button class="sc-btn'+(isSel?' sel':'')+'" id="scbtn-'+d.id+'-'+v.toString().replace('.','_')+'" '+
+        'style="'+(isSel?'background:'+c+';border-color:'+c:'')+';" '+
+        'onclick="setDomainScore(\''+d.id+'\','+v+')">' +
+        '<span class="sv" style="color:'+(isSel?'#fff':c)+'">'+SCORE_LABELS[SCORE_VALUES.indexOf(v)]+'</span>'+
+        '<span style="font-size:10px;color:'+(isSel?'rgba(255,255,255,.8)':c)+'">'+SCORE_NAMES[v]+'</span>'+
+      '</button>';
+    }).join('');
+
+    var descHtml = currentScore!==null ?
+      '<div class="level-desc" style="border-color:'+scoreColor+'33;background:'+scoreColor+'08">'+
+        '<strong style="color:'+scoreColor+'">'+SCORE_NAMES[currentScore]+'</strong>'+
+        d.levels[currentScore]+
+      '</div>' : '';
+
+    card.innerHTML =
+      '<div class="dc-header" style="border-bottom:1px solid var(--border)">'+
+        '<div class="dc-title">'+
+          '<span class="dc-icon">'+d.icon+'</span>'+
+          '<div>'+
+            '<div style="color:'+(d.isMemory?'var(--amber)':'var(--navy)')+'">'+d.name+(d.isMemory?' ★':'')+'</div>'+
+            (d.isMemory?'<div style="font-size:11px;color:var(--amber)">Domínio principal do algoritmo</div>':'')+''+
+          '</div>'+
+        '</div>'+
+        '<div>'+
+          '<span class="dc-score-badge" id="dsc-'+d.id+'" style="color:'+scoreColor+'">'+
+            (currentScore!==null?SCORE_LABELS[SCORE_VALUES.indexOf(currentScore)]:'—')+
+          '</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="dc-body">'+
+        '<div class="score-btns" style="margin-top:12px">'+btnHtml+'</div>'+
+        '<div id="desc-'+d.id+'">'+descHtml+'</div>'+
+      '</div>';
+    g.appendChild(card);
+  });
+  buildSbDomains();
+}
+
+function buildSbDomains(){
+  var c=document.getElementById('sbDomains'); c.innerHTML='';
+  DOMAINS.forEach(function(d){
+    var v=scores[d.id];
+    var col=v!==null?SCORE_COLORS[v]:'rgba(255,255,255,.35)';
+    c.innerHTML+='<div class="sb-item">'+
+      '<span class="sb-val" id="sbdom-'+d.id+'" style="color:'+col+';font-size:18px">'+(v!==null?SCORE_LABELS[SCORE_VALUES.indexOf(v)]:'—')+'</span>'+
+      '<span class="sb-lbl">'+d.name.split(' ')[0].substring(0,7)+'</span>'+
+    '</div>';
+  });
+}
+
+// ═══════════════════════════════════════
+// SET SCORE
+// ═══════════════════════════════════════
+function setDomainScore(domId, val){
+  scores[domId] = val;
+  // Rebuild just this domain card
+  var dom = DOMAINS.find(function(d){ return d.id===domId; });
+  var c = SCORE_COLORS[val];
+  // Update buttons
+  SCORE_VALUES.forEach(function(v){
+    var btn = document.getElementById('scbtn-'+domId+'-'+v.toString().replace('.','_'));
+    if(!btn) return;
+    var isSel = v===val;
+    var bc = SCORE_COLORS[v];
+    btn.className = 'sc-btn'+(isSel?' sel':'');
+    btn.style.background = isSel ? bc : '';
+    btn.style.borderColor = isSel ? bc : '';
+    var sv = btn.querySelector('.sv');
+    if(sv) sv.style.color = isSel ? '#fff' : bc;
+    var sl = btn.querySelector('span:not(.sv)');
+    if(sl) sl.style.color = isSel ? 'rgba(255,255,255,.8)' : bc;
+  });
+  // Update badge
+  var badge = document.getElementById('dsc-'+domId);
+  if(badge){ badge.textContent=SCORE_LABELS[SCORE_VALUES.indexOf(val)]; badge.style.color=c; }
+  // Update description
+  var desc = document.getElementById('desc-'+domId);
+  if(desc){
+    desc.innerHTML='<div class="level-desc" style="border-color:'+c+'33;background:'+c+'08">'+
+      '<strong style="color:'+c+'">'+SCORE_NAMES[val]+'</strong>'+dom.levels[val]+'</div>';
+  }
+  updateScores();
+}
+
+// ═══════════════════════════════════════
+// CDR GLOBAL ALGORITHM (Hughes/Morris)
+// ═══════════════════════════════════════
+function calcCDRGlobal(){
+  var M = scores.mem;
+  var sec = [scores.ori, scores.jul, scores.com, scores.dom, scores.cui].filter(function(v){ return v!==null; });
+  if(M===null) return null;
+  var secScores = [scores.ori, scores.jul, scores.com, scores.dom, scores.cui];
+  if(secScores.some(function(v){ return v===null; })) return null;
+
+  // Count secondary domains equal to M, > M, < M
+  var eq=0, gt=0, lt=0;
+  secScores.forEach(function(v){
+    if(v===M) eq++;
+    else if(v>M) gt++;
+    else lt++;
+  });
+
+  // Rule 1: If 3+ secondary match M → CDR = M
+  if(eq>=3) return M;
+  // Rule 2: If 3+ secondary on same side of M
+  if(gt>=3) return gt>=3 && M===0 ? 0.5 : Math.min(M+0.5, 3); // simplified
+  if(lt>=3) return Math.max(M-0.5, 0);
+  // Rule 3: If split, CDR = M (most common case)
+  return M;
+}
+
+// Proper Morris (1993) algorithm
+function calcCDRGlobalMorris(){
+  var M = scores.mem;
+  var secArr = [scores.ori, scores.jul, scores.com, scores.dom, scores.cui];
+  if(M===null || secArr.some(function(v){return v===null;})) return null;
+
+  var gtM = secArr.filter(function(v){return v>M;}).length;
+  var ltM = secArr.filter(function(v){return v<M;}).length;
+  var eqM = secArr.filter(function(v){return v===M;}).length;
+
+  // If 3+ secondary >= M → CDR = M (most common)
+  // Full Morris rules:
+  // CDR = M if >= 3 secondary equal M
+  if(eqM >= 3) return M;
+  // If >= 3 secondary greater than M → CDR = next level above M (but not > highest secondary)
+  if(gtM >= 3){
+    var sorted = secArr.slice().sort(function(a,b){return a-b;});
+    // CDR = score of majority
+    var counts = {};
+    secArr.forEach(function(v){ counts[v]=(counts[v]||0)+1; });
+    var maxC=0, majScore=M;
+    Object.keys(counts).forEach(function(k){if(counts[k]>maxC){maxC=counts[k];majScore=parseFloat(k);}});
+    return majScore > M ? majScore : M;
+  }
+  // If >= 3 secondary less than M → CDR = next level below M
+  if(ltM >= 3){
+    var counts2 = {};
+    secArr.forEach(function(v){ counts2[v]=(counts2[v]||0)+1; });
+    var maxC2=0, majScore2=M;
+    Object.keys(counts2).forEach(function(k){if(counts2[k]>maxC2){maxC2=counts2[k];majScore2=parseFloat(k);}});
+    return majScore2 < M ? majScore2 : M;
+  }
+  // Equal split → CDR = M
+  return M;
+}
+
+function calcCDRSB(){
+  var total=0;
+  DOMAINS.forEach(function(d){ if(scores[d.id]!==null) total+=scores[d.id]; });
+  return total;
+}
+
+function updateScores(){
+  var cdrGlobal = calcCDRGlobalMorris();
+  var cdrSB = calcCDRSB();
+  var allFilled = DOMAINS.every(function(d){ return scores[d.id]!==null; });
+  var sbFilled = cdrSB;
+
+  // Score bar
+  var globalStr = cdrGlobal!==null ? SCORE_LABELS[SCORE_VALUES.indexOf(cdrGlobal)] : '—';
+  var globalLabel = cdrGlobal!==null ? SCORE_NAMES[cdrGlobal] : '—';
+  var globalColor = cdrGlobal!==null ? SCORE_COLORS[cdrGlobal] : 'rgba(255,255,255,.3)';
+  document.getElementById('sbGlobal').textContent = globalStr;
+  var badge=document.getElementById('sbGlobalBadge');
+  badge.textContent=globalLabel; badge.style.background=globalColor+'33'; badge.style.color=globalColor;
+  document.getElementById('sbSB').textContent = allFilled ? sbFilled.toString().replace('.',',') : '—';
+
+  // SB domains
+  buildSbDomains();
+
+  // Result summary
+  document.getElementById('rsGlobal').textContent = cdrGlobal!==null ? globalStr : '—';
+  document.getElementById('rsSB').textContent = allFilled ? sbFilled.toString().replace('.',',') : '—';
+
+  var lbl=document.getElementById('rsLabel');
+  lbl.textContent=globalLabel; lbl.style.background=globalColor+'22'; lbl.style.color=globalColor; lbl.style.border='1px solid '+globalColor+'44';
+
+  var desc='';
+  if(cdrGlobal!==null){
+    var descs={
+      0:'Sem demência. Funcionamento cognitivo dentro dos parâmetros normais para a idade.',
+      0.5:'Comprometimento cognitivo questionável / muito leve. Frequentemente compatível com comprometimento cognitivo leve (MCI). Acompanhamento longitudinal recomendado.',
+      1:'Demência leve. Comprometimento cognitivo com impacto funcional, mas ainda com relativa independência para atividades básicas.',
+      2:'Demência moderada. Comprometimento cognitivo e funcional que exige supervisão e suporte nas atividades diárias.',
+      3:'Demência grave. Comprometimento profundo de cognição e funcionalidade; dependência total para cuidados básicos.'
+    };
+    desc = descs[cdrGlobal]||'';
+  }
+  document.getElementById('rsDesc').textContent = desc||'Preencha todos os domínios para ver a interpretação.';
+
+  // Domain pills
+  var rsd=document.getElementById('rsDomains'); rsd.innerHTML='';
+  DOMAINS.forEach(function(d){
+    var v=scores[d.id]; var col=v!==null?SCORE_COLORS[v]:'rgba(255,255,255,.2)';
+    rsd.innerHTML+='<div class="rs-dom">'+
+      '<span class="rs-dom-val" style="color:'+col+'">'+(v!==null?SCORE_LABELS[SCORE_VALUES.indexOf(v)]:'—')+'</span>'+
+      '<span class="rs-dom-lbl">'+d.name.split(' ')[0].substring(0,7)+'</span>'+
+    '</div>';
+  });
+}
+
+function scrollToResult(){ document.getElementById('resultSummary').scrollIntoView({behavior:'smooth'}); }
+
+function resetForm(){
+  if(!confirm('Limpar todos os dados e iniciar nova avaliação?')) return;
+  DOMAINS.forEach(function(d){ scores[d.id]=null; });
+  buildDomains(); updateScores();
+  ['pat-nome','pat-nasc','pat-data','pat-informante','pat-diag','obsGeral'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Formulário limpo.');
+}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){
+    var sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload=gerarPDF; document.head.appendChild(sc);
+  } else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58],teal2=[74,171,171],rose=[212,96,122];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var cdrGlobal=calcCDRGlobalMorris();
+  var cdrSB=calcCDRSB();
+  var nome=document.getElementById('pat-nome').value||'—';
+  var nasc=document.getElementById('pat-nasc').value||'—';
+  var dataAv=document.getElementById('pat-data').value||date;
+  var informante=document.getElementById('pat-informante').value||'—';
+  var diag=document.getElementById('pat-diag').value||'—';
+  var obs=document.getElementById('obsGeral').value||'';
+  var globalStr=cdrGlobal!==null?SCORE_LABELS[SCORE_VALUES.indexOf(cdrGlobal)]:'—';
+  var globalLabel=cdrGlobal!==null?SCORE_NAMES[cdrGlobal]:'—';
+
+  function hex2rgb(h){ return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+  function scoreColor(v){ var c=SCORE_COLORS[v]; return hex2rgb(c); }
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,54,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO CLÍNICA DE DEMÊNCIAS  ·  CDR',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Clinical Dementia Rating',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  Avaliação: '+dataAv,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  doc.setTextColor(255,200,100);doc.setFontSize(7.5);
+  doc.text('Instrumento aplicado por examinador — requer entrevista clínica estruturada',W/2,50,{align:'center'});
+  y=62;
+
+  // Patient
+  chk(26);
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(M,y,W-M*2,22,3,3,'FD');
+  st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(nome,M+6,y+8);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);st(muted);
+  doc.text('Nasc.: '+nasc,M+6,y+16);
+  doc.text('Informante: '+informante,W/2,y+16);
+  doc.text('Diagnóstico: '+diag,W-M,y+16,{align:'right'});
+  y+=30;
+
+  // CDR Global + SB heroes
+  chk(34);
+  var gcol=cdrGlobal!==null?scoreColor(cdrGlobal):muted;
+  sf(navy);doc.roundedRect(M,y,W-M*2,28,4,4,'F');
+  // Global
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('CDR GLOBAL',M+25,y+7,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(36);
+  doc.text(globalStr,M+25,y+21,{align:'center'});
+  sf(gcol);doc.roundedRect(M+44,y+8,40,12,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(globalLabel,M+64,y+16,{align:'center'});
+  // SB
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('CDR-SB',W-M-30,y+7,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(28);
+  doc.text(String(cdrSB).replace('.',','),W-M-30,y+21,{align:'center'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('/18',W-M-12,y+21);
+  y+=36;
+
+  // Domain table
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Pontuação por Domínio',M,y);y+=8;
+  sf(bg);doc.roundedRect(M,y,W-M*2,8,2,2,'F');
+  st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  var dcw=(W-M*2)/3;
+  doc.text('Domínio',M+4,y+5.5);doc.text('Pontuação',M+dcw+4,y+5.5);doc.text('Classificação',M+dcw*2+4,y+5.5);
+  y+=10;
+  DOMAINS.forEach(function(d){
+    chk(10);
+    var v=scores[d.id]; var vc=v!==null?scoreColor(v):muted;
+    var vs=v!==null?SCORE_LABELS[SCORE_VALUES.indexOf(v)]:'—';
+    var vl=v!==null?SCORE_NAMES[v]:'—';
+    st(ink);doc.setFont('helvetica',d.isMemory?'bold':'normal');doc.setFontSize(9);
+    doc.text(d.name+(d.isMemory?' ★':''),M+4,y+4);
+    st(vc);doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text(vs,M+dcw+4,y+4);
+    doc.setFontSize(8);doc.text(vl,M+dcw*2+4,y+4);
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+7,W-M,y+7);y+=9;
+  });
+  y+=4;
+
+  // Level descriptions
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Descrição por Domínio',M,y);y+=8;
+  DOMAINS.forEach(function(d){
+    var v=scores[d.id]; if(v===null) return;
+    chk(16);
+    var vc=scoreColor(v);
+    sf(vc);doc.rect(M,y,3,12,'F');
+    st(ink);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(d.name,M+7,y+5);
+    st(muted);doc.setFont('helvetica','italic');doc.setFontSize(8);
+    var dlines=doc.splitTextToSize(d.levels[v],W-M*2-10);
+    doc.text(dlines,M+7,y+10);
+    y+=dlines.length*3.8+8;
+  });
+
+  // Interpretation
+  if(cdrGlobal!==null){
+    chk(20);
+    var descs2={
+      0:'Sem demência — funcionamento cognitivo normal para a idade.',
+      0.5:'Comprometimento cognitivo questionável / muito leve — possivelmente compatível com MCI. Acompanhamento longitudinal recomendado.',
+      1:'Demência leve — comprometimento cognitivo com impacto funcional, mas com relativa independência para atividades básicas.',
+      2:'Demência moderada — comprometimento que exige supervisão e suporte nas atividades diárias.',
+      3:'Demência grave — dependência total para cuidados básicos.'
+    };
+    var ic=scoreColor(cdrGlobal);
+    sf(ic);doc.rect(M,y,3,20,'F');
+    st(ic);doc.setFont('helvetica','bold');doc.setFontSize(11);
+    doc.text('Interpretação: '+globalLabel,M+8,y+8);
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    var il=doc.splitTextToSize(descs2[cdrGlobal],W-M*2-10);
+    doc.text(il,M+8,y+15);
+    y+=il.length*4.5+14;
+  }
+
+  // Obs
+  if(obs.trim()){
+    chk(14);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text('Observações Clínicas',M,y);y+=7;
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    var olines=doc.splitTextToSize(obs,W-M*2);doc.text(olines,M,y);y+=olines.length*4.2+6;
+  }
+
+  // CTA
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  var patName=(document.getElementById('pat-nome').value||'paciente').replace(/\s+/g,'-').toLowerCase();
+  doc.save('cdr-'+patName+'-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('Relatório gerado com sucesso!');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// INIT
+buildDomains();
+updateScores();
+var today=new Date();
+document.getElementById('pat-data').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+</script>
+</body>
+</html>

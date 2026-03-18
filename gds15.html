@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDS-15 – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(90,122,138,.22) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(109,196,74,.12) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,50px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--green));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:660px;margin:0 auto;padding:32px 16px 0;}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:28px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:24px;}
+.notice{background:rgba(90,122,138,.07);border:1.5px solid rgba(90,122,138,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#3A5A6A;line-height:1.65;margin-bottom:24px;text-align:left;}
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:10px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 3px 14px rgba(27,58,92,.07);}
+.q-num{font-size:11px;color:var(--muted);letter-spacing:.6px;margin-bottom:8px;}
+.q-text{font-size:15px;line-height:1.65;margin-bottom:14px;font-weight:400;}
+.yn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.yn-btn{padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;}
+.yn-btn:hover{border-color:var(--teal-d);color:var(--ink);}
+.yn-btn.sel-sim{background:var(--navy);border-color:var(--navy);color:#fff;}
+.yn-btn.sel-nao{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+
+/* RESULTS */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(90,122,138,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;max-width:500px;}
+.hero-score{display:flex;align-items:baseline;gap:6px;margin-top:16px;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#fff;line-height:1;}
+.hs-max{font-size:18px;color:rgba(255,255,255,.4);}
+.hero-band{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+
+/* score bar */
+.score-bar-wrap{margin:12px 0 6px;}
+.score-segments{display:flex;height:14px;border-radius:99px;overflow:hidden;}
+.score-seg{height:100%;transition:flex .3s;}
+.score-marker-wrap{position:relative;height:18px;}
+.score-marker{position:absolute;top:0;transform:translateX(-50%);transition:left .8s ease;font-size:12px;}
+.score-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px;}
+
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* Item review */
+.item-review{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.ir-item{border-radius:10px;padding:10px 14px;border:1px solid var(--border);font-size:12px;line-height:1.5;}
+.ir-item .ir-q{color:var(--muted);margin-bottom:4px;}
+.ir-item .ir-ans{font-weight:500;}
+
+.sens-result{background:#FFF5F5;border:1.5px solid #FFCCCC;border-radius:12px;padding:16px 18px;margin-bottom:16px;font-size:13px;color:#7A2020;line-height:1.6;}
+.sens-result strong{display:block;margin-bottom:4px;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){.intro-card{padding:28px 18px;}.item-review{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Avaliação Geriátrica</div>
+  <h1>Escala de <strong>Depressão<br>Geriátrica</strong></h1>
+  <p>GDS-15 — Avaliação dos sintomas depressivos em adultos idosos através de 15 perguntas simples de Sim ou Não.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baseado em Yesavage et al. (1982)</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 15</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como você tem se sentido?</h2>
+    <p>Esta escala foi desenvolvida especialmente para avaliar sintomas de depressão em pessoas idosas. Para cada pergunta, responda <strong>Sim</strong> ou <strong>Não</strong> com base em como você se sentiu <strong>na última semana</strong>.</p>
+    <div class="notice">
+      ⚠️ Esta é uma ferramenta de <strong>triagem</strong>, não um diagnóstico. Os resultados devem ser interpretados por um profissional de saúde. Não substitui avaliação clínica completa.
+    </div>
+    <div class="intro-stats">
+      <div class="stat"><strong>15</strong><span>perguntas</span></div>
+      <div class="stat"><strong>~5 min</strong><span>para completar</span></div>
+      <div class="stat"><strong>Sim / Não</strong><span>respostas</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">GDS-15 — Resultado</div>
+    <div class="rh-title" id="rhTitle">—</div>
+    <div class="rh-sub" id="rhSub">—</div>
+    <div class="hero-score">
+      <span class="hs-num" id="hsNum">—</span>
+      <span class="hs-max">/15</span>
+    </div>
+    <div class="hero-band" id="heroBand">—</div>
+  </div>
+
+  <div class="result-card" id="interpCard"></div>
+  <div class="sens-result" id="sensResult" style="display:none">
+    <strong>⚠️ Atenção</strong>
+    A pontuação indica sintomas significativos que merecem atenção profissional. Converse com seu médico ou psicólogo. Em caso de crise, o CVV atende 24h pelo telefone <strong>188</strong>.
+  </div>
+  <div class="result-card" id="reviewCard"></div>
+
+  <div class="cta-box">
+    <p>Quer conversar sobre esses resultados e receber acompanhamento especializado?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// GDS-15 QUESTIONS
+// scoring: pontua se resposta = scoringAnswer
+// ═══════════════════════════════════════
+var QUESTIONS = [
+  {n:1,  text:'Em geral, está satisfeito(a) com sua vida?',               scoringAnswer:'nao'},
+  {n:2,  text:'Abandonou muitas de suas atividades e interesses?',         scoringAnswer:'sim'},
+  {n:3,  text:'Sente que sua vida está vazia?',                            scoringAnswer:'sim'},
+  {n:4,  text:'Fica frequentemente aborrecido(a)?',                        scoringAnswer:'sim'},
+  {n:5,  text:'Tem esperança no futuro?',                                  scoringAnswer:'nao'},
+  {n:6,  text:'Fica incomodado(a) com pensamentos que não consegue afastar?', scoringAnswer:'sim'},
+  {n:7,  text:'Na maior parte do tempo está de bom humor?',                scoringAnswer:'nao'},
+  {n:8,  text:'Tem medo de que algo de ruim vá lhe acontecer?',            scoringAnswer:'sim'},
+  {n:9,  text:'Sente-se feliz na maior parte do tempo?',                   scoringAnswer:'nao'},
+  {n:10, text:'Sente-se frequentemente desamparado(a)?',                   scoringAnswer:'sim'},
+  {n:11, text:'Fica frequentemente inquieto(a) e agitado(a)?',             scoringAnswer:'sim'},
+  {n:12, text:'Prefere ficar em casa a sair e fazer coisas novas?',        scoringAnswer:'sim'},
+  {n:13, text:'Preocupa-se frequentemente com o futuro?',                  scoringAnswer:'sim'},
+  {n:14, text:'Acha que tem mais problemas de memória do que a maioria?',  scoringAnswer:'sim'},
+  {n:15, text:'Acha que é maravilhoso estar vivo(a) agora?',               scoringAnswer:'nao'}
+];
+
+var answers = {}; // idx -> 'sim' | 'nao'
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML = '';
+  QUESTIONS.forEach(function(q, i){
+    var ansSim = answers[i];
+    var selSim = ansSim === 'sim' ? ' sel-sim' : '';
+    var selNao = ansSim === 'nao' ? ' sel-nao' : '';
+    c.innerHTML +=
+      '<div class="q-card'+(ansSim?' answered':'')+'" id="qc-'+i+'">' +
+        '<div class="q-num">Pergunta '+q.n+' de 15</div>' +
+        '<div class="q-text">'+q.text+'</div>' +
+        '<div class="yn-row">' +
+          '<button class="yn-btn'+selSim+'" id="bs-'+i+'" onclick="setAns('+i+',\'sim\')">Sim</button>' +
+          '<button class="yn-btn'+selNao+'" id="bn-'+i+'" onclick="setAns('+i+',\'nao\')">Não</button>' +
+        '</div>' +
+      '</div>';
+  });
+  updateProg();
+}
+
+function setAns(idx, val){
+  answers[idx] = val;
+  var bs = document.getElementById('bs-'+idx);
+  var bn = document.getElementById('bn-'+idx);
+  var card = document.getElementById('qc-'+idx);
+  bs.className = 'yn-btn' + (val==='sim' ? ' sel-sim' : '');
+  bn.className = 'yn-btn' + (val==='nao' ? ' sel-nao' : '');
+  card.className = 'q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n = Object.keys(answers).length;
+  document.getElementById('progFill').style.width = (n/15*100)+'%';
+  document.getElementById('progTxt').textContent = n+' / 15';
+  document.getElementById('pgInfo').textContent = n+' de 15 respondidas';
+}
+
+function calcScore(){
+  var score = 0;
+  QUESTIONS.forEach(function(q, i){
+    if(answers[i] === q.scoringAnswer) score++;
+  });
+  return score;
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goIntro(){ document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+function startTest(){
+  buildQuestions();
+  document.getElementById('progBar').style.display = 'flex';
+  showScreen('s-questions');
+}
+
+function restartTest(){ answers={}; document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+// ═══════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════
+function showResults(){
+  var score = calcScore();
+
+  // Band
+  var band, bandColor, title, desc;
+  if(score <= 5){
+    band='Ausência de depressão'; bandColor='#6DC44A';
+    title='Sem indicativo de depressão';
+    desc='A pontuação está dentro da faixa normal (0–5), sem indicativo de sintomas depressivos clinicamente significativos. Continue cuidando do seu bem-estar emocional e mantenha atividades prazerosas e vínculos sociais.';
+  } else if(score <= 10){
+    band='Depressão leve'; bandColor='#E8943A';
+    title='Indicativo de depressão leve';
+    desc='A pontuação sugere a presença de sintomas depressivos de intensidade leve (6–10). Recomenda-se atenção ao estado emocional e busca de apoio profissional para avaliação mais detalhada e possíveis intervenções.';
+  } else {
+    band='Depressão moderada a grave'; bandColor='#C03A3A';
+    title='Indicativo de depressão moderada a grave';
+    desc='A pontuação indica presença de sintomas depressivos significativos (11–15). É importante buscar avaliação e acompanhamento com profissional de saúde mental o quanto antes para uma intervenção adequada.';
+  }
+
+  document.getElementById('hsNum').textContent = score;
+  document.getElementById('rhTitle').textContent = title;
+  document.getElementById('rhSub').textContent = 'Pontuação ' + score + '/15 · ' + band;
+
+  var bandEl = document.getElementById('heroBand');
+  bandEl.textContent = band;
+  bandEl.style.background = bandColor+'22';
+  bandEl.style.color = bandColor;
+  bandEl.style.border = '1px solid '+bandColor+'44';
+
+  // Sensitivity notice
+  document.getElementById('sensResult').style.display = score >= 6 ? 'block' : 'none';
+
+  // Interpretation card with score bar
+  var pct = score/15*100;
+  document.getElementById('interpCard').innerHTML =
+    '<h3>Interpretação da Pontuação</h3>' +
+    '<div class="rc-sub">Escala de Depressão Geriátrica (GDS-15) — Yesavage et al., 1982. Pontuação de 0 a 15.</div>' +
+    '<div class="score-bar-wrap">' +
+      '<div class="score-marker-wrap">' +
+        '<div class="score-marker" style="left:'+Math.min(pct,97)+'%;color:'+bandColor+'">▼</div>' +
+      '</div>' +
+      '<div class="score-segments">' +
+        '<div class="score-seg" style="flex:5;background:#6DC44A;opacity:.75"></div>' +
+        '<div class="score-seg" style="flex:5;background:#E8943A;opacity:.75"></div>' +
+        '<div class="score-seg" style="flex:5;background:#C03A3A;opacity:.75"></div>' +
+      '</div>' +
+      '<div class="score-labels">' +
+        '<span>0</span><span style="color:#6DC44A;font-weight:500">Normal (0–5)</span>' +
+        '<span style="color:#E8943A;font-weight:500">Leve (6–10)</span>' +
+        '<span style="color:#C03A3A;font-weight:500">Mod./Grave (11–15)</span><span>15</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="interp-text">'+desc+'</div>';
+
+  // Item review
+  var revHtml = '<h3>Respostas por item</h3>' +
+    '<div class="rc-sub">Itens em destaque contribuíram para a pontuação.</div>' +
+    '<div class="item-review">';
+  QUESTIONS.forEach(function(q, i){
+    var ans = answers[i] || '—';
+    var pontuou = answers[i] === q.scoringAnswer;
+    var bgColor = pontuou ? 'background:rgba(192,58,58,.06);border-color:rgba(192,58,58,.25)' : '';
+    var ansColor = pontuou ? 'color:var(--red)' : 'color:var(--green)';
+    revHtml +=
+      '<div class="ir-item" style="'+bgColor+'">' +
+        '<div class="ir-q">'+q.n+'. '+q.text+'</div>' +
+        '<div class="ir-ans" style="'+ansColor+'">' +
+          (ans==='sim'?'Sim':'Não') + (pontuou?' · pontua':'') +
+        '</div>' +
+      '</div>';
+  });
+  revHtml += '</div>';
+  document.getElementById('reviewCard').innerHTML = revHtml;
+
+  showScreen('s-results');
+}
+
+function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 2500); }
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf === 'undefined'){
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload = gerarPDF; document.head.appendChild(sc);
+  } else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc = new window.jspdf.jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+  var W=210, M=20, y=0;
+  var navy=[27,58,92], teal=[74,171,171], green=[109,196,74], gold=[200,169,110],
+      white=[255,255,255], bg=[244,248,248], muted=[90,122,138], ink=[27,58,92],
+      amber=[232,148,58], red=[192,58,58];
+  var date = new Date().toLocaleDateString('pt-BR');
+  var score = calcScore();
+  var bandColor = score<=5 ? green : score<=10 ? amber : red;
+  var bandText  = score<=5 ? 'Ausência de depressão' : score<=10 ? 'Depressão leve' : 'Depressão moderada a grave';
+
+  function sf(c){ doc.setFillColor(c[0],c[1],c[2]); }
+  function sd(c){ doc.setDrawColor(c[0],c[1],c[2]); }
+  function st(c){ doc.setTextColor(c[0],c[1],c[2]); }
+  function chk(n){ if(y+n>275){ doc.addPage(); y=20; } }
+
+  // Header
+  sf(navy); doc.rect(0,0,W,50,'F');
+  st(gold); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.text('AVALIAÇÃO GERIÁTRICA  ·  GDS-15', W/2, 14, {align:'center'});
+  st(white); doc.setFont('helvetica','bold'); doc.setFontSize(20);
+  doc.text('Escala de Depressão Geriátrica', W/2, 26, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date, W/2, 36, {align:'center'});
+  doc.text('paulogomespsicologo.com', W/2, 43, {align:'center'});
+  y = 60;
+
+  // Score hero
+  chk(36);
+  sf(navy); doc.roundedRect(M, y, W-M*2, 30, 4, 4, 'F');
+  st([180,210,220]); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.text('PONTUAÇÃO TOTAL (GDS-15)', W/2, y+8, {align:'center'});
+  st(white); doc.setFont('helvetica','bold'); doc.setFontSize(36);
+  doc.text(String(score), W/2-6, y+23, {align:'right'});
+  st([160,190,210]); doc.setFont('helvetica','normal'); doc.setFontSize(14);
+  doc.text('/15', W/2-4, y+23);
+  sf(bandColor); doc.roundedRect(W/2+10, y+14, 56, 10, 3, 3, 'F');
+  st(white); doc.setFont('helvetica','bold'); doc.setFontSize(8.5);
+  doc.text(bandText, W/2+38, y+21, {align:'center'});
+  y += 40;
+
+  // Score bar
+  chk(20);
+  var barW = W-M*2;
+  sf(green); doc.setGState(new doc.GState({opacity:0.75}));
+  doc.roundedRect(M, y, barW*(5/15), 8, 3, 3, 'F');
+  sf(amber);
+  doc.rect(M+barW*(5/15), y, barW*(5/15), 8, 'F');
+  sf(red);
+  doc.roundedRect(M+barW*(10/15), y, barW*(5/15), 8, 0, 3, 'F');
+  doc.setGState(new doc.GState({opacity:1}));
+  // marker
+  var markerX = M + (score/15)*barW;
+  sf(navy); doc.triangle(markerX-3, y-5, markerX+3, y-5, markerX, y-1, 'F');
+  st(muted); doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+  doc.text('0', M, y+13); doc.text('Normal (0–5)', M+5, y+13);
+  doc.text('Leve (6–10)', M+barW/3+3, y+13);
+  doc.text('Mod./Grave (11–15)', M+barW*2/3+3, y+13);
+  doc.text('15', W-M, y+13, {align:'right'});
+  y += 22;
+
+  // Interpretation
+  chk(28);
+  sf(bandColor); doc.rect(M, y, 3, 22, 'F');
+  st(bandColor); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text(bandText, M+8, y+8);
+  st(ink); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  var interpPDF = score<=5
+    ? 'Pontuação dentro da faixa normal — sem indicativo de sintomas depressivos significativos.'
+    : score<=10
+    ? 'Pontuação sugere sintomas depressivos leves. Recomenda-se avaliação profissional.'
+    : 'Pontuação indica sintomas depressivos significativos. Buscar apoio profissional com urgência.';
+  var il = doc.splitTextToSize(interpPDF, W-M*2-10);
+  doc.text(il, M+8, y+16);
+  y += il.length*4.8 + 16;
+
+  // Item detail
+  chk(12);
+  st(ink); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+  doc.text('Respostas por Item', M, y); y += 8;
+  var bw2 = (W-M*2)/2;
+  QUESTIONS.forEach(function(q, i){
+    if(i%2===0) chk(10);
+    var ans = answers[i] || '—';
+    var pontuou = answers[i] === q.scoringAnswer;
+    var xPos = M + (i%2)*bw2;
+    if(i%2===0 && i>0) y += 0;
+    if(i%2===0){
+      // New row
+      chk(10);
+    }
+    st(pontuou ? red : green);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8);
+    doc.text(pontuou ? '●' : '○', xPos, (i%2===0?y:y)+4);
+    st(ink); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    var qtext = q.n+'. '+q.text.substring(0,48)+(q.text.length>48?'…':'');
+    doc.text(qtext, xPos+5, (i%2===0?y:y)+4);
+    st(pontuou?red:green); doc.setFont('helvetica','bold');
+    doc.text(ans==='sim'?'Sim':'Não', xPos+bw2-8, (i%2===0?y:y)+4);
+    if(i%2===1) y += 9;
+  });
+  if(QUESTIONS.length%2!==0) y += 9;
+  y += 4;
+
+  // Attention note
+  if(score >= 6){
+    chk(18);
+    sf([255,245,240]); sd([255,180,100]); doc.setLineWidth(0.4);
+    doc.roundedRect(M, y, W-M*2, 14, 3, 3, 'FD');
+    st([122,74,16]); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.text('Atenção: pontuação sugere sintomas que merecem avaliação profissional.', M+6, y+7);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.text('Em caso de crise: CVV 188 (24h)', M+6, y+12);
+    y += 22;
+  }
+
+  // CTA
+  chk(22); y += 4;
+  sf(navy); doc.roundedRect(M, y, W-M*2, 18, 4, 4, 'F');
+  st(white); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+  doc.text('Agende uma consulta:', M+10, y+8);
+  st(teal); doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com', M+10, y+14);
+
+  var pages = doc.internal.getNumberOfPages();
+  for(var p=1; p<=pages; p++){
+    doc.setPage(p); sf(navy); doc.rect(0,287,W,10,'F');
+    st(white); doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+    doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com', W/2, 293, {align:'center'});
+  }
+
+  doc.save('gds15-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

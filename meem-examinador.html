@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEEM – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+  --d1:#4AABAB;--d2:#8B6FBE;--d3:#E8943A;--d4:#D4607A;
+  --d5:#6DC44A;--d6:#C8A96E;--d7:#5A7A8A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;padding-bottom:80px;}
+
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:44px 24px 36px;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(74,171,171,.2) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(109,196,74,.12) 0%,transparent 70%);}
+.header-inner{max-width:900px;margin:0 auto;position:relative;z-index:1;}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,4vw,42px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:8px;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.6);font-size:13px;max-width:520px;line-height:1.65;}
+.header-badge{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:6px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;font-size:11px;color:rgba(255,255,255,.7);}
+
+/* SCORE BAR */
+.score-bar{position:sticky;top:0;z-index:200;background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.2);flex-wrap:wrap;}
+.sb-total{display:flex;align-items:baseline;gap:6px;}
+.sb-score{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;line-height:1;}
+.sb-max{font-size:14px;color:rgba(255,255,255,.4);}
+.sb-label{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;display:block;}
+.sb-domains{display:flex;gap:8px;flex-wrap:wrap;}
+.sb-dom{text-align:center;}
+.sb-dom-score{font-size:13px;font-weight:500;color:#fff;display:block;line-height:1.2;}
+.sb-dom-name{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.5px;display:block;}
+.sb-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;background:var(--green);color:#fff;white-space:nowrap;}
+.sb-btn:hover{background:#5cb33a;}
+
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 0;}
+
+/* PATIENT */
+.patient-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.patient-panel h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:16px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+.form-group input,.form-group select{padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal-d);}
+.edu-note{font-size:12px;color:var(--muted);margin-top:12px;padding:10px 14px;background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.3);border-radius:8px;line-height:1.6;}
+
+/* DOMAIN SECTIONS */
+.domain-section{background:var(--card);border:1px solid var(--border);border-radius:18px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.domain-header{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
+.domain-header:hover{background:rgba(0,0,0,.02);}
+.dh-left{display:flex;align-items:center;gap:12px;}
+.dh-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.dh-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;}
+.dh-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.dh-right{display:flex;align-items:center;gap:10px;}
+.dh-score{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;min-width:36px;text-align:right;}
+.dh-chevron{font-size:11px;color:var(--muted);transition:transform .2s;}
+.domain-section.open .dh-chevron{transform:rotate(180deg);}
+.domain-body{display:none;padding:16px 20px;}
+.domain-section.open .domain-body{display:block;}
+
+/* ITEMS */
+.item-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.item-row:last-child{border-bottom:none;}
+.item-desc{flex:1;font-size:13px;line-height:1.65;}
+.item-label{font-weight:500;display:block;margin-bottom:2px;}
+.item-note{font-size:11px;color:var(--muted);font-style:italic;line-height:1.5;}
+.item-pts{display:flex;gap:5px;flex-shrink:0;}
+.pt-btn{width:32px;height:32px;border-radius:7px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.pt-btn:hover{border-color:var(--teal-d);color:var(--ink);}
+.pt-btn.sel{color:#fff;border-color:transparent;}
+
+/* TEXT INPUT items */
+.item-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);outline:none;margin-top:6px;transition:border-color .2s;}
+.item-input:focus{border-color:var(--teal-d);}
+.obs-area{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);resize:vertical;min-height:55px;outline:none;margin-top:8px;transition:border-color .2s;}
+.obs-area:focus{border-color:var(--teal-d);}
+
+/* CUTOFF */
+.cutoff-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;}
+.cutoff-panel h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:14px;}
+.cutoff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.cutoff-card{border-radius:12px;padding:14px 16px;border:1.5px solid var(--border);}
+.cutoff-card h4{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;color:var(--muted);}
+.cutoff-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
+.cutoff-row span{color:var(--muted);}
+.cutoff-row strong{color:var(--ink);}
+
+/* RESULT */
+.result-summary{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:18px;padding:28px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;}
+.result-summary::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(74,171,171,.25) 0%,transparent 70%);}
+.rs-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.rs-score{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;line-height:1;}
+.rs-max{font-size:20px;color:rgba(255,255,255,.4);}
+.rs-label{display:inline-block;padding:5px 16px;border-radius:99px;font-size:12px;font-weight:600;margin:8px 0 10px;letter-spacing:.5px;}
+.rs-desc{font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;max-width:480px;}
+.rs-domains{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+.rs-dom{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 14px;text-align:center;}
+.rs-dom-score{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;display:block;line-height:1;}
+.rs-dom-label{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;display:block;margin-top:2px;}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-row .btn{flex:1;text-align:center;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:13px;margin-top:40px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:520px){.sb-domains{display:none;}.form-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Rastreio Cognitivo · Examinador</div>
+    <h1><strong>MEEM</strong> — Mini-Exame<br>do Estado Mental</h1>
+    <p>Ferramenta de registro para o examinador. Aplique o protocolo completo e registre as pontuações por domínio. O resultado é calculado automaticamente com os pontos de corte brasileiros.</p>
+    <div class="header-badge">⚠ Uso exclusivo do examinador · Não é versão de autorrelato</div>
+  </div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <div>
+    <div class="sb-total">
+      <span class="sb-score" id="sbScore">0</span>
+      <span class="sb-max">/30</span>
+    </div>
+    <span class="sb-label">Pontuação Total</span>
+  </div>
+  <div class="sb-domains" id="sbDomains"></div>
+  <button class="sb-btn" onclick="scrollToResult()">Ver resultado ↓</button>
+</div>
+
+<div class="wrap">
+
+<!-- PATIENT -->
+<div class="patient-panel">
+  <h3>Dados do Paciente</h3>
+  <div class="form-grid">
+    <div class="form-group" style="grid-column:span 2"><label>Nome completo</label><input type="text" id="pat-nome" placeholder="Nome do paciente"></div>
+    <div class="form-group"><label>Data de nascimento</label><input type="date" id="pat-nasc"></div>
+    <div class="form-group"><label>Data da avaliação</label><input type="date" id="pat-data"></div>
+    <div class="form-group">
+      <label>Escolaridade</label>
+      <select id="pat-edu" onchange="updateCutoff()">
+        <option value="0">Analfabeto</option>
+        <option value="1">1 a 3 anos</option>
+        <option value="4">4 a 7 anos</option>
+        <option value="8" selected>7 anos ou mais</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Queixa principal</label><input type="text" id="pat-queixa" placeholder="Ex: lapsos de memória"></div>
+  </div>
+  <div class="edu-note" id="eduNote">📚 Com ≥ 7 anos de escolaridade: ponto de corte = 28 pontos (Bertolucci et al., 1994).</div>
+</div>
+
+<!-- DOMAINS -->
+<div id="domainsContainer"></div>
+
+<!-- CUTOFF -->
+<div class="cutoff-panel">
+  <h3>Pontos de Corte — Brasil (Bertolucci et al., 1994)</h3>
+  <div class="cutoff-grid" id="cutoffGrid"></div>
+</div>
+
+<!-- RESULT -->
+<div class="result-summary" id="resultSummary">
+  <div class="rs-eyebrow">Resultado — MEEM</div>
+  <div>
+    <span class="rs-score" id="rsScore">0</span>
+    <span class="rs-max">/30</span>
+  </div>
+  <div class="rs-label" id="rsLabel">—</div>
+  <div class="rs-desc" id="rsDesc">—</div>
+  <div class="rs-domains" id="rsDomains"></div>
+</div>
+
+<div class="patient-panel" style="margin-bottom:16px">
+  <h3>Observações clínicas</h3>
+  <textarea class="obs-area" id="obsGeral" rows="4" placeholder="Registre observações sobre a aplicação: comportamento, cooperação, nível de atenção, uso de óculos/aparelho auditivo, tempo de aplicação, etc."></textarea>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" onclick="downloadPDF()">⬇ Gerar relatório em PDF</button>
+  <button class="btn btn-outline" onclick="resetForm()">↺ Nova avaliação</button>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// MEEM DOMAIN & ITEM DEFINITIONS
+// ═══════════════════════════════════════
+var DOMAINS = [
+  {
+    id:'oriT', name:'Orientação Temporal', icon:'📅', color:'--d1', maxScore:5,
+    subtitle:'5 pontos — ano, estação, mês, dia do mês, dia da semana',
+    items:[
+      {id:'ori_ano',    label:'Ano',             note:'Qual é o ano atual?',                  max:1},
+      {id:'ori_est',    label:'Estação do ano',  note:'Em que estação do ano estamos?',        max:1},
+      {id:'ori_mes',    label:'Mês',             note:'Qual é o mês atual?',                   max:1},
+      {id:'ori_dia',    label:'Dia do mês',      note:'Qual é o dia do mês de hoje?',          max:1},
+      {id:'ori_sem',    label:'Dia da semana',   note:'Que dia da semana é hoje?',             max:1}
+    ]
+  },
+  {
+    id:'oriE', name:'Orientação Espacial', icon:'🗺️', color:'--d2', maxScore:5,
+    subtitle:'5 pontos — país, estado, cidade, local, andar/setor',
+    items:[
+      {id:'ori_pais',   label:'País',            note:'Em que país estamos?',                  max:1},
+      {id:'ori_est2',   label:'Estado',          note:'Em que estado estamos?',                max:1},
+      {id:'ori_cid',    label:'Cidade',          note:'Em que cidade estamos?',                max:1},
+      {id:'ori_loc',    label:'Local',           note:'Qual é este local? (hospital/clínica)', max:1},
+      {id:'ori_and',    label:'Andar / Setor',   note:'Em que andar / setor estamos?',         max:1}
+    ]
+  },
+  {
+    id:'mem', name:'Memória Imediata', icon:'🧠', color:'--d3', maxScore:3,
+    subtitle:'3 pontos — repetição de 3 palavras',
+    items:[
+      {id:'mem1', label:'Palavra 1 — CARRO',    note:'Diga as 3 palavras claramente e peça para repetir. 1 ponto por cada palavra correta.', max:1},
+      {id:'mem2', label:'Palavra 2 — VASO',     note:null, max:1},
+      {id:'mem3', label:'Palavra 3 — TIJOLO',   note:null, max:1}
+    ]
+  },
+  {
+    id:'atc', name:'Atenção e Cálculo', icon:'🎯', color:'--d4', maxScore:5,
+    subtitle:'5 pontos — subtração serial 100-7 (5 vezes) ou soletrar MUNDO ao contrário',
+    items:[
+      {id:'atc1', label:'100 − 7 = 93',   note:'1 ponto por resposta correta. Cada subtração é independente.', max:1},
+      {id:'atc2', label:'93 − 7 = 86',    note:null, max:1},
+      {id:'atc3', label:'86 − 7 = 79',    note:null, max:1},
+      {id:'atc4', label:'79 − 7 = 72',    note:null, max:1},
+      {id:'atc5', label:'72 − 7 = 65',    note:'Alternativa: soletrar MUNDO ao contrário (O-D-N-U-M)', max:1}
+    ]
+  },
+  {
+    id:'evo', name:'Evocação / Memória de Fixação', icon:'💭', color:'--d5', maxScore:3,
+    subtitle:'3 pontos — evocação das 3 palavras anteriores',
+    items:[
+      {id:'evo1', label:'Evocação — CARRO',   note:'Quais eram as 3 palavras que pedi para você repetir?', max:1},
+      {id:'evo2', label:'Evocação — VASO',    note:null, max:1},
+      {id:'evo3', label:'Evocação — TIJOLO',  note:null, max:1}
+    ]
+  },
+  {
+    id:'ling', name:'Linguagem', icon:'💬', color:'--d6', maxScore:8,
+    subtitle:'8 pontos — nomeação, repetição, comando, leitura, escrita',
+    items:[
+      {id:'nom1',  label:'Nomeação — relógio',        note:'Mostrar relógio: "O que é isto?"',                       max:1},
+      {id:'nom2',  label:'Nomeação — caneta',         note:'Mostrar caneta: "O que é isto?"',                        max:1},
+      {id:'rep1',  label:'Repetição de frase',        note:'"Nem aqui, nem ali, nem lá." — repetir exatamente.',    max:1},
+      {id:'com1',  label:'Comando 1 — Pegue o papel', note:'"Pegue este papel com a mão direita…"',                  max:1},
+      {id:'com2',  label:'Comando 2 — Dobre ao meio', note:'"…dobre-o ao meio…"',                                    max:1},
+      {id:'com3',  label:'Comando 3 — Coloque no chão',note:'"…e coloque-o no chão."',                              max:1},
+      {id:'lei1',  label:'Leitura — FECHE OS OLHOS',  note:'Mostrar cartão escrito "FECHE OS OLHOS" — obedece?',    max:1},
+      {id:'esc1',  label:'Escrita — frase espontânea', note:'Pedir para escrever uma frase completa com sujeito e verbo.', max:1}
+    ]
+  },
+  {
+    id:'vis', name:'Capacidade Construtiva Visual', icon:'✏️', color:'--d7', maxScore:1,
+    subtitle:'1 ponto — cópia de dois pentágonos sobrepostos',
+    items:[
+      {id:'vis1', label:'Cópia dos pentágonos',
+       note:'Copiar dois pentágonos que se intersectam. Cada figura deve ter 5 lados e a intersecção deve formar um quadrilátero. 1 ponto se correto.',
+       max:1}
+    ]
+  }
+];
+
+// Cutoffs Brasil — Bertolucci et al. 1994 / Brucki et al. 2003
+var CUTOFFS = [
+  {edu:'0', label:'Analfabeto',        cutoff:19, cutoffLabel:'< 19'},
+  {edu:'1', label:'1 a 3 anos',        cutoff:23, cutoffLabel:'< 23'},
+  {edu:'4', label:'4 a 7 anos',        cutoff:24, cutoffLabel:'< 24'},
+  {edu:'8', label:'≥ 7 anos',          cutoff:28, cutoffLabel:'< 28'}
+];
+var EDU_NOTES = {
+  '0':'Analfabeto: ponto de corte = 19 pontos.',
+  '1':'1 a 3 anos de escolaridade: ponto de corte = 23 pontos.',
+  '4':'4 a 7 anos de escolaridade: ponto de corte = 24 pontos.',
+  '8':'7 anos ou mais de escolaridade: ponto de corte = 28 pontos.'
+};
+
+var scores = {};
+DOMAINS.forEach(function(d){ d.items.forEach(function(it){ scores[it.id]=0; }); });
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildDomains(){
+  var c=document.getElementById('domainsContainer'); c.innerHTML='';
+  DOMAINS.forEach(function(d,di){
+    var color='var('+d.color+')';
+    var sec=document.createElement('div');
+    sec.className='domain-section'+(di===0?' open':'');
+    sec.id='dom-'+d.id;
+    var itemsHtml=d.items.map(function(it){
+      var pts='';
+      for(var v=0;v<=it.max;v++){
+        var isSel=scores[it.id]===v;
+        pts+='<button class="pt-btn'+(isSel?' sel':'')+'" id="pb-'+it.id+'-'+v+'" '+
+          'style="'+(isSel?'background:'+color+';':'')+'" '+
+          'onclick="setScore(\''+it.id+'\','+v+',\''+color+'\')">'+v+'</button>';
+      }
+      return '<div class="item-row">'+
+        '<div class="item-desc">'+
+          '<span class="item-label">'+it.label+'</span>'+
+          (it.note?'<span class="item-note">'+it.note+'</span>':'')+
+        '</div>'+
+        '<div class="item-pts">'+pts+'</div>'+
+      '</div>';
+    }).join('');
+    sec.innerHTML=
+      '<div class="domain-header" onclick="toggleDom(\''+d.id+'\')">'+
+        '<div class="dh-left">'+
+          '<div class="dh-icon" style="background:'+color+'18">'+d.icon+'</div>'+
+          '<div>'+
+            '<div class="dh-title" style="color:'+color+'">'+d.name+'</div>'+
+            '<div class="dh-sub">'+d.subtitle+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="dh-right">'+
+          '<div>'+
+            '<span class="dh-score" id="dscore-'+d.id+'" style="color:'+color+'">'+getDomainScore(d)+'</span>'+
+            '<span style="font-size:11px;color:var(--muted)">/'+d.maxScore+'</span>'+
+          '</div>'+
+          '<span class="dh-chevron">▼</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="domain-body">'+
+        '<div>'+itemsHtml+'</div>'+
+        '<textarea class="obs-area" id="obs-'+d.id+'" rows="2" placeholder="Observações sobre este domínio…"></textarea>'+
+      '</div>';
+    c.appendChild(sec);
+  });
+  buildSbDomains();
+}
+
+function toggleDom(id){
+  document.getElementById('dom-'+id).classList.toggle('open');
+}
+
+function buildSbDomains(){
+  var c=document.getElementById('sbDomains'); c.innerHTML='';
+  DOMAINS.forEach(function(d){
+    c.innerHTML+='<div class="sb-dom">'+
+      '<span class="sb-dom-score" id="sbds-'+d.id+'">'+getDomainScore(d)+'/'+d.maxScore+'</span>'+
+      '<span class="sb-dom-name">'+d.name.substring(0,7)+'</span>'+
+    '</div>';
+  });
+}
+
+function getDomainScore(d){
+  return d.items.reduce(function(sum,it){ return sum+(scores[it.id]||0); },0);
+}
+
+function getTotalScore(){
+  return DOMAINS.reduce(function(sum,d){ return sum+getDomainScore(d); },0);
+}
+
+function setScore(id,val,color){
+  scores[id]=val;
+  var maxVal=0;
+  DOMAINS.forEach(function(d){ d.items.forEach(function(it){ if(it.id===id) maxVal=it.max; }); });
+  for(var v=0;v<=maxVal;v++){
+    var btn=document.getElementById('pb-'+id+'-'+v);
+    if(!btn) continue;
+    btn.className='pt-btn'+(v===val?' sel':'');
+    btn.style.background=v===val?color:'';
+  }
+  updateScores();
+}
+
+function updateScores(){
+  var total=getTotalScore();
+  document.getElementById('sbScore').textContent=total;
+  document.getElementById('rsScore').textContent=total;
+  DOMAINS.forEach(function(d){
+    var ds=getDomainScore(d);
+    var el=document.getElementById('dscore-'+d.id);
+    var sb=document.getElementById('sbds-'+d.id);
+    if(el) el.textContent=ds;
+    if(sb) sb.textContent=ds+'/'+d.maxScore;
+  });
+  updateResult(total);
+}
+
+function updateResult(total){
+  var eduVal=document.getElementById('pat-edu').value;
+  var cut=CUTOFFS.find(function(c){ return c.edu===eduVal; })||CUTOFFS[3];
+  var below=total<cut.cutoff;
+  var label=below?'Abaixo do ponto de corte':'Dentro da normalidade';
+  var labelColor=below?'#E8943A':'#6DC44A';
+  var desc=below
+    ?'Pontuação abaixo do ponto de corte para este nível educacional ('+cut.cutoffLabel+' pontos). Indica necessidade de investigação mais aprofundada. O MEEM é um instrumento de rastreio — escores baixos não equivalem a diagnóstico de demência.'
+    :'Pontuação dentro dos parâmetros esperados para este nível educacional. O MEEM não exclui declínio cognitivo leve — em caso de queixas, avaliação neuropsicológica completa é recomendada.';
+
+  var lEl=document.getElementById('rsLabel');
+  lEl.textContent=label; lEl.style.background=labelColor+'22'; lEl.style.color=labelColor; lEl.style.border='1px solid '+labelColor+'44';
+  document.getElementById('rsDesc').textContent=desc;
+
+  var rsd=document.getElementById('rsDomains'); rsd.innerHTML='';
+  DOMAINS.forEach(function(d){
+    rsd.innerHTML+='<div class="rs-dom">'+
+      '<span class="rs-dom-score">'+getDomainScore(d)+'/'+d.maxScore+'</span>'+
+      '<span class="rs-dom-label">'+d.name.substring(0,7)+'</span>'+
+    '</div>';
+  });
+}
+
+function buildCutoffs(){
+  var g=document.getElementById('cutoffGrid'); g.innerHTML='';
+  var eduVal=document.getElementById('pat-edu').value;
+  CUTOFFS.forEach(function(c){
+    var isActive=c.edu===eduVal;
+    var bg=isActive?'background:rgba(74,171,171,.08);border-color:rgba(74,171,171,.4)':'';
+    g.innerHTML+=
+      '<div class="cutoff-card" style="'+bg+'">'+
+        '<h4 style="color:'+(isActive?'var(--teal-d)':'var(--muted)')+'">'+c.label+(isActive?' ✓':'')+'</h4>'+
+        '<div class="cutoff-row"><span>Ponto de corte</span><strong>'+c.cutoffLabel+' pts</strong></div>'+
+        '<div class="cutoff-row"><span>Referência</span><strong>Bertolucci, 1994</strong></div>'+
+      '</div>';
+  });
+}
+
+function updateCutoff(){
+  buildCutoffs();
+  var eduVal=document.getElementById('pat-edu').value;
+  document.getElementById('eduNote').textContent='📚 '+EDU_NOTES[eduVal];
+  updateResult(getTotalScore());
+}
+
+function scrollToResult(){ document.getElementById('resultSummary').scrollIntoView({behavior:'smooth'}); }
+
+function resetForm(){
+  if(!confirm('Limpar todos os dados e iniciar nova avaliação?')) return;
+  DOMAINS.forEach(function(d){ d.items.forEach(function(it){ scores[it.id]=0; }); });
+  buildDomains(); updateScores();
+  ['pat-nome','pat-nasc','pat-queixa','obsGeral'].forEach(function(id){ var el=document.getElementById(id);if(el)el.value=''; });
+  document.getElementById('pat-data').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Formulário limpo.');
+}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var total=getTotalScore();
+  var nome=document.getElementById('pat-nome').value||'—';
+  var nasc=document.getElementById('pat-nasc').value||'—';
+  var dataAv=document.getElementById('pat-data').value||date;
+  var queixa=document.getElementById('pat-queixa').value||'—';
+  var eduVal=document.getElementById('pat-edu').value;
+  var cut=CUTOFFS.find(function(c){return c.edu===eduVal;})||CUTOFFS[3];
+  var obs=document.getElementById('obsGeral').value||'';
+  var below=total<cut.cutoff;
+  var resultColor=below?amber:green;
+  var resultLabel=below?'Abaixo do ponto de corte':'Dentro da normalidade';
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,54,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('RASTREIO COGNITIVO  ·  MEEM',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Mini-Exame do Estado Mental',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  Avaliação: '+dataAv,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  doc.setTextColor(255,200,100);doc.setFontSize(7.5);
+  doc.text('Instrumento aplicado por examinador treinado — não é versão de autorrelato',W/2,50,{align:'center'});
+  y=62;
+
+  // Patient
+  chk(26);
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(M,y,W-M*2,22,3,3,'FD');
+  st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(nome,M+6,y+8);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);st(muted);
+  doc.text('Nasc.: '+nasc,M+6,y+16);
+  doc.text('Escolaridade: '+cut.label,W/2,y+16);
+  doc.text('Queixa: '+(queixa.substring(0,30)),W-M,y+16,{align:'right'});
+  y+=30;
+
+  // Score hero
+  chk(34);
+  sf(navy);doc.roundedRect(M,y,W-M*2,28,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('PONTUAÇÃO TOTAL (MEEM)',W/2,y+7,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(34);
+  doc.text(String(total),W/2-7,y+21,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(14);
+  doc.text('/30',W/2-5,y+21);
+  sf(resultColor);doc.roundedRect(W/2+10,y+13,52,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(resultLabel,W/2+36,y+20,{align:'center'});
+  doc.text('Corte: '+cut.cutoffLabel,W/2+36,y+26,{align:'center'});
+  y+=36;
+
+  // Score bar
+  chk(20);
+  var barW=W-M*2;
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(M,y,barW,8,3,3,'FD');
+  sf(resultColor);doc.roundedRect(M,y,(total/30)*barW,8,3,3,'F');
+  sf(navy);doc.circle(M+(cut.cutoff/30)*barW,y+4,2.5,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0',M,y+13);doc.text('Corte: '+cut.cutoff,M+(cut.cutoff/30)*barW,y+13,{align:'center'});doc.text('30',W-M,y+13,{align:'right'});
+  y+=22;
+
+  // Domain table
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Pontuação por Domínio',M,y);y+=8;
+  sf(bg);doc.roundedRect(M,y,W-M*2,8,2,2,'F');
+  st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  var dcw=(W-M*2)/3;
+  doc.text('Domínio',M+4,y+5.5);doc.text('Pts',M+dcw+4,y+5.5);doc.text('Máximo',M+dcw*2+4,y+5.5);
+  y+=10;
+  DOMAINS.forEach(function(d){
+    chk(9);
+    var ds=getDomainScore(d);
+    var pct=ds/d.maxScore;
+    var dc=pct>=0.8?green:pct>=0.5?teal:amber;
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    doc.text(d.name,M+4,y+4);
+    st(dc);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text(String(ds),M+dcw+4,y+4);
+    st(muted);doc.setFont('helvetica','normal');
+    doc.text(String(d.maxScore),M+dcw*2+4,y+4);
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+7,W-M,y+7);y+=9;
+  });
+  y+=4;
+
+  // Item detail
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Registro por Item',M,y);y+=8;
+  DOMAINS.forEach(function(d){
+    chk(10);
+    sf(teal);doc.rect(M,y,3,6,'F');
+    st(ink);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(d.name,M+7,y+4.5);y+=10;
+    d.items.forEach(function(it){
+      chk(8);
+      var v=scores[it.id];
+      st(v>0?green:[192,58,58]);doc.setFont('helvetica','bold');doc.setFontSize(8);
+      doc.text(String(v),M+4,y+4);
+      st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8);
+      doc.text(it.label,M+10,y+4);
+      y+=8;
+    });
+    var domObs=document.getElementById('obs-'+d.id);
+    if(domObs&&domObs.value.trim()){
+      chk(8);st(muted);doc.setFont('helvetica','italic');doc.setFontSize(7.5);
+      var ol=doc.splitTextToSize('Obs: '+domObs.value,W-M*2-5);doc.text(ol,M+5,y);y+=ol.length*3.8+2;
+    }
+    y+=3;
+  });
+
+  // Cutoff table
+  chk(14);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Pontos de Corte — Brasil (Bertolucci et al., 1994)',M,y);y+=8;
+  sf(bg);doc.roundedRect(M,y,W-M*2,8,2,2,'F');
+  st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  var ncw=(W-M*2)/2;
+  doc.text('Escolaridade',M+4,y+5.5);doc.text('Ponto de Corte',M+ncw+4,y+5.5);
+  y+=10;
+  CUTOFFS.forEach(function(c){
+    chk(9);var isA=c.edu===eduVal;
+    st(isA?teal:ink);doc.setFont('helvetica',isA?'bold':'normal');doc.setFontSize(8);
+    doc.text(c.label+(isA?' ← selecionado':''),M+4,y+4);
+    doc.text(c.cutoffLabel+' pontos',M+ncw+4,y+4);
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+7,W-M,y+7);y+=9;
+  });y+=4;
+
+  if(obs.trim()){
+    chk(14);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text('Observações Clínicas',M,y);y+=7;
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    var olines=doc.splitTextToSize(obs,W-M*2);doc.text(olines,M,y);y+=olines.length*4.2+6;
+  }
+
+  // CTA
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  var patName=(document.getElementById('pat-nome').value||'paciente').replace(/\s+/g,'-').toLowerCase();
+  doc.save('meem-'+patName+'-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('Relatório gerado com sucesso!');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// INIT
+buildDomains();
+buildCutoffs();
+updateScores();
+var today=new Date();
+document.getElementById('pat-data').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+</script>
+</body>
+</html>
