@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Áudio de Regulação Emocional — Roteiro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#1B2A4A; --navy-mid:#243659; --teal:#2B8A8A; --teal-light:#3AACAC;
+  --teal-pale:#D0ECEC; --green:#2E7D52; --green-pale:#D4EDE0; --cream:#F4F7F6;
+  --muted:#7A9090; --gold:#C8962A; --border:#D0DDD8; --text:#1B2A4A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+.app-header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.header-inner{max-width:780px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.header-brand h1{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;color:#fff;}
+.header-brand p{font-size:.65rem;color:var(--teal-light);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.header-badge{background:var(--teal);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;white-space:nowrap;}
+.teal-bar{height:4px;background:linear-gradient(90deg,var(--teal),var(--green));}
+
+/* PLAYER BAR */
+.player-bar{background:var(--navy-mid);padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);}
+.player-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:14px;}
+.play-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.play-btn.idle{background:var(--teal);}
+.play-btn.playing{background:var(--green);}
+.play-btn.paused{background:var(--gold);}
+.play-btn svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;}
+.player-info{flex:1;min-width:0;}
+.player-status{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-light);}
+.player-section{font-size:.85rem;font-weight:500;color:#fff;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.player-timer{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#fff;flex-shrink:0;}
+
+.progress-wrap{background:rgba(255,255,255,.08);height:4px;margin-top:10px;border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--teal);width:0%;transition:width .5s;}
+
+/* MAIN */
+.main{max-width:780px;margin:0 auto;padding:28px 20px 60px;}
+
+/* INTRO */
+.intro-card{background:var(--navy);border-radius:18px;padding:28px 32px;margin-bottom:28px;position:relative;overflow:hidden;}
+.intro-card::before{content:'';position:absolute;right:-40px;bottom:-40px;width:180px;height:180px;border-radius:50%;background:rgba(43,138,138,.15);}
+.intro-card::after{content:'';position:absolute;left:-20px;top:-20px;width:100px;height:100px;border-radius:50%;background:rgba(46,125,82,.1);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:#fff;margin-bottom:10px;position:relative;}
+.intro-card p{font-size:.85rem;color:var(--teal-light);line-height:1.75;margin-bottom:10px;position:relative;}
+.meta-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;position:relative;}
+.meta-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border-radius:20px;padding:6px 14px;font-size:.74rem;color:rgba(255,255,255,.75);}
+.meta-chip svg{width:14px;height:14px;stroke:var(--teal-light);fill:none;stroke-width:2;flex-shrink:0;}
+.mode-btns{display:flex;gap:10px;flex-wrap:wrap;position:relative;}
+.mode-btn{border:none;border-radius:12px;padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.mode-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;}
+.mode-btn.primary{background:var(--teal);color:#fff;}
+.mode-btn.primary:hover{background:var(--teal-light);}
+.mode-btn.secondary{background:rgba(255,255,255,.1);color:#fff;}
+.mode-btn.secondary:hover{background:rgba(255,255,255,.18);}
+
+/* USAGE PANEL */
+.usage-panel{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:22px 26px;margin-bottom:24px;}
+.usage-panel h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;color:var(--navy);margin-bottom:14px;}
+.usage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:560px){.usage-grid{grid-template-columns:1fr;}}
+.usage-item{background:var(--cream);border-radius:12px;padding:14px 16px;text-align:center;}
+.usage-icon{width:36px;height:36px;border-radius:50%;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.usage-icon svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-width:2;}
+.usage-item h4{font-size:.78rem;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.usage-item p{font-size:.72rem;color:var(--muted);line-height:1.5;}
+
+/* SECTION CARD */
+.section-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);overflow:hidden;margin-bottom:14px;transition:all .3s;}
+.section-card.active-section{border-color:var(--teal);box-shadow:0 0 0 3px rgba(43,138,138,.1);}
+.section-card.completed-section{border-color:var(--green);background:#FAFFFE;}
+
+.section-top{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;}
+.section-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .3s;}
+.section-num.idle{background:var(--cream);color:var(--muted);border:2px solid var(--border);}
+.section-num.active{background:var(--teal);color:#fff;}
+.section-num.done{background:var(--green);color:#fff;}
+
+.section-info{flex:1;}
+.section-title{font-size:.92rem;font-weight:600;color:var(--navy);}
+.section-sub{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.section-duration{font-size:.72rem;font-weight:600;color:var(--gold);background:#FDF3DC;padding:3px 11px;border-radius:20px;white-space:nowrap;}
+
+/* SCRIPT CONTENT */
+.script-body{padding:0 20px 20px;display:none;}
+.script-body.open{display:block;}
+
+/* Breathing timer */
+.breathing-block{background:var(--navy);border-radius:14px;padding:22px;margin-bottom:18px;text-align:center;}
+.breathing-label{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-light);margin-bottom:10px;}
+.breathing-circle{width:90px;height:90px;border-radius:50%;border:3px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;transition:all 1s ease;position:relative;}
+.breathing-circle-inner{width:60px;height:60px;border-radius:50%;background:rgba(43,138,138,.2);display:flex;align-items:center;justify-content:center;transition:all 1s ease;}
+.breathing-count{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:#fff;}
+.breathing-phase{font-size:.78rem;color:var(--teal-light);margin-bottom:14px;}
+.breathing-btns{display:flex;justify-content:center;gap:10px;}
+.br-btn{background:var(--teal);border:none;color:#fff;border-radius:8px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:background .2s;}
+.br-btn:hover{background:var(--teal-light);}
+.br-btn.secondary{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);}
+
+/* Script paragraphs */
+.script-block{margin-bottom:18px;}
+.script-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;padding:3px 10px;border-radius:4px;display:inline-block;}
+.script-label.narration{background:var(--teal-pale);color:var(--teal);}
+.script-label.instruction{background:var(--gold-pale);color:var(--gold);}
+.script-label.pause{background:var(--green-pale);color:var(--green);}
+
+.script-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--navy);line-height:1.85;border-left:3px solid var(--teal);padding-left:16px;margin-top:6px;}
+.script-text.instruction-text{border-left-color:var(--gold);font-style:italic;font-size:1rem;color:var(--navy-mid);}
+.script-text.pause-text{border-left-color:var(--green);font-size:.88rem;color:var(--muted);font-style:italic;}
+
+/* Highlight active block */
+.script-block.highlight .script-text{background:rgba(43,138,138,.05);border-radius:0 8px 8px 0;}
+
+/* Pause indicator */
+.pause-indicator{display:flex;align-items:center;gap:10px;background:var(--green-pale);border-radius:10px;padding:10px 14px;margin:14px 0;}
+.pause-indicator svg{width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:2;flex-shrink:0;}
+.pause-indicator span{font-size:.78rem;color:var(--green);font-weight:500;}
+.pause-timer-btn{margin-left:auto;background:var(--green);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;}
+.pause-countdown{font-weight:700;margin-left:4px;}
+
+.section-actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
+.btn-primary{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:var(--navy);}
+.btn-secondary{background:var(--cream);color:var(--navy);border:1.5px solid var(--border);border-radius:10px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal);}
+
+/* COMPLETION */
+.completion-card{background:var(--navy);border-radius:18px;padding:32px;text-align:center;margin-top:24px;display:none;}
+.completion-card.show{display:block;}
+.completion-card h2{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:600;color:#fff;margin-bottom:12px;}
+.completion-card p{font-size:.85rem;color:var(--teal-light);line-height:1.7;margin-bottom:6px;}
+.completion-icon{width:60px;height:60px;border-radius:50%;background:rgba(43,138,138,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.completion-icon svg{width:28px;height:28px;stroke:var(--teal-light);fill:none;stroke-width:2;stroke-linecap:round;}
+
+.toast{position:fixed;bottom:22px;right:20px;background:var(--navy);color:#fff;padding:11px 18px;border-radius:12px;font-size:.8rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:999;border-left:4px solid var(--teal);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+footer{text-align:center;padding:24px 20px;font-size:.68rem;color:var(--muted);border-top:1px solid var(--border);margin-top:20px;}
+footer strong{color:var(--navy);}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <h1>Regulação Emocional</h1>
+      <p>Manual Anti-Burnout · Paulo Gomes · @paulogomespsicologo</p>
+    </div>
+    <span class="header-badge">Bônus 3</span>
+  </div>
+  <div class="teal-bar"></div>
+</header>
+
+<!-- PLAYER BAR -->
+<div class="player-bar">
+  <div class="player-inner">
+    <button class="play-btn idle" id="play-btn" onclick="togglePlay()">
+      <svg id="play-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+    <div class="player-info">
+      <div class="player-status" id="player-status">Pronto para iniciar</div>
+      <div class="player-section" id="player-section">Áudio Guiado de Regulação Emocional — 8 a 10 min</div>
+      <div class="progress-wrap"><div class="progress-fill" id="audio-progress"></div></div>
+    </div>
+    <div class="player-timer" id="player-timer">10:00</div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- INTRO -->
+  <div class="intro-card">
+    <h2>Roteiro de Gravação</h2>
+    <p>Este é o roteiro completo do seu áudio guiado de regulação emocional. Use no modo <strong style="color:#fff;">leitura guiada</strong> para gravar sua própria voz, ou como referência para acompanhar o processo.</p>
+    <div class="meta-row">
+      <div class="meta-chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>8–10 minutos</div>
+      <div class="meta-chip"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>Para gravar ou ler</div>
+      <div class="meta-chip"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>3 momentos de uso</div>
+    </div>
+    <div class="mode-btns">
+      <button class="mode-btn primary" onclick="startGuided()">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Modo leitura guiada
+      </button>
+      <button class="mode-btn secondary" onclick="showAll()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+        Ver roteiro completo
+      </button>
+    </div>
+  </div>
+
+  <!-- QUANDO USAR -->
+  <div class="usage-panel">
+    <h3>Quando usar este áudio</h3>
+    <div class="usage-grid">
+      <div class="usage-item">
+        <div class="usage-icon"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+        <h4>Antes de dormir</h4>
+        <p>Para desacelerar o sistema nervoso e reduzir pensamentos acelerados</p>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+        <h4>Após dias intensos</h4>
+        <p>Para processar e liberar a tensão acumulada antes de descansar</p>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h4>Antes de tarefas difíceis</h4>
+        <p>Para centrar o foco e reduzir ansiedade de desempenho antes de começar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTIONS -->
+  <div id="sections-container"></div>
+
+  <!-- COMPLETION -->
+  <div class="completion-card" id="completion-card">
+    <div class="completion-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+    <h2>Regulação concluída.</h2>
+    <p>Você dedicou tempo para cuidar do seu sistema nervoso.<br>Isso é saúde mental aplicada na prática.</p>
+    <p style="margin-top:8px;font-size:.78rem;color:var(--muted);">Perceba como está seu corpo agora em comparação com o início.</p>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Manual Anti-Burnout</strong> · Paulo Gomes · CRP-11/13235 · @paulogomespsicologo
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SCRIPT SECTIONS ──────────────────────────────────────────────────────────
+const SECTIONS = [
+  {
+    title: 'Abertura e chegada', duration: '1–2 min',
+    sub: 'Preparação do espaço interno',
+    blocks: [
+      { type:'instruction', text:'[Fale em voz pausada, suave, com 1–2 segundos de pausa entre frases]' },
+      { type:'narration', text:'Encontre uma posição confortável. Pode ser sentado, reclinado ou deitado.' },
+      { type:'narration', text:'Permita que seu corpo encontre o apoio que precisa neste momento.' },
+      { type:'narration', text:'Feche os olhos suavemente, ou direcione o olhar para baixo, sem focar em nada específico.' },
+      { type:'pause', text:'[pausa de 4 segundos]', seconds: 4 },
+      { type:'narration', text:'Você não precisa fazer nada agora. Só chegar.' },
+      { type:'narration', text:'Só estar aqui.' },
+      { type:'pause', text:'[pausa de 5 segundos]', seconds: 5 },
+      { type:'narration', text:'Este é um momento só seu.' },
+    ]
+  },
+  {
+    title: 'Respiração regulatória', duration: '2–3 min',
+    sub: 'Ativação do sistema parassimpático',
+    blocks: [
+      { type:'instruction', text:'[Conduza o ouvinte por 4 ciclos completos. Fale no ritmo da respiração.]' },
+      { type:'narration', text:'Agora vamos trabalhar com a respiração.' },
+      { type:'narration', text:'Inspire lentamente pelo nariz, contando mentalmente até quatro.' },
+      { type:'breathing', cycles: 4 },
+      { type:'narration', text:'Segure o ar suavemente por dois tempos.' },
+      { type:'narration', text:'E expire completamente pela boca, soltando todo o ar — contando até seis.' },
+      { type:'pause', text:'[Repita este ciclo 4 vezes antes de continuar]', seconds: 0 },
+      { type:'narration', text:'Cada expiração é uma oportunidade de soltar o que você carregou durante o dia.' },
+      { type:'narration', text:'Não há forma certa ou errada de fazer isso. Seu corpo já sabe o que precisa.' },
+    ]
+  },
+  {
+    title: 'Verificação do corpo', duration: '2 min',
+    sub: 'Escaneamento corporal e liberação de tensão',
+    blocks: [
+      { type:'instruction', text:'[Fale devagar — dê tempo para a pessoa realmente sentir cada região]' },
+      { type:'narration', text:'Agora, vamos fazer um percurso pelo seu corpo.' },
+      { type:'narration', text:'Comece pela testa. Perceba se há tensão ali. Se houver, apenas note — sem precisar resolver.' },
+      { type:'pause', text:'[pausa de 4 segundos]', seconds: 4 },
+      { type:'narration', text:'Desça para o maxilar. Muitas vezes ele está contraído sem que percebamos.' },
+      { type:'narration', text:'Permita que ele se afrouxe levemente.' },
+      { type:'pause', text:'[pausa de 4 segundos]', seconds: 4 },
+      { type:'narration', text:'Os ombros. Deixe-os afundar naturalmente. Não há nada que eles precisem segurar agora.' },
+      { type:'pause', text:'[pausa de 5 segundos]', seconds: 5 },
+      { type:'narration', text:'O peito. Sinta a expansão suave a cada respiração.' },
+      { type:'pause', text:'[pausa de 4 segundos]', seconds: 4 },
+      { type:'narration', text:'As mãos. Abra os dedos levemente. Solte qualquer rigidez.' },
+      { type:'pause', text:'[pausa de 3 segundos]', seconds: 3 },
+      { type:'narration', text:'Todo o seu corpo tem permissão para descansar agora.' },
+    ]
+  },
+  {
+    title: 'Processamento emocional', duration: '2 min',
+    sub: 'Reconhecimento e acolhimento do estado interno',
+    blocks: [
+      { type:'instruction', text:'[Esta é a parte mais importante. Fale com cuidado e calma.]' },
+      { type:'narration', text:'Observe como você está se sentindo neste momento — sem julgamento.' },
+      { type:'narration', text:'Pode ser cansaço. Pode ser tensão. Pode ser preocupação. Pode ser vazio.' },
+      { type:'pause', text:'[pausa de 5 segundos]', seconds: 5 },
+      { type:'narration', text:'Qualquer que seja o estado, ele é válido.' },
+      { type:'narration', text:'Você não precisa resolver isso agora. Só precisa reconhecer.' },
+      { type:'pause', text:'[pausa de 4 segundos]', seconds: 4 },
+      { type:'narration', text:'Se hoje foi pesado, você atravessou. E isso por si só merece reconhecimento.' },
+      { type:'narration', text:'Se você está exausto, seu sistema nervoso está pedindo atenção — não é fraqueza.' },
+      { type:'pause', text:'[pausa de 5 segundos]', seconds: 5 },
+      { type:'narration', text:'Respire mais uma vez — longa e profunda.' },
+      { type:'narration', text:'E ao expirar, solte a necessidade de dar conta de tudo agora.' },
+    ]
+  },
+  {
+    title: 'Encerramento e intenção', duration: '1–2 min',
+    sub: 'Retorno suave e ancoragem positiva',
+    blocks: [
+      { type:'instruction', text:'[Fale com leveza. O objetivo é trazer de volta com calma.]' },
+      { type:'narration', text:'Aos poucos, traga sua atenção de volta para o ambiente ao redor.' },
+      { type:'narration', text:'Sinta o peso do seu corpo no apoio — cadeira, cama, chão.' },
+      { type:'pause', text:'[pausa de 4 segundos]', seconds: 4 },
+      { type:'narration', text:'Mova os dedos das mãos e dos pés suavemente.' },
+      { type:'pause', text:'[pausa de 3 segundos]', seconds: 3 },
+      { type:'narration', text:'Quando estiver pronto, abra os olhos devagar.' },
+      { type:'pause', text:'[pausa de 5 segundos]', seconds: 5 },
+      { type:'narration', text:'Antes de se levantar, carregue esta sensação por um momento.' },
+      { type:'narration', text:'Seu sistema nervoso foi regulado. Seu corpo recebeu atenção.' },
+      { type:'narration', text:'Isso é cuidado. Isso é saúde.' },
+      { type:'pause', text:'[pausa de 3 segundos]', seconds: 3 },
+      { type:'narration', text:'Até a próxima vez.' },
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentSection = -1;
+let isPlaying = false;
+let totalSecs = 10 * 60;
+let elapsed = 0;
+let mainTimer = null;
+let pauseTimers = {};
+let guidedMode = false;
+
+// ── BUILD ─────────────────────────────────────────────────────────────────────
+function buildSections(openAll = false) {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+
+  SECTIONS.forEach((sec, si) => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    card.id = 'sec-card-'+si;
+
+    let bodyHTML = '<div class="script-body" id="sec-body-'+si+'">';
+    sec.blocks.forEach((block, bi) => {
+      if (block.type === 'breathing') {
+        bodyHTML += buildBreathing(si, bi, block.cycles);
+      } else if (block.type === 'pause' && block.seconds > 0) {
+        bodyHTML += `<div class="pause-indicator" id="pi-${si}-${bi}">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
+          <span>Pausa — ${block.seconds} segundos <span class="pause-countdown" id="pcd-${si}-${bi}"></span></span>
+          <button class="pause-timer-btn" onclick="startPauseTimer(${si},${bi},${block.seconds})">Iniciar</button>
+        </div>`;
+      } else if (block.type === 'pause') {
+        bodyHTML += `<div class="script-block"><span class="script-label pause">Instrução</span><div class="script-text pause-text">${block.text}</div></div>`;
+      } else if (block.type === 'instruction') {
+        bodyHTML += `<div class="script-block"><span class="script-label instruction">Direção</span><div class="script-text instruction-text">${block.text}</div></div>`;
+      } else {
+        bodyHTML += `<div class="script-block" id="sb-${si}-${bi}"><span class="script-label narration">Narração</span><div class="script-text">${block.text}</div></div>`;
+      }
+    });
+
+    bodyHTML += `<div class="section-actions">
+      <button class="btn-primary" onclick="completeSection(${si})" id="sbtn-${si}">
+        ${si < SECTIONS.length-1 ? 'Próxima seção' : 'Concluir áudio'}
+      </button>
+      ${si > 0 ? `<button class="btn-secondary" onclick="goSection(${si-1})">Voltar</button>` : ''}
+    </div></div>`;
+
+    card.innerHTML = `
+      <div class="section-top" onclick="toggleSection(${si})">
+        <div class="section-num idle" id="snum-${si}">${si+1}</div>
+        <div class="section-info">
+          <div class="section-title">${sec.title}</div>
+          <div class="section-sub">${sec.sub}</div>
+        </div>
+        <div class="section-duration">${sec.duration}</div>
+      </div>
+      ${bodyHTML}`;
+    container.appendChild(card);
+    if (openAll) document.getElementById('sec-body-'+si).classList.add('open');
+  });
+}
+
+function buildBreathing(si, bi, cycles) {
+  return `<div class="breathing-block" id="br-${si}-${bi}">
+    <div class="breathing-label">Respiração guiada — ${cycles} ciclos</div>
+    <div class="breathing-circle" id="br-circle-${si}-${bi}">
+      <div class="breathing-circle-inner"><span class="breathing-count" id="br-count-${si}-${bi}">4</span></div>
+    </div>
+    <div class="breathing-phase" id="br-phase-${si}-${bi}">Pronto para começar</div>
+    <div class="breathing-btns">
+      <button class="br-btn" onclick="startBreathing(${si},${bi},${cycles})">Iniciar</button>
+      <button class="br-btn secondary" onclick="stopBreathing(${si},${bi})">Parar</button>
+    </div>
+  </div>`;
+}
+
+// ── BREATHING ─────────────────────────────────────────────────────────────────
+let breathTimers = {};
+function startBreathing(si, bi, totalCycles) {
+  stopBreathing(si, bi);
+  let cycle = 0;
+  const phases = [
+    { label: 'Inspire...', count: 4, scale: 1.2 },
+    { label: 'Segure...', count: 2, scale: 1.2 },
+    { label: 'Expire...', count: 6, scale: 0.85 },
+  ];
+  let pi = 0, cnt = phases[0].count;
+
+  function tick() {
+    const countEl  = document.getElementById(`br-count-${si}-${bi}`);
+    const phaseEl  = document.getElementById(`br-phase-${si}-${bi}`);
+    const circleEl = document.getElementById(`br-circle-${si}-${bi}`);
+    if (!countEl) return;
+    countEl.textContent = cnt;
+    phaseEl.textContent = phases[pi].label;
+    circleEl.style.transform = `scale(${phases[pi].scale})`;
+    cnt--;
+    if (cnt < 0) {
+      pi = (pi+1) % 3;
+      if (pi === 0) { cycle++; if (cycle >= totalCycles) { stopBreathing(si,bi); phaseEl.textContent = `${totalCycles} ciclos concluídos ✓`; countEl.textContent=''; return; }}
+      cnt = phases[pi].count;
+    }
+  }
+  tick();
+  breathTimers[`${si}-${bi}`] = setInterval(tick, 1000);
+}
+
+function stopBreathing(si, bi) {
+  const key = `${si}-${bi}`;
+  if (breathTimers[key]) { clearInterval(breathTimers[key]); delete breathTimers[key]; }
+  const circleEl = document.getElementById(`br-circle-${si}-${bi}`);
+  if (circleEl) circleEl.style.transform = 'scale(1)';
+}
+
+// ── PAUSE TIMERS ───────────────────────────────────────────────────────────────
+function startPauseTimer(si, bi, secs) {
+  const key = `${si}-${bi}`;
+  if (pauseTimers[key]) clearInterval(pauseTimers[key]);
+  let remaining = secs;
+  const el = document.getElementById(`pcd-${si}-${bi}`);
+  if (el) el.textContent = `(${remaining}s)`;
+  pauseTimers[key] = setInterval(() => {
+    remaining--;
+    if (el) el.textContent = remaining > 0 ? `(${remaining}s)` : '✓';
+    if (remaining <= 0) { clearInterval(pauseTimers[key]); delete pauseTimers[key]; }
+  }, 1000);
+}
+
+// ── SECTIONS ───────────────────────────────────────────────────────────────────
+function goSection(idx) {
+  SECTIONS.forEach((_,i) => {
+    document.getElementById('sec-card-'+i).classList.remove('active-section');
+    if (!guidedMode) return;
+    document.getElementById('sec-body-'+i).classList.remove('open');
+  });
+  currentSection = idx;
+  const card = document.getElementById('sec-card-'+idx);
+  card.classList.add('active-section');
+  document.getElementById('sec-body-'+idx).classList.add('open');
+  document.getElementById('snum-'+idx).className = 'section-num active';
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('player-section').textContent = SECTIONS[idx].title;
+  document.getElementById('player-status').textContent = `Seção ${idx+1} de ${SECTIONS.length}`;
+  updateAudioProgress();
+}
+
+function toggleSection(idx) {
+  if (guidedMode) return;
+  document.getElementById('sec-body-'+idx).classList.toggle('open');
+}
+
+function completeSection(idx) {
+  document.getElementById('snum-'+idx).className = 'section-num done';
+  document.getElementById('sec-card-'+idx).classList.remove('active-section');
+  document.getElementById('sec-card-'+idx).classList.add('completed-section');
+  if (idx < SECTIONS.length-1) { goSection(idx+1); }
+  else {
+    clearInterval(mainTimer); isPlaying = false; updatePlayBtn();
+    document.getElementById('completion-card').classList.add('show');
+    document.getElementById('completion-card').scrollIntoView({ behavior:'smooth' });
+    showToast('Regulação emocional concluída.');
+  }
+}
+
+function updateAudioProgress() {
+  const pct = currentSection < 0 ? 0 : ((currentSection+1)/SECTIONS.length)*100;
+  document.getElementById('audio-progress').style.width = pct+'%';
+}
+
+// ── PLAYER ────────────────────────────────────────────────────────────────────
+function togglePlay() {
+  if (!isPlaying) {
+    isPlaying = true;
+    if (currentSection < 0) startGuided();
+    mainTimer = setInterval(() => {
+      elapsed++;
+      const rem = Math.max(0, totalSecs - elapsed);
+      const m = Math.floor(rem/60).toString().padStart(2,'0');
+      const s = (rem%60).toString().padStart(2,'0');
+      document.getElementById('player-timer').textContent = m+':'+s;
+    }, 1000);
+  } else {
+    isPlaying = false;
+    clearInterval(mainTimer);
+  }
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  const btn = document.getElementById('play-btn');
+  const icon = document.getElementById('play-icon');
+  const status = document.getElementById('player-status');
+  if (isPlaying) {
+    btn.className = 'play-btn playing';
+    icon.innerHTML = '<line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/>';
+    status.textContent = 'Em andamento...';
+  } else {
+    btn.className = 'play-btn paused';
+    icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+    if (currentSection >= 0) status.textContent = 'Pausado';
+  }
+}
+
+function startGuided() {
+  guidedMode = true;
+  buildSections(false);
+  isPlaying = true;
+  mainTimer = setInterval(() => {
+    elapsed++;
+    const rem = Math.max(0, totalSecs - elapsed);
+    const m = Math.floor(rem/60).toString().padStart(2,'0');
+    const s = (rem%60).toString().padStart(2,'0');
+    document.getElementById('player-timer').textContent = m+':'+s;
+  }, 1000);
+  updatePlayBtn();
+  goSection(0);
+}
+
+function showAll() {
+  guidedMode = false;
+  buildSections(true);
+  SECTIONS.forEach((_,i) => {
+    document.getElementById('sec-card-'+i).classList.remove('locked');
+  });
+  document.getElementById('player-status').textContent = 'Roteiro completo';
+  document.getElementById('player-section').textContent = 'Visualizando todas as seções';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+buildSections(false);
+</script>
+</body>
+</html>

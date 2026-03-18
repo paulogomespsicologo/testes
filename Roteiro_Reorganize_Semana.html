@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reorganize Sua Semana em 40 Minutos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#1B2A4A; --navy-mid:#243659; --teal:#2B8A8A; --teal-light:#3AACAC;
+  --teal-pale:#D0ECEC; --green:#2E7D52; --green-pale:#D4EDE0; --cream:#F4F7F6;
+  --muted:#7A9090; --gold:#C8962A; --gold-pale:#FDF3DC; --red:#C0392B;
+  --border:#D0DDD8; --text:#1B2A4A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.app-header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.header-inner{max-width:860px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.header-brand h1{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;color:#fff;}
+.header-brand p{font-size:.65rem;color:var(--teal-light);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.header-badge{background:var(--teal);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;white-space:nowrap;}
+.teal-bar{height:4px;background:linear-gradient(90deg,var(--teal),var(--green));}
+
+/* PROGRESS HEADER */
+.progress-wrap{background:var(--navy-mid);padding:16px 20px;}
+.progress-inner{max-width:860px;margin:0 auto;}
+.progress-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.progress-label{font-size:.72rem;font-weight:600;color:var(--teal-light);letter-spacing:.08em;text-transform:uppercase;}
+.progress-timer{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#fff;line-height:1;}
+.progress-bar-bg{height:6px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:3px;transition:width .5s ease;}
+.steps-dots{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.step-dot{width:28px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);transition:background .3s;}
+.step-dot.done{background:var(--green);}
+.step-dot.active{background:var(--teal);}
+
+/* MAIN */
+.main{max-width:860px;margin:0 auto;padding:28px 20px 60px;}
+
+/* INTRO CARD */
+.intro-card{background:var(--navy);border-radius:18px;padding:28px 32px;margin-bottom:28px;position:relative;overflow:hidden;}
+.intro-card::after{content:'';position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:rgba(43,138,138,.2);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:#fff;margin-bottom:10px;}
+.intro-card p{font-size:.85rem;color:var(--teal-light);line-height:1.7;margin-bottom:16px;}
+.intro-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border-radius:20px;padding:6px 14px;font-size:.74rem;color:rgba(255,255,255,.75);}
+.meta-chip svg{width:14px;height:14px;stroke:var(--teal-light);fill:none;stroke-width:2;flex-shrink:0;}
+.start-btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;border:none;border-radius:12px;padding:13px 28px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:background .2s;margin-top:18px;}
+.start-btn:hover{background:var(--teal-light);}
+.start-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;}
+
+/* STEP CARD */
+.step-card{background:#fff;border-radius:18px;border:1.5px solid var(--border);overflow:hidden;margin-bottom:16px;transition:box-shadow .2s,opacity .3s;}
+.step-card.locked{opacity:.45;pointer-events:none;}
+.step-card.active-step{border-color:var(--teal);box-shadow:0 0 0 3px rgba(43,138,138,.12);}
+.step-card.completed-step{border-color:var(--green);background:#FAFFFE;}
+
+.step-header{padding:18px 22px;display:flex;align-items:center;gap:16px;cursor:pointer;}
+.step-num-wrap{flex-shrink:0;}
+.step-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;font-family:'DM Sans',sans-serif;transition:all .3s;}
+.step-num.pending{background:var(--cream);color:var(--muted);border:2px solid var(--border);}
+.step-num.running{background:var(--teal);color:#fff;}
+.step-num.done{background:var(--green);color:#fff;}
+.step-num.done::after{content:'✓';}
+.step-num.done span{display:none;}
+
+.step-meta{flex:1;min-width:0;}
+.step-title{font-size:.96rem;font-weight:600;color:var(--navy);}
+.step-subtitle{font-size:.74rem;color:var(--muted);margin-top:3px;}
+.step-time-badge{flex-shrink:0;background:var(--gold-pale);color:var(--gold);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid #E8D090;white-space:nowrap;}
+.step-time-badge.running-badge{background:var(--teal-pale);color:var(--teal);border-color:var(--teal);}
+.step-time-badge.done-badge{background:var(--green-pale);color:var(--green);border-color:#9ACCA8;}
+
+.step-body{padding:0 22px 20px;display:none;}
+.step-body.open{display:block;}
+
+/* Timer inside step */
+.step-timer-bar{height:4px;background:var(--cream);border-radius:2px;margin-bottom:18px;overflow:hidden;}
+.step-timer-fill{height:100%;background:var(--teal);width:0%;transition:width 1s linear;}
+
+/* Instructions */
+.instruction-block{margin-bottom:18px;}
+.instruction-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+
+.checklist-item{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--cream);}
+.checklist-item:last-child{border-bottom:none;}
+.ci-check{width:20px;height:20px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;appearance:none;-webkit-appearance:none;background:#fff;margin-top:1px;transition:all .15s;}
+.ci-check:checked{background:var(--teal);border-color:var(--teal);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l3 3 5-6' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-size:70%;background-repeat:no-repeat;background-position:center;}
+.ci-text{font-size:.85rem;color:var(--navy);line-height:1.55;flex:1;}
+.ci-text.checked-text{text-decoration:line-through;color:var(--muted);}
+
+/* Input areas */
+.input-label{font-size:.72rem;font-weight:600;color:var(--navy);margin-bottom:6px;}
+.step-textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--text);resize:vertical;min-height:80px;transition:border-color .15s;background:#fff;}
+.step-textarea:focus{outline:none;border-color:var(--teal);}
+
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:520px){.input-row{grid-template-columns:1fr;}}
+.input-field{border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--text);width:100%;background:#fff;}
+.input-field:focus{outline:none;border-color:var(--teal);}
+
+/* Priority list */
+.priority-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.priority-item{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:10px 14px;}
+.priority-badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0;}
+.priority-input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--text);}
+.priority-input:focus{outline:none;}
+
+/* Highlight box */
+.highlight-box{background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:var(--navy);line-height:1.65;}
+.highlight-box strong{color:var(--teal);}
+
+.gold-box{background:var(--gold-pale);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:var(--navy);line-height:1.65;}
+
+/* Step actions */
+.step-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.btn-primary{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:var(--navy);}
+.btn-secondary{background:var(--cream);color:var(--navy);border:1.5px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal);}
+.timer-display{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--teal);display:flex;align-items:center;gap:6px;}
+.timer-display svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-width:2;}
+
+/* COMPLETION */
+.completion-card{background:var(--navy);border-radius:18px;padding:32px;text-align:center;margin-top:28px;display:none;}
+.completion-card.show{display:block;}
+.completion-icon{width:64px;height:64px;background:rgba(43,138,138,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.completion-icon svg{width:32px;height:32px;stroke:var(--teal-light);fill:none;stroke-width:2;stroke-linecap:round;}
+.completion-card h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:#fff;margin-bottom:12px;}
+.completion-card p{font-size:.85rem;color:var(--teal-light);line-height:1.7;margin-bottom:20px;}
+.completion-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-white{background:#fff;color:var(--navy);border:none;border-radius:12px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn-white:hover{background:var(--teal-pale);}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:20px;background:var(--navy);color:#fff;padding:11px 18px;border-radius:12px;font-size:.8rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:999;border-left:4px solid var(--teal);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+footer{text-align:center;padding:24px 20px;font-size:.68rem;color:var(--muted);border-top:1px solid var(--border);margin-top:20px;}
+footer strong{color:var(--navy);}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <h1>Reorganize Sua Semana</h1>
+      <p>Manual Anti-Burnout · Paulo Gomes · @paulogomespsicologo</p>
+    </div>
+    <span class="header-badge">Bônus 4</span>
+  </div>
+  <div class="teal-bar"></div>
+</header>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <div class="progress-top">
+      <span class="progress-label" id="progress-label">Pronto para começar</span>
+      <span class="progress-timer" id="total-timer">40:00</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="steps-dots" id="steps-dots"></div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- INTRO -->
+  <div class="intro-card" id="intro-card">
+    <h2>Sua semana, reorganizada em 40 minutos.</h2>
+    <p>Este roteiro guiado vai te levar, passo a passo, por um processo de reorganização semanal baseado em princípios neurocompatíveis — sem sobrecarga, sem perfeccionismo, com clareza.</p>
+    <div class="intro-meta">
+      <div class="meta-chip">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        40 minutos
+      </div>
+      <div class="meta-chip">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        6 etapas guiadas
+      </div>
+      <div class="meta-chip">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Salvo automaticamente
+      </div>
+    </div>
+    <button class="start-btn" onclick="startSession()">
+      <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Iniciar reorganização
+    </button>
+  </div>
+
+  <!-- STEPS -->
+  <div id="steps-container"></div>
+
+  <!-- COMPLETION -->
+  <div class="completion-card" id="completion-card">
+    <div class="completion-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Semana reorganizada!</h2>
+    <p>Você dedicou 40 minutos para cuidar da sua semana com inteligência.<br>Isso já é um ato concreto de proteção da sua energia mental.</p>
+    <p style="margin-bottom:0;font-size:.78rem;color:var(--muted);">Retorne a este roteiro toda segunda-feira ou domingo à noite.</p>
+    <div class="completion-actions" style="margin-top:22px;">
+      <button class="btn-white" onclick="resetSession()">Refazer na próxima semana</button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Manual Anti-Burnout</strong> · Paulo Gomes · CRP-11/13235 · @paulogomespsicologo<br>
+  <span style="font-size:.62rem;margin-top:4px;display:block;">Dados salvos apenas neste navegador.</span>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STEP DEFINITIONS ─────────────────────────────────────────────────────────
+const STEPS = [
+  {
+    id: 's1', title: 'Esvazie a mente', minutes: 5,
+    subtitle: 'Coloque para fora tudo que está ocupando espaço mental',
+    color: 'var(--teal)',
+    content: `
+      <div class="highlight-box">
+        <strong>Por que isso importa:</strong> O cérebro sobrecarregado tenta manter todas as tarefas em memória ativa — isso consome energia cognitiva mesmo quando você não está trabalhando. Externalizar libera espaço.
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Brain dump — escreva tudo sem filtro</div>
+        <div class="input-label">Liste aqui tudo que está na sua cabeça (tarefas, compromissos, preocupações, pendências):</div>
+        <textarea class="step-textarea" id="brain-dump" rows="6" placeholder="Escreva sem ordem, sem julgamento. Tudo que vier à mente..." style="min-height:120px;"></textarea>
+      </div>
+      <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Escrevi sem filtrar ou julgar o que apareceu</span></div>
+      <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Incluí tanto trabalho quanto vida pessoal</span></div>
+      <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Incluí pendências antigas que ainda ocupam espaço mental</span></div>
+    `
+  },
+  {
+    id: 's2', title: 'Classifique e elimine', minutes: 8,
+    subtitle: 'Separe o que é realmente seu do que pode ser eliminado ou delegado',
+    color: 'var(--green)',
+    content: `
+      <div class="highlight-box">
+        <strong>Princípio:</strong> Nem tudo que está na sua lista é sua responsabilidade real. Antes de planejar como fazer, questione se precisa ser feito — e por você.
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Filtragem estratégica</div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Reli meu brain dump e marquei o que posso eliminar sem consequências reais</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Identifiquei o que posso delegar ou pedir ajuda</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Separei o que é autoexigência interna do que é demanda real</span></div>
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">O que vou eliminar ou delegar esta semana</div>
+        <textarea class="step-textarea" id="eliminar" placeholder="Liste aqui o que você vai tirar da sua responsabilidade ou delegar..."></textarea>
+      </div>
+      <div class="gold-box">
+        <strong>Pergunta-chave:</strong> "Se eu não fizer isso esta semana, qual é o impacto real?" — se a resposta for pequena, elimine.
+      </div>
+    `
+  },
+  {
+    id: 's3', title: 'Defina as 3 prioridades', minutes: 7,
+    subtitle: 'Escolha as tarefas que realmente vão mover sua semana',
+    color: 'var(--gold)',
+    content: `
+      <div class="highlight-box">
+        <strong>Por que apenas 3?</strong> Com mais de 3 prioridades por semana, o cérebro distribui foco igualmente — e perde eficácia. Hierarquizar é proteger energia.
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Minhas 3 prioridades absolutas desta semana</div>
+        <div class="priority-list">
+          <div class="priority-item"><div class="priority-badge" style="background:var(--teal)">1</div><input class="priority-input" type="text" id="p1" placeholder="A tarefa mais importante da semana..." data-save="p1"></div>
+          <div class="priority-item"><div class="priority-badge" style="background:var(--green)">2</div><input class="priority-input" type="text" id="p2" placeholder="Segunda prioridade..." data-save="p2"></div>
+          <div class="priority-item"><div class="priority-badge" style="background:var(--gold)">3</div><input class="priority-input" type="text" id="p3" placeholder="Terceira prioridade..." data-save="p3"></div>
+        </div>
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Pergunta de validação</div>
+        <div class="input-label">Se ao final desta semana eu tiver feito apenas essas 3 coisas, como vou me sentir?</div>
+        <textarea class="step-textarea" id="validacao" placeholder="Escreva sua resposta honesta aqui..."></textarea>
+      </div>
+    `
+  },
+  {
+    id: 's4', title: 'Distribua por energia', minutes: 8,
+    subtitle: 'Aloque cada tarefa no momento certo, respeitando seus ciclos biológicos',
+    color: 'var(--teal)',
+    content: `
+      <div class="highlight-box">
+        <strong>Princípio neurocompatível:</strong> Produtividade inteligente acompanha variações de energia — não tenta lutar contra elas. Tarefas erradas no momento errado geram esforço dobrado.
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Meu mapa de energia semanal</div>
+        <div class="input-label">Em qual período meu foco é naturalmente maior?</div>
+        <div class="input-row">
+          <input class="input-field" type="text" id="peak" placeholder="Ex: manhã, das 8h às 11h" data-save="peak">
+          <input class="input-field" type="text" id="low" placeholder="Período de menor energia..." data-save="low">
+        </div>
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Distribuição estratégica</div>
+        <div class="input-label">Alta energia → tarefas estratégicas e criativas:</div>
+        <textarea class="step-textarea" id="alta-energia" placeholder="Quais tarefas vou reservar para meu pico de energia?" style="min-height:65px;" data-save="alta-energia"></textarea>
+        <div class="input-label" style="margin-top:10px;">Energia média → tarefas operacionais:</div>
+        <textarea class="step-textarea" id="media-energia" placeholder="E-mails, reuniões, respostas, processos rotineiros..." style="min-height:65px;" data-save="media-energia"></textarea>
+        <div class="input-label" style="margin-top:10px;">Baixa energia → tarefas simples ou pausa intencional:</div>
+        <textarea class="step-textarea" id="baixa-energia" placeholder="Leitura leve, organização, descanso ativo..." style="min-height:65px;" data-save="baixa-energia"></textarea>
+      </div>
+    `
+  },
+  {
+    id: 's5', title: 'Defina margem e limites', minutes: 7,
+    subtitle: 'Proteja sua agenda dos imprevistos e do excesso',
+    color: 'var(--green)',
+    content: `
+      <div class="highlight-box">
+        <strong>Agenda sem margem = ansiedade garantida.</strong> Imprevistos existem. Quem não planeja margem inevitavelmente ultrapassa seus limites — e isso alimenta o ciclo de esgotamento.
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Meus limites inegociáveis desta semana</div>
+        <div class="input-row">
+          <div>
+            <div class="input-label">Horário máximo de encerramento diário:</div>
+            <input class="input-field" type="time" id="horario-limite" data-save="horario-limite">
+          </div>
+          <div>
+            <div class="input-label">Máximo de tarefas principais por dia:</div>
+            <input class="input-field" type="number" id="max-tarefas" min="1" max="10" placeholder="Ex: 3" data-save="max-tarefas">
+          </div>
+        </div>
+        <div class="input-label" style="margin-top:10px;">Dia(s) de pausa mental garantida:</div>
+        <input class="input-field" id="pausa-dia" placeholder="Ex: sábado à tarde, domingo inteiro..." data-save="pausa-dia">
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Margem de segurança</div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Deixei pelo menos 1 bloco de tempo livre por dia para imprevistos</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Não marquei compromissos em todos os horários disponíveis</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Planejei um horário de transição entre trabalho e vida pessoal</span></div>
+      </div>
+      <div class="gold-box">
+        <strong>Lembre:</strong> Margem não é tempo perdido — é prevenção de esgotamento.
+      </div>
+    `
+  },
+  {
+    id: 's6', title: 'Revisão e intenção', minutes: 5,
+    subtitle: 'Consolide o plano e defina sua intenção para a semana',
+    color: 'var(--navy)',
+    content: `
+      <div class="highlight-box">
+        <strong>Último passo:</strong> Uma semana planejada com intenção clara reduz a ansiedade antecipatória — seu cérebro sabe que há um plano, e isso já regula o sistema nervoso.
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Revisão rápida</div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Tenho no máximo 3 prioridades claras para esta semana</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Aloquei tarefas respeitando meu mapa de energia</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Tenho limites definidos (horário, quantidade, pausa)</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Eliminei ou deleguei o que não era minha responsabilidade real</span></div>
+        <div class="checklist-item"><input type="checkbox" class="ci-check" onchange="ciCheck(this)"><span class="ci-text">Inclui margem de segurança na agenda</span></div>
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Minha intenção para esta semana</div>
+        <div class="input-label">Complete a frase:</div>
+        <textarea class="step-textarea" id="intencao" placeholder="Esta semana, eu escolho priorizar..." data-save="intencao"></textarea>
+      </div>
+      <div class="instruction-block">
+        <div class="instruction-title">Uma coisa que vou proteger independente do que aconteça:</div>
+        <input class="input-field" id="proteger" placeholder="Ex: minha pausa do almoço, meu horário de dormir..." data-save="proteger">
+      </div>
+    `
+  },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let currentStep = -1;
+let sessionStarted = false;
+let totalSeconds = 40 * 60;
+let elapsedSeconds = 0;
+let totalTimer = null;
+let stepTimers = {};
+
+function save(k, v) { try { localStorage.setItem('sem40_'+k, JSON.stringify(v)); } catch(e){} }
+function load(k, d) { try { const v=localStorage.getItem('sem40_'+k); return v!==null?JSON.parse(v):d; } catch(e){return d;} }
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function buildSteps() {
+  const container = document.getElementById('steps-container');
+  const dotsEl = document.getElementById('steps-dots');
+  container.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  STEPS.forEach((step, i) => {
+    const status = load('step_status_'+i, 'pending');
+    const card = document.createElement('div');
+    card.className = 'step-card locked';
+    card.id = 'card-'+i;
+    card.innerHTML = `
+      <div class="step-header" onclick="toggleStep(${i})">
+        <div class="step-num-wrap">
+          <div class="step-num ${status}" id="num-${i}"><span>${i+1}</span></div>
+        </div>
+        <div class="step-meta">
+          <div class="step-title">${step.title}</div>
+          <div class="step-subtitle">${step.subtitle}</div>
+        </div>
+        <div class="step-time-badge ${status==='done'?'done-badge':''}" id="badge-${i}">${step.minutes} min</div>
+      </div>
+      <div class="step-body" id="body-${i}">
+        <div class="step-timer-bar"><div class="step-timer-fill" id="fill-${i}"></div></div>
+        ${step.content}
+        <div class="step-actions">
+          <div class="timer-display" id="timer-${i}">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="timer-text-${i}">${step.minutes}:00</span>
+          </div>
+          <button class="btn-primary" onclick="completeStep(${i})" id="btn-${i}">
+            ${i < STEPS.length-1 ? 'Concluir e avançar' : 'Finalizar reorganização'}
+          </button>
+          ${i > 0 ? `<button class="btn-secondary" onclick="goToStep(${i-1})">Voltar</button>` : ''}
+        </div>
+      </div>`;
+    container.appendChild(card);
+
+    // Dot
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (status==='done'?' done':'');
+    dot.id = 'dot-'+i;
+    dotsEl.appendChild(dot);
+  });
+
+  // Restore saved text fields
+  STEPS.forEach((step, i) => {
+    const body = document.getElementById('body-'+i);
+    body.querySelectorAll('[data-save]').forEach(el => {
+      const val = load('field_'+el.dataset.save, '');
+      if (val) el.value = val;
+      el.addEventListener('input', () => save('field_'+el.dataset.save, el.value));
+    });
+    // Also save textareas without data-save by id
+    body.querySelectorAll('textarea, input[type=text], input[type=time], input[type=number]').forEach(el => {
+      if (!el.dataset.save && el.id) {
+        const val = load('field_'+el.id, '');
+        if (val) el.value = val;
+        el.addEventListener('input', () => save('field_'+el.id, el.value));
+      }
+    });
+  });
+}
+
+// ── SESSION ───────────────────────────────────────────────────────────────────
+function startSession() {
+  sessionStarted = true;
+  document.getElementById('intro-card').style.display = 'none';
+  save('session_started', true);
+
+  // Start total timer
+  elapsedSeconds = load('elapsed', 0);
+  updateTotalTimer();
+  totalTimer = setInterval(() => {
+    elapsedSeconds++;
+    save('elapsed', elapsedSeconds);
+    updateTotalTimer();
+  }, 1000);
+
+  goToStep(0);
+}
+
+function updateTotalTimer() {
+  const remaining = Math.max(0, totalSeconds - elapsedSeconds);
+  const m = Math.floor(remaining/60).toString().padStart(2,'0');
+  const s = (remaining%60).toString().padStart(2,'0');
+  document.getElementById('total-timer').textContent = m+':'+s;
+  const pct = Math.min(100, (elapsedSeconds/totalSeconds)*100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  const done = STEPS.filter((_,i)=>load('step_status_'+i,'pending')==='done').length;
+  document.getElementById('progress-label').textContent =
+    done===0 ? 'Etapa 1 de 6' : `${done} de 6 etapas concluídas`;
+}
+
+function goToStep(idx) {
+  // Close all
+  STEPS.forEach((_,i) => {
+    document.getElementById('card-'+i).classList.remove('active-step');
+    document.getElementById('body-'+i).classList.remove('open');
+  });
+
+  currentStep = idx;
+  const card = document.getElementById('card-'+idx);
+  card.classList.remove('locked');
+  card.classList.add('active-step');
+  document.getElementById('body-'+idx).classList.add('open');
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('dot-'+idx).classList.add('active');
+
+  // Step timer
+  startStepTimer(idx);
+  save('current_step', idx);
+}
+
+function toggleStep(idx) {
+  if (!sessionStarted) return;
+  const card = document.getElementById('card-'+idx);
+  if (card.classList.contains('locked')) return;
+  const body = document.getElementById('body-'+idx);
+  body.classList.toggle('open');
+}
+
+function startStepTimer(idx) {
+  if (stepTimers[idx]) return; // already running
+  const stepSecs = STEPS[idx].minutes * 60;
+  let elapsed = load('step_elapsed_'+idx, 0);
+
+  stepTimers[idx] = setInterval(() => {
+    elapsed++;
+    save('step_elapsed_'+idx, elapsed);
+    const remaining = Math.max(0, stepSecs - elapsed);
+    const m = Math.floor(remaining/60).toString().padStart(2,'0');
+    const s = (remaining%60).toString().padStart(2,'0');
+    const el = document.getElementById('timer-text-'+idx);
+    if (el) el.textContent = m+':'+s;
+    const fill = document.getElementById('fill-'+idx);
+    if (fill) fill.style.width = Math.min(100, (elapsed/stepSecs)*100)+'%';
+    if (remaining === 0) {
+      clearInterval(stepTimers[idx]);
+      showToast('Tempo da etapa encerrado — avance quando estiver pronto.');
+    }
+  }, 1000);
+}
+
+function completeStep(idx) {
+  clearInterval(stepTimers[idx]);
+  save('step_status_'+idx, 'done');
+
+  // Update UI
+  const num = document.getElementById('num-'+idx);
+  num.className = 'step-num done';
+  const badge = document.getElementById('badge-'+idx);
+  badge.className = 'step-time-badge done-badge';
+  badge.textContent = '✓ Concluído';
+  document.getElementById('card-'+idx).classList.remove('active-step');
+  document.getElementById('card-'+idx).classList.add('completed-step');
+  document.getElementById('dot-'+idx).classList.remove('active');
+  document.getElementById('dot-'+idx).classList.add('done');
+
+  if (idx < STEPS.length - 1) {
+    document.getElementById('card-'+(idx+1)).classList.remove('locked');
+    goToStep(idx+1);
+  } else {
+    // All done
+    clearInterval(totalTimer);
+    document.getElementById('completion-card').classList.add('show');
+    document.getElementById('completion-card').scrollIntoView({ behavior:'smooth' });
+    showToast('Semana reorganizada! Parabéns.');
+  }
+}
+
+function ciCheck(el) {
+  const span = el.nextElementSibling;
+  if (el.checked) span.classList.add('checked-text');
+  else span.classList.remove('checked-text');
+}
+
+function resetSession() {
+  if (!confirm('Isso limpará todos os dados desta sessão. Confirmar?')) return;
+  STEPS.forEach((_,i) => {
+    localStorage.removeItem('sem40_step_status_'+i);
+    localStorage.removeItem('sem40_step_elapsed_'+i);
+  });
+  localStorage.removeItem('sem40_elapsed');
+  localStorage.removeItem('sem40_current_step');
+  localStorage.removeItem('sem40_session_started');
+  location.reload();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+buildSteps();
+const wasStarted = load('session_started', false);
+if (wasStarted) {
+  sessionStarted = true;
+  document.getElementById('intro-card').style.display = 'none';
+  elapsedSeconds = load('elapsed', 0);
+  updateTotalTimer();
+  totalTimer = setInterval(() => {
+    elapsedSeconds++;
+    save('elapsed', elapsedSeconds);
+    updateTotalTimer();
+  }, 1000);
+  const cs = load('current_step', 0);
+  // Unlock completed steps
+  for (let i = 0; i <= cs; i++) {
+    document.getElementById('card-'+i).classList.remove('locked');
+  }
+  goToStep(cs);
+}
+</script>
+</body>
+</html>
