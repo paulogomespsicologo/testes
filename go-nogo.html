@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Go/No-Go – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow-x:hidden;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;}
+
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes flash-green{0%{background:rgba(109,196,74,.3)}100%{background:transparent}}
+@keyframes flash-red{0%{background:rgba(192,58,58,.3)}100%{background:transparent}}
+@keyframes shrink{from{width:100%}to{width:0%}}
+
+/* ══ INTRO ══ */
+#s-intro{animation:rise .4s ease both;}
+.intro-header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.intro-header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(109,196,74,.2) 0%,transparent 70%);}
+.intro-header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(192,58,58,.15) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.intro-header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,50px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.intro-header h1 strong{font-weight:600;font-style:normal;}
+.intro-header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+.intro-body{max-width:660px;margin:0 auto;padding:32px 16px 60px;}
+
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;margin-bottom:16px;box-shadow:0 4px 20px rgba(27,58,92,.07);}
+.info-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:14px;color:var(--navy);}
+
+/* stimulus preview */
+.stim-demo{display:flex;align-items:center;justify-content:center;gap:28px;margin:16px 0;}
+.stim-box{text-align:center;}
+.stim-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin:0 auto 8px;}
+.stim-label{font-size:12px;color:var(--muted);}
+.stim-arrow{font-size:20px;color:var(--muted);}
+
+.rule-row{display:flex;gap:10px;align-items:center;margin-bottom:10px;font-size:13px;color:var(--muted);line-height:1.6;}
+.rule-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+.stats-row{display:flex;gap:12px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+
+/* ══ TASK ══ */
+#s-task{background:#0D1B2A;position:relative;overflow:hidden;}
+.task-bar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,27,46,.95);backdrop-filter:blur(8px);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);}
+.tb-block{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase;}
+.tb-block span{color:#fff;font-weight:500;}
+.tb-timer{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--teal);line-height:1;}
+.tb-score{text-align:right;}
+.tb-score .ts-val{font-size:14px;color:#fff;font-weight:500;display:block;}
+.tb-score .ts-lbl{font-size:10px;color:rgba(255,255,255,.4);}
+
+/* progress */
+.task-progress{position:fixed;top:52px;left:0;right:0;z-index:100;height:3px;background:rgba(255,255,255,.08);}
+.task-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--green));transition:width .2s;}
+
+/* arena */
+.arena{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px;gap:20px;cursor:pointer;user-select:none;}
+.arena.flash-g{animation:flash-green .25s ease;}
+.arena.flash-r{animation:flash-red .25s ease;}
+
+/* stimulus */
+.stimulus{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:900;transition:all .1s;box-shadow:0 0 60px rgba(0,0,0,.5);}
+.stimulus.go{background:var(--green);color:#fff;box-shadow:0 0 60px rgba(109,196,74,.4);}
+.stimulus.nogo{background:var(--red);color:#fff;box-shadow:0 0 60px rgba(192,58,58,.4);}
+.stimulus.hidden{opacity:0;transform:scale(.7);}
+.stimulus.show{animation:pop .2s ease both;}
+
+.stim-hint{font-size:13px;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;margin-top:8px;}
+
+/* response timer bar */
+.resp-timer{width:200px;height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;}
+.resp-timer-fill{height:100%;background:var(--teal);border-radius:99px;}
+
+/* feedback flash */
+.feedback-txt{font-size:16px;font-weight:600;letter-spacing:1px;text-transform:uppercase;min-height:24px;color:transparent;}
+.feedback-txt.correct{color:var(--green);}
+.feedback-txt.wrong{color:var(--red);}
+.feedback-txt.miss{color:var(--amber);}
+
+/* tap instruction */
+.tap-hint{position:fixed;bottom:30px;left:0;right:0;text-align:center;font-size:13px;color:rgba(255,255,255,.35);pointer-events:none;}
+
+/* countdown overlay */
+.countdown-overlay{position:fixed;inset:0;background:rgba(13,27,46,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;}
+.cd-num{font-family:'Cormorant Garamond',serif;font-size:120px;font-weight:300;color:#fff;line-height:1;animation:pop .4s ease both;}
+.cd-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:10px;letter-spacing:2px;text-transform:uppercase;}
+
+/* block complete */
+.block-complete{position:fixed;inset:0;background:rgba(13,27,46,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:300;}
+.block-complete.show{display:flex;}
+.bc-card{background:var(--card);border-radius:20px;padding:36px 32px;text-align:center;max-width:380px;width:90%;animation:pop .4s ease both;}
+.bc-card h2{font-family:'Cormorant Garamond',serif;font-size:26px;margin-bottom:6px;}
+.bc-card p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.65;}
+.bc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.bc-stat{background:var(--bg);border-radius:10px;padding:10px;}
+.bc-stat strong{display:block;font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;}
+.bc-stat span{font-size:11px;color:var(--muted);}
+
+/* ══ RESULTS ══ */
+#s-results{animation:rise .4s ease both;}
+.results-wrap{max-width:700px;margin:0 auto;padding:28px 16px 60px;}
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(109,196,74,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.hero-metrics{display:flex;gap:20px;margin-top:18px;flex-wrap:wrap;}
+.hm strong{display:block;font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;line-height:1;}
+.hm span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.big-value{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;line-height:1;}
+.norm-bar-bg{height:12px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);position:relative;margin:10px 0 4px;}
+.norm-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.norm-marker{position:absolute;top:-4px;width:3px;height:20px;border-radius:99px;transform:translateX(-50%);}
+.norm-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* block breakdown */
+.block-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.block-row:last-child{border-bottom:none;}
+.br-label{min-width:70px;font-size:12px;color:var(--muted);}
+.br-bar-bg{flex:1;height:7px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.br-bar-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+.br-val{font-size:12px;font-weight:500;min-width:50px;text-align:right;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:20px;font-size:13px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){.stimulus{width:130px;height:130px;font-size:48px;}}
+</style>
+</head>
+<body>
+
+<!-- ══ INTRO ══ -->
+<div class="screen active" id="s-intro">
+  <div class="intro-header">
+    <div class="eyebrow">Avaliação Neuropsicológica</div>
+    <h1>Teste <strong>Go/No-Go</strong></h1>
+    <p>Avaliação do controle inibitório, impulsividade e atenção sustentada através da capacidade de responder e inibir respostas a estímulos específicos.</p>
+    <div class="credit">Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com</div>
+  </div>
+
+  <div class="intro-body">
+    <div class="info-card">
+      <h3>Como funciona</h3>
+      <div class="stim-demo">
+        <div class="stim-box">
+          <div class="stim-circle" style="background:var(--green);color:#fff;">●</div>
+          <div class="stim-label" style="color:var(--green);font-weight:600">GO</div>
+        </div>
+        <div class="stim-arrow">→</div>
+        <div class="stim-box">
+          <div style="font-size:32px">👆</div>
+          <div class="stim-label">Pressione / Toque</div>
+        </div>
+        <div style="width:1px;height:60px;background:var(--border);margin:0 8px;"></div>
+        <div class="stim-box">
+          <div class="stim-circle" style="background:var(--red);color:#fff;">✕</div>
+          <div class="stim-label" style="color:var(--red);font-weight:600">NO-GO</div>
+        </div>
+        <div class="stim-arrow">→</div>
+        <div class="stim-box">
+          <div style="font-size:32px">🚫</div>
+          <div class="stim-label">Não responda</div>
+        </div>
+      </div>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--green)"></div><span>Círculo <strong>verde (●)</strong> — pressione a tela ou barra de espaço o mais rápido possível</span></div>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--red)"></div><span>Círculo <strong>vermelho (✕)</strong> — <em>não</em> pressione, aguarde o próximo estímulo</span></div>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--amber)"></div><span>Os estímulos desaparecem rapidamente — responda antes que sumam</span></div>
+    </div>
+
+    <div class="info-card">
+      <h3>Estrutura do teste</h3>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--teal-d)"></div><span><strong>Bloco 1</strong> — Prática (20 tentativas, feedback visível)</span></div>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--violet)"></div><span><strong>Bloco 2</strong> — Moderado (40 tentativas, estímulos mais rápidos)</span></div>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--amber)"></div><span><strong>Bloco 3</strong> — Desafiador (60 tentativas, tempo reduzido)</span></div>
+      <div class="rule-row"><div class="rule-dot" style="background:var(--muted)"></div><span>Proporção Go/No-Go: <strong>75% / 25%</strong> — maioria são Go, para criar tendência de resposta</span></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><strong>120</strong><span>tentativas</span></div>
+      <div class="stat"><strong>75%</strong><span>Go trials</span></div>
+      <div class="stat"><strong>25%</strong><span>No-Go trials</span></div>
+      <div class="stat"><strong>TR em ms</strong><span>métrica principal</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="initTask()">Iniciar teste →</button>
+  </div>
+</div>
+
+<!-- ══ TASK ══ -->
+<div class="screen" id="s-task">
+  <div class="task-bar">
+    <div class="tb-block">Bloco <span id="tbBlock">1</span>/3</div>
+    <div class="tb-timer" id="tbTimer">—</div>
+    <div class="tb-score">
+      <span class="ts-val" id="tbCorrect">0</span>
+      <span class="ts-lbl">acertos</span>
+    </div>
+  </div>
+  <div class="task-progress"><div class="task-progress-fill" id="taskProgFill" style="width:0%"></div></div>
+
+  <div class="arena" id="arena">
+    <div class="stimulus hidden" id="stimulus">●</div>
+    <div class="stim-hint" id="stimHint"></div>
+    <div class="resp-timer"><div class="resp-timer-fill" id="respTimerFill" style="width:100%"></div></div>
+    <div class="feedback-txt" id="feedbackTxt"></div>
+  </div>
+
+  <div class="tap-hint">Toque na tela ou pressione <strong>Espaço / Enter</strong> para Go</div>
+
+  <!-- Countdown overlay -->
+  <div class="countdown-overlay" id="cdOverlay">
+    <div class="cd-num" id="cdNum">3</div>
+    <div class="cd-sub" id="cdSub">prepare-se</div>
+  </div>
+
+  <!-- Block complete overlay -->
+  <div class="block-complete" id="bcOverlay">
+    <div class="bc-card">
+      <h2 id="bcTitle">Bloco completo!</h2>
+      <p id="bcDesc">Descanse por alguns segundos.</p>
+      <div class="bc-stats">
+        <div class="bc-stat"><strong id="bcTR">—</strong><span>TR médio (ms)</span></div>
+        <div class="bc-stat"><strong id="bcAcc">—</strong><span>Precisão Go</span></div>
+        <div class="bc-stat"><strong id="bcComm">—</strong><span>Erros comissão</span></div>
+        <div class="bc-stat"><strong id="bcOmit">—</strong><span>Erros omissão</span></div>
+      </div>
+      <button class="btn btn-primary" id="bcBtn" onclick="nextBlock()">Próximo bloco →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div class="screen" id="s-results">
+  <div class="results-wrap">
+    <div class="results-hero">
+      <div class="rh-eyebrow">Go/No-Go — Resultado</div>
+      <div class="rh-title" id="rhTitle">—</div>
+      <div class="rh-sub" id="rhSub">—</div>
+      <div class="hero-metrics" id="heroMetrics"></div>
+    </div>
+
+    <div class="result-card" id="trCard"></div>
+    <div class="result-card" id="commCard"></div>
+    <div class="result-card" id="blockCard"></div>
+
+    <div class="cta-box">
+      <p>Quer interpretar esses resultados em contexto clínico e realizar avaliação neuropsicológica completa?</p>
+      <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar relatório em PDF</button>
+      <button class="btn btn-outline" onclick="restartTask()">Refazer teste</button>
+    </div>
+  </div>
+  <div class="site-footer">
+    <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+    <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// CONFIG
+// ══════════════════════════════════
+var BLOCKS = [
+  {n:1, trials:20,  stim_duration:800,  isi_min:600, isi_max:1200, go_ratio:0.75, label:'Prática',    color:'var(--teal-d)',  feedback:true},
+  {n:2, trials:40,  stim_duration:650,  isi_min:500, isi_max:1000, go_ratio:0.75, label:'Moderado',   color:'var(--violet)',  feedback:false},
+  {n:3, trials:60,  stim_duration:500,  isi_min:400, isi_max:900,  go_ratio:0.75, label:'Desafiador', color:'var(--amber)',   feedback:false}
+];
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+var currentBlock = 0;
+var trialIdx = 0;
+var trialLog = []; // {block,type,responded,rt,correct}
+var blockLogs = [];
+
+var stimTimer = null, isiTimer = null, respTimerAnim = null;
+var trialStart = 0;
+var awaitingResponse = false;
+var currentType = null; // 'go' | 'nogo'
+var responded = false;
+var taskActive = false;
+
+// ══════════════════════════════════
+// SCREENS
+// ══════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+function initTask(){
+  currentBlock=0; trialIdx=0; trialLog=[]; blockLogs=[];
+  showScreen('s-task');
+  setupEventListeners();
+  countdown(3, startBlock);
+}
+
+function setupEventListeners(){
+  document.getElementById('arena').addEventListener('click', handleResponse);
+  document.addEventListener('keydown', function(e){
+    if(e.code==='Space'||e.code==='Enter'){e.preventDefault(); handleResponse();}
+  });
+}
+
+// ══════════════════════════════════
+// COUNTDOWN
+// ══════════════════════════════════
+function countdown(n, cb){
+  var ov=document.getElementById('cdOverlay'), el=document.getElementById('cdNum'), sub=document.getElementById('cdSub');
+  ov.style.display='flex'; el.textContent=n;
+  el.style.animation='none'; void el.offsetWidth; el.style.animation='pop .4s ease both';
+  if(n>0){ setTimeout(function(){countdown(n-1,cb);},800); }
+  else{
+    el.textContent='GO!'; el.style.color='#6DC44A'; sub.textContent='responda ao círculo verde';
+    setTimeout(function(){ ov.style.display='none'; cb(); },700);
+  }
+}
+
+// ══════════════════════════════════
+// BLOCK
+// ══════════════════════════════════
+function startBlock(){
+  var blk=BLOCKS[currentBlock];
+  document.getElementById('tbBlock').textContent=blk.n;
+  trialIdx=0; taskActive=true;
+  updateBlockProgress();
+  nextTrial();
+}
+
+function nextTrial(){
+  var blk=BLOCKS[currentBlock];
+  if(trialIdx>=blk.trials){ endBlock(); return; }
+  updateBlockProgress();
+  currentType = Math.random() < blk.go_ratio ? 'go' : 'nogo';
+  responded=false; awaitingResponse=false;
+  var isi = blk.isi_min + Math.random()*(blk.isi_max-blk.isi_min);
+  isiTimer = setTimeout(function(){ showStimulus(); }, isi);
+}
+
+function showStimulus(){
+  var blk=BLOCKS[currentBlock];
+  var stim=document.getElementById('stimulus');
+  var hint=document.getElementById('stimHint');
+  var fb=document.getElementById('feedbackTxt');
+  fb.className='feedback-txt'; fb.textContent='';
+  stim.className='stimulus show '+(currentType==='go'?'go':'nogo');
+  stim.textContent=currentType==='go'?'●':'✕';
+  hint.textContent=currentType==='go'?'GO — Pressione!':'NO-GO — Aguarde!';
+  awaitingResponse=true; responded=false;
+  trialStart=performance.now();
+
+  // Response timer bar animation
+  var fill=document.getElementById('respTimerFill');
+  fill.style.transition='none'; fill.style.width='100%';
+  void fill.offsetWidth;
+  fill.style.transition='width '+blk.stim_duration+'ms linear'; fill.style.width='0%';
+
+  // Timer bar text
+  document.getElementById('tbTimer').textContent=(blk.stim_duration/1000).toFixed(1)+'s';
+
+  stimTimer=setTimeout(function(){ hideStimulus(false); }, blk.stim_duration);
+}
+
+function hideStimulus(responded_flag){
+  clearTimeout(stimTimer);
+  var stim=document.getElementById('stimulus');
+  stim.className='stimulus hidden';
+  document.getElementById('stimHint').textContent='';
+  document.getElementById('respTimerFill').style.width='0%';
+  awaitingResponse=false;
+  if(!responded_flag){
+    // Timeout — record miss or correct inhibition
+    var rt=performance.now()-trialStart;
+    var correct=currentType==='nogo'; // not responding to nogo = correct
+    trialLog.push({block:currentBlock+1,type:currentType,responded:false,rt:rt,correct:correct});
+    if(BLOCKS[currentBlock].feedback && !correct){
+      showFeedback('miss','Omissão!');
+    }
+  }
+  trialIdx++;
+  setTimeout(nextTrial, 200);
+}
+
+function handleResponse(){
+  if(!taskActive||!awaitingResponse) return;
+  if(responded) return;
+  responded=true;
+  var rt=Math.round(performance.now()-trialStart);
+  var correct=currentType==='go';
+  trialLog.push({block:currentBlock+1,type:currentType,responded:true,rt:rt,correct:correct});
+  if(correct){
+    document.getElementById('tbCorrect').textContent=
+      parseInt(document.getElementById('tbCorrect').textContent)+1;
+    flashArena('g');
+    if(BLOCKS[currentBlock].feedback) showFeedback('correct','Correto! '+rt+'ms');
+  } else {
+    flashArena('r');
+    if(BLOCKS[currentBlock].feedback) showFeedback('wrong','Comissão!');
+  }
+  hideStimulus(true);
+}
+
+function flashArena(type){
+  var a=document.getElementById('arena');
+  a.className='arena flash-'+type;
+  setTimeout(function(){a.className='arena';},250);
+}
+
+function showFeedback(type, msg){
+  var fb=document.getElementById('feedbackTxt');
+  fb.className='feedback-txt '+type; fb.textContent=msg;
+}
+
+function updateBlockProgress(){
+  var blk=BLOCKS[currentBlock];
+  var pct=trialIdx/blk.trials*100;
+  document.getElementById('taskProgFill').style.width=pct+'%';
+}
+
+// ══════════════════════════════════
+// BLOCK END
+// ══════════════════════════════════
+function endBlock(){
+  taskActive=false;
+  var blkTrials=trialLog.filter(function(t){return t.block===currentBlock+1;});
+  var goTrials=blkTrials.filter(function(t){return t.type==='go';});
+  var nogoTrials=blkTrials.filter(function(t){return t.type==='nogo';});
+  var goCorrect=goTrials.filter(function(t){return t.correct;});
+  var commErrors=nogoTrials.filter(function(t){return t.responded;}).length;
+  var omitErrors=goTrials.filter(function(t){return !t.responded;}).length;
+  var goRTs=goCorrect.map(function(t){return t.rt;});
+  var meanRT=goRTs.length?Math.round(goRTs.reduce(function(a,b){return a+b;},0)/goRTs.length):0;
+  var acc=goTrials.length?Math.round(goCorrect.length/goTrials.length*100):0;
+
+  blockLogs.push({block:currentBlock+1,meanRT:meanRT,acc:acc,comm:commErrors,omit:omitErrors,go:goTrials.length,nogo:nogoTrials.length});
+
+  var isLast=currentBlock>=BLOCKS.length-1;
+  var ov=document.getElementById('bcOverlay');
+  document.getElementById('bcTitle').textContent='Bloco '+(currentBlock+1)+' completo!';
+  document.getElementById('bcDesc').textContent=isLast?'Teste concluído — veja seu resultado.':'Respire fundo e continue quando estiver pronto.';
+  document.getElementById('bcTR').textContent=meanRT+'ms';
+  document.getElementById('bcAcc').textContent=acc+'%';
+  document.getElementById('bcComm').textContent=commErrors;
+  document.getElementById('bcOmit').textContent=omitErrors;
+  document.getElementById('bcBtn').textContent=isLast?'Ver resultado →':'Próximo bloco →';
+  ov.classList.add('show');
+}
+
+function nextBlock(){
+  document.getElementById('bcOverlay').classList.remove('show');
+  currentBlock++;
+  if(currentBlock>=BLOCKS.length){ buildResults(); showScreen('s-results'); return; }
+  countdown(3, startBlock);
+}
+
+// ══════════════════════════════════
+// RESULTS
+// ══════════════════════════════════
+function buildResults(){
+  var allGo=trialLog.filter(function(t){return t.type==='go';});
+  var allNogo=trialLog.filter(function(t){return t.type==='nogo';});
+  var goCorrect=allGo.filter(function(t){return t.correct;});
+  var commTotal=allNogo.filter(function(t){return t.responded;}).length;
+  var omitTotal=allGo.filter(function(t){return !t.responded;}).length;
+  var goRTs=goCorrect.map(function(t){return t.rt;});
+  var meanRT=goRTs.length?Math.round(goRTs.reduce(function(a,b){return a+b;},0)/goRTs.length):0;
+  var sdRT=goRTs.length>1?Math.round(Math.sqrt(goRTs.map(function(x){return Math.pow(x-meanRT,2);}).reduce(function(a,b){return a+b;},0)/goRTs.length)):0;
+  var acc=allGo.length?Math.round(goCorrect.length/allGo.length*100):0;
+  var commRate=allNogo.length?Math.round(commTotal/allNogo.length*100):0;
+
+  var perfLabel=meanRT<300?'Excelente':meanRT<400?'Adequado':meanRT<550?'Limítrofe':'Rebaixado';
+  var inhibLabel=commRate<10?'Inibição preservada':commRate<25?'Inibição limítrofe':'Inibição reduzida';
+
+  document.getElementById('rhTitle').textContent=perfLabel+' — '+inhibLabel;
+  document.getElementById('rhSub').textContent=
+    'TR médio '+meanRT+'ms · Precisão '+acc+'% · '+commTotal+' erros de comissão · '+omitTotal+' omissões';
+  document.getElementById('heroMetrics').innerHTML=
+    '<div class="hm"><strong>'+meanRT+'ms</strong><span>TR MÉDIO GO</span></div>'+
+    '<div class="hm"><strong>'+acc+'%</strong><span>PRECISÃO</span></div>'+
+    '<div class="hm"><strong>'+commRate+'%</strong><span>TX. COMISSÃO</span></div>'+
+    '<div class="hm"><strong>'+sdRT+'ms</strong><span>VARIABILIDADE</span></div>';
+
+  // TR card
+  var trColor=meanRT<300?'#6DC44A':meanRT<400?'#4AABAB':meanRT<550?'#E8943A':'#C03A3A';
+  var trMax=700;
+  var trInterp=meanRT<300?'Tempo de reação excelente — velocidade de processamento e atenção sustentada muito bem preservadas.':
+    meanRT<400?'Tempo de reação dentro dos parâmetros normativos esperados para adultos.':
+    meanRT<550?'Tempo de reação levemente acima do esperado — pode indicar lentidão no processamento ou atenção reduzida.':
+    'Tempo de reação significativamente elevado — sugere dificuldade na velocidade de processamento e atenção sustentada.';
+  document.getElementById('trCard').innerHTML=
+    '<h3>Tempo de Reação — Tentativas Go</h3>'+
+    '<div class="rc-sub">Calculado apenas sobre as respostas corretas ao estímulo Go (excluindo erros e omissões).</div>'+
+    '<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">'+
+      '<span class="big-value" style="color:'+trColor+'">'+meanRT+'</span>'+
+      '<span style="font-size:14px;color:var(--muted)">ms · '+perfLabel+'</span>'+
+    '</div>'+
+    '<div class="norm-bar-bg">'+
+      '<div class="norm-bar-fill" style="width:'+Math.min(meanRT/trMax*100,100)+'%;background:'+trColor+'"></div>'+
+      '<div class="norm-marker" style="left:'+(300/trMax*100)+'%;background:#6DC44A;opacity:.7"></div>'+
+      '<div class="norm-marker" style="left:'+(400/trMax*100)+'%;background:#4AABAB;opacity:.7"></div>'+
+      '<div class="norm-marker" style="left:'+(550/trMax*100)+'%;background:#E8943A;opacity:.7"></div>'+
+    '</div>'+
+    '<div class="norm-labels"><span>0ms</span><span>300ms</span><span>400ms</span><span>550ms</span><span>700ms</span></div>'+
+    '<div style="font-size:12px;color:var(--muted);margin-top:8px">Variabilidade (DP): <strong>'+sdRT+'ms</strong> — '+(sdRT<80?'consistência boa':'variabilidade elevada, pode indicar lapsos atencionais')+'</div>'+
+    '<div class="interp-text">'+trInterp+'</div>';
+
+  // Commission card
+  var cColor=commRate<10?'#6DC44A':commRate<25?'#E8943A':'#C03A3A';
+  var cInterp=commRate<10?'Taxa de erros de comissão dentro do esperado — inibição de resposta preservada. O sistema de controle inibitório está funcionando adequadamente.':
+    commRate<25?'Taxa de erros de comissão moderada — pode indicar alguma dificuldade no controle inibitório. Monitoramento clínico recomendado.':
+    'Taxa de erros de comissão elevada — sugere dificuldade significativa na inibição de resposta, possivelmente associada a impulsividade ou TDAH. Avaliação clínica recomendada.';
+  document.getElementById('commCard').innerHTML=
+    '<h3>Controle Inibitório — Erros de Comissão</h3>'+
+    '<div class="rc-sub">Erros de comissão = responder ao estímulo No-Go (falha na inibição). Principal medida de impulsividade do teste.</div>'+
+    '<div style="display:flex;gap:24px;margin-bottom:14px;flex-wrap:wrap">'+
+      '<div><span class="big-value" style="color:'+cColor+'">'+commTotal+'</span><span style="font-size:13px;color:var(--muted)"> erros em '+allNogo.length+' No-Go</span></div>'+
+      '<div><span class="big-value" style="color:'+cColor+'">'+commRate+'%</span><span style="font-size:13px;color:var(--muted)"> taxa</span></div>'+
+    '</div>'+
+    '<div style="font-size:13px;color:var(--muted);margin-bottom:12px">Erros de omissão: <strong>'+omitTotal+'</strong> (falha em responder ao Go — atenção)</div>'+
+    '<div class="interp-text">'+cInterp+'</div>';
+
+  // Block breakdown
+  var blockRows=blockLogs.map(function(b){
+    var bColor=b.meanRT<300?'#6DC44A':b.meanRT<400?'#4AABAB':b.meanRT<550?'#E8943A':'#C03A3A';
+    var cPct=b.nogo>0?Math.round(b.comm/b.nogo*100):0;
+    return '<div class="block-row">'+
+      '<span class="br-label" style="color:'+(b.block===1?'var(--teal-d)':b.block===2?'var(--violet)':'var(--amber)')+'">Bloco '+b.block+'</span>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:11px;color:var(--muted);margin-bottom:3px">TR médio: <strong style="color:'+bColor+'">'+b.meanRT+'ms</strong> · Precisão: <strong>'+b.acc+'%</strong> · Comissão: <strong style="color:'+(cPct>20?'var(--red)':'var(--muted)')+'">'+b.comm+'</strong></div>'+
+        '<div class="br-bar-bg"><div class="br-bar-fill" style="width:'+Math.min(b.meanRT/700*100,100)+'%;background:'+bColor+'"></div></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('blockCard').innerHTML=
+    '<h3>Desempenho por Bloco</h3>'+
+    '<div class="rc-sub">Evolução ao longo dos 3 blocos — tempo de reação e controle inibitório por dificuldade crescente.</div>'+
+    blockRows;
+}
+
+function restartTask(){
+  clearTimeout(stimTimer); clearTimeout(isiTimer);
+  document.removeEventListener('keydown', handleResponse);
+  showScreen('s-intro');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ══════════════════════════════════
+// PDF
+// ══════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58],violet=[139,111,190];
+  var date=new Date().toLocaleDateString('pt-BR');
+
+  var allGo=trialLog.filter(function(t){return t.type==='go';});
+  var allNogo=trialLog.filter(function(t){return t.type==='nogo';});
+  var goCorrect=allGo.filter(function(t){return t.correct;});
+  var commTotal=allNogo.filter(function(t){return t.responded;}).length;
+  var omitTotal=allGo.filter(function(t){return !t.responded;}).length;
+  var goRTs=goCorrect.map(function(t){return t.rt;});
+  var meanRT=goRTs.length?Math.round(goRTs.reduce(function(a,b){return a+b;},0)/goRTs.length):0;
+  var sdRT=goRTs.length>1?Math.round(Math.sqrt(goRTs.map(function(x){return Math.pow(x-meanRT,2);}).reduce(function(a,b){return a+b;},0)/goRTs.length)):0;
+  var acc=allGo.length?Math.round(goCorrect.length/allGo.length*100):0;
+  var commRate=allNogo.length?Math.round(commTotal/allNogo.length*100):0;
+  var trColor=meanRT<300?green:meanRT<400?teal:meanRT<550?amber:red;
+  var cColor=commRate<10?green:commRate<25?amber:red;
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO NEUROPSICOLÓGICA  ·  GO/NO-GO',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Teste Go/No-Go — Controle Inibitório',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // Metrics row
+  chk(26);
+  var metrics=[
+    {l:'TR MÉDIO (ms)',v:String(meanRT)},
+    {l:'VARIABILIDADE',v:sdRT+'ms'},
+    {l:'PRECISÃO GO',v:acc+'%'},
+    {l:'TX. COMISSÃO',v:commRate+'%'}
+  ];
+  var mw=(W-M*2)/4;
+  metrics.forEach(function(m,i){
+    var x=M+i*mw;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(x,y,mw-3,22,3,3,'FD');
+    st(navy);doc.setFont('helvetica','bold');doc.setFontSize(13);
+    doc.text(m.v,x+mw/2-1.5,y+12,{align:'center'});
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7);
+    doc.text(m.l,x+mw/2-1.5,y+19,{align:'center'});
+  });
+  y+=32;
+
+  // TR bar
+  chk(20);
+  var barW=W-M*2;
+  sf(trColor);doc.rect(M,y,3,18,'F');
+  st(trColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text('Tempo de Reação: '+meanRT+'ms — '+(meanRT<300?'Excelente':meanRT<400?'Adequado':meanRT<550?'Limítrofe':'Rebaixado'),M+8,y+8);
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var trDesc=meanRT<300?'TR excelente — velocidade de processamento e atenção sustentada muito bem preservadas.':meanRT<400?'TR dentro dos parâmetros normativos.':meanRT<550?'TR levemente elevado — possível lentidão no processamento.':'TR significativamente elevado — velocidade de processamento reduzida.';
+  var tl=doc.splitTextToSize(trDesc,W-M*2-10);doc.text(tl,M+8,y+15);
+  y+=tl.length*4.5+14;
+
+  // TR bar visual
+  chk(18);
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(M,y,barW,8,3,3,'FD');
+  sf(trColor);doc.roundedRect(M,y,Math.min(meanRT/700*barW,barW),8,3,3,'F');
+  sf(green);doc.rect(M+(300/700)*barW-1,y,2,8,'F');
+  sf(teal);doc.rect(M+(400/700)*barW-1,y,2,8,'F');
+  sf(amber);doc.rect(M+(550/700)*barW-1,y,2,8,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0ms',M,y+13);doc.text('300ms',M+(300/700)*barW,y+13,{align:'center'});
+  doc.text('400ms',M+(400/700)*barW,y+13,{align:'center'});doc.text('550ms',M+(550/700)*barW,y+13,{align:'center'});
+  doc.text('700ms',W-M,y+13,{align:'right'});
+  y+=22;
+
+  // Commission
+  chk(24);
+  sf(cColor);doc.rect(M,y,3,18,'F');
+  st(cColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text('Erros de Comissão: '+commTotal+' ('+commRate+'%) — '+(commRate<10?'Inibição preservada':commRate<25?'Inibição limítrofe':'Inibição reduzida'),M+8,y+8);
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var cl=doc.splitTextToSize(commRate<10?'Taxa de comissão dentro do esperado — controle inibitório preservado.':commRate<25?'Taxa moderada — possível dificuldade no controle inibitório.':'Taxa elevada — dificuldade significativa na inibição de resposta. Avaliação clínica recomendada.',W-M*2-10);
+  doc.text(cl,M+8,y+15);
+  y+=cl.length*4.5+14;
+
+  doc.text('Erros de omissão: '+omitTotal+' de '+allGo.length+' Go trials ('+Math.round(omitTotal/allGo.length*100)+'%)',M,y);
+  y+=12;
+
+  // Block table
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Desempenho por Bloco',M,y);y+=8;
+  sf(bg);doc.roundedRect(M,y,W-M*2,8,2,2,'F');
+  st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  var cw=(W-M*2)/5;
+  doc.text('Bloco',M+4,y+5.5);doc.text('Dificuldade',M+cw+4,y+5.5);doc.text('TR médio',M+cw*2+4,y+5.5);
+  doc.text('Precisão',M+cw*3+4,y+5.5);doc.text('Comissão',M+cw*4+4,y+5.5);
+  y+=10;
+  var bColors=[teal,violet,amber];
+  blockLogs.forEach(function(b,i){
+    chk(9);
+    var bc=bColors[i];
+    st(bc);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('Bloco '+b.block,M+4,y+4);
+    st(muted);doc.setFont('helvetica','normal');
+    doc.text(BLOCKS[i].label,M+cw+4,y+4);
+    st(b.meanRT<300?green:b.meanRT<400?teal:b.meanRT<550?amber:red);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text(b.meanRT+'ms',M+cw*2+4,y+4);
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text(b.acc+'%',M+cw*3+4,y+4);
+    st(b.comm>0?amber:green);doc.setFont('helvetica','bold');
+    doc.text(String(b.comm),M+cw*4+4,y+4);
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+7,W-M,y+7);y+=9;
+  });
+  y+=6;
+
+  // CTA
+  chk(22);
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('gonogo-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>
