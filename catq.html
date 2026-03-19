@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAT-Q – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+  --comp:#4AABAB;   /* Compensação */
+  --mask:#8B6FBE;   /* Mascaramento */
+  --assi:#D4607A;   /* Assimilação */
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(139,111,190,.22) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(74,171,171,.15) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,50px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:500px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--comp),var(--mask),var(--assi));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:680px;margin:0 auto;padding:28px 16px 0;}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:24px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:20px;}
+.notice{background:rgba(90,122,138,.07);border:1.5px solid rgba(90,122,138,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#3A5A6A;line-height:1.65;margin-bottom:20px;text-align:left;}
+
+/* Subescalas preview */
+.sub-legend{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+.sub-chip{border-radius:12px;padding:12px 10px;text-align:center;border:1.5px solid;}
+.sub-chip .sc-icon{font-size:20px;display:block;margin-bottom:4px;}
+.sub-chip .sc-name{font-size:12px;font-weight:600;display:block;margin-bottom:2px;}
+.sub-chip .sc-n{font-size:10px;color:var(--muted);}
+
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+/* SCALE LEGEND */
+.scale-ref{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:12px;}
+.scale-ref p{font-size:12px;color:var(--muted);margin-bottom:8px;font-style:italic;}
+.scale-chips{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.schip{border-radius:8px;padding:8px 4px;text-align:center;border:1px solid var(--border);background:var(--bg);}
+.schip .sv{font-size:15px;font-weight:300;display:block;color:var(--navy);font-family:'Cormorant Garamond',serif;line-height:1;}
+.schip .sl{font-size:8.5px;color:var(--muted);line-height:1.3;margin-top:3px;}
+
+/* SECTION HEADERS */
+.sub-header{display:flex;align-items:center;gap:10px;margin:20px 0 10px;padding:10px 14px;border-radius:10px;}
+.sub-header-icon{font-size:18px;}
+.sub-header-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;}
+.sub-header-n{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:8px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 3px 12px rgba(27,58,92,.07);}
+.q-num{font-size:10px;color:var(--muted);letter-spacing:.6px;margin-bottom:7px;}
+.q-text{font-size:13px;line-height:1.65;margin-bottom:12px;font-weight:400;}
+.scale-row-7{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.sbt7{padding:9px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:300;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1;}
+.sbt7:hover{border-color:var(--teal-d);color:var(--ink);}
+.sbt7.sel{color:#fff;border-color:transparent;}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* RESULTS */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(139,111,190,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.hero-score{display:flex;align-items:baseline;gap:6px;margin-top:16px;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#fff;line-height:1;}
+.hs-max{font-size:18px;color:rgba(255,255,255,.4);}
+.hero-band{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+.hero-subs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px;}
+.hs-sub{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;text-align:center;}
+.hs-sub-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;display:block;line-height:1;}
+.hs-sub-max{font-size:10px;color:rgba(255,255,255,.4);}
+.hs-sub-lbl{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;display:block;margin-top:4px;}
+
+/* RESULT CARDS */
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* Score bar */
+.score-bar-wrap{margin:10px 0 6px;}
+.score-bar-bg{height:12px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);position:relative;}
+.score-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.score-marker{position:absolute;top:-4px;width:3px;height:20px;border-radius:99px;transform:translateX(-50%);}
+.score-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* Sub score bars */
+.sub-score-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ssr-label{min-width:110px;font-size:12px;color:var(--ink);}
+.ssr-bar-bg{flex:1;height:9px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.ssr-bar-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+.ssr-val{font-size:12px;font-weight:500;min-width:44px;text-align:right;}
+
+/* Item review */
+.ir-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.ir-item{border-radius:10px;padding:9px 12px;border:1px solid var(--border);font-size:12px;line-height:1.5;}
+.ir-item .ir-q{color:var(--muted);margin-bottom:3px;font-size:11px;}
+.ir-item .ir-ans{font-weight:500;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){
+  .intro-card{padding:28px 18px;}
+  .scale-row-7{grid-template-columns:repeat(7,1fr);}
+  .sbt7{font-size:14px;padding:8px 2px;}
+  .ir-grid{grid-template-columns:1fr;}
+  .scale-chips{grid-template-columns:repeat(4,1fr);}
+  .hero-subs{grid-template-columns:repeat(3,1fr);}
+  .sub-legend{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Avaliação do Espectro Autista</div>
+  <h1>CAT-Q — <strong>Camuflagem<br>de Traços Autísticos</strong></h1>
+  <p>Questionário de autorrelato que avalia estratégias de camuflagem social utilizadas por adultos com características autísticas — Compensação, Mascaramento e Assimilação.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baseado em Hull et al. (2019) · Para adultos ≥ 16 anos</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 25</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como você age nas situações sociais?</h2>
+    <p>Este questionário avalia as estratégias que você usa para se adaptar a situações sociais. Responda com base em como você <strong>geralmente</strong> se comporta — não como gostaria de se comportar.</p>
+
+    <div class="sub-legend">
+      <div class="sub-chip" style="border-color:rgba(74,171,171,.4);background:rgba(74,171,171,.05)">
+        <span class="sc-icon">🎭</span>
+        <span class="sc-name" style="color:var(--comp)">Compensação</span>
+        <span class="sc-n">9 itens · max 63</span>
+      </div>
+      <div class="sub-chip" style="border-color:rgba(139,111,190,.4);background:rgba(139,111,190,.05)">
+        <span class="sc-icon">🎭</span>
+        <span class="sc-name" style="color:var(--mask)">Mascaramento</span>
+        <span class="sc-n">8 itens · max 56</span>
+      </div>
+      <div class="sub-chip" style="border-color:rgba(212,96,122,.4);background:rgba(212,96,122,.05)">
+        <span class="sc-icon">🎭</span>
+        <span class="sc-name" style="color:var(--assi)">Assimilação</span>
+        <span class="sc-n">8 itens · max 56</span>
+      </div>
+    </div>
+
+    <div class="notice">
+      ⚠️ O CAT-Q é uma ferramenta de <strong>triagem</strong> — não é um diagnóstico de TEA. Pontuações altas indicam maior uso de estratégias de camuflagem e devem ser interpretadas por um profissional especializado em conjunto com outros dados clínicos.
+    </div>
+
+    <div class="intro-stats">
+      <div class="stat"><strong>25</strong><span>itens</span></div>
+      <div class="stat"><strong>1–7</strong><span>por item</span></div>
+      <div class="stat"><strong>25–175</strong><span>pontuação total</span></div>
+      <div class="stat"><strong>≥ 100</strong><span>ponto de corte</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div class="scale-ref">
+    <p>Para cada afirmação, escolha de <strong>1</strong> (Discordo fortemente) a <strong>7</strong> (Concordo plenamente).</p>
+    <div class="scale-chips">
+      <div class="schip"><span class="sv">1</span><span class="sl">Discordo fortemente</span></div>
+      <div class="schip"><span class="sv">2</span><span class="sl">Discordo</span></div>
+      <div class="schip"><span class="sv">3</span><span class="sl">Discordo parcialmente</span></div>
+      <div class="schip"><span class="sv">4</span><span class="sl">Neutro</span></div>
+      <div class="schip"><span class="sv">5</span><span class="sl">Concordo parcialmente</span></div>
+      <div class="schip"><span class="sv">6</span><span class="sl">Concordo</span></div>
+      <div class="schip"><span class="sv">7</span><span class="sl">Concordo plenamente</span></div>
+    </div>
+  </div>
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">CAT-Q — Resultado</div>
+    <div class="rh-title" id="rhTitle">—</div>
+    <div class="rh-sub" id="rhSub">—</div>
+    <div class="hero-score">
+      <span class="hs-num" id="hsNum">—</span>
+      <span class="hs-max">/175</span>
+    </div>
+    <div class="hero-band" id="heroBand">—</div>
+    <div class="hero-subs">
+      <div class="hs-sub">
+        <span class="hs-sub-val" id="hsComp" style="color:rgba(74,171,171,.9)">—</span>
+        <span class="hs-sub-max">/63</span>
+        <span class="hs-sub-lbl">Compensação</span>
+      </div>
+      <div class="hs-sub">
+        <span class="hs-sub-val" id="hsMask" style="color:rgba(139,111,190,.9)">—</span>
+        <span class="hs-sub-max">/56</span>
+        <span class="hs-sub-lbl">Mascaramento</span>
+      </div>
+      <div class="hs-sub">
+        <span class="hs-sub-val" id="hsAssi" style="color:rgba(212,96,122,.9)">—</span>
+        <span class="hs-sub-max">/56</span>
+        <span class="hs-sub-lbl">Assimilação</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-card" id="interpCard"></div>
+  <div class="result-card" id="subCard"></div>
+  <div class="result-card" id="reviewCard"></div>
+
+  <div class="cta-box">
+    <p>Quer interpretar esses resultados em contexto clínico e aprofundar a avaliação neuropsicológica?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// CAT-Q QUESTIONS
+// sub: 'C'=Compensação, 'M'=Mascaramento, 'A'=Assimilação
+// reversed: true = item reverso (8-v)
+// ═══════════════════════════════════════
+var QUESTIONS = [
+  {n:1,  text:'Quando estou interagindo com alguém, copio deliberadamente sua linguagem corporal ou expressões faciais.',          sub:'C', rev:false},
+  {n:2,  text:'Monitoro minha linguagem corporal ou expressões faciais para parecer relaxado(a).',                                  sub:'M', rev:false},
+  {n:3,  text:'Raramente sinto a necessidade de encenar para superar uma situação social.',                                         sub:'M', rev:true},
+  {n:4,  text:'Desenvolvi um roteiro para seguir em situações sociais.',                                                            sub:'C', rev:false},
+  {n:5,  text:'Repetirei frases que ouvi outras pessoas dizerem exatamente da mesma maneira que as ouvi pela primeira vez.',        sub:'C', rev:false},
+  {n:6,  text:'Ajusto minha linguagem corporal ou expressões faciais para que pareça interessado(a) pela pessoa com quem estou interagindo.',sub:'M', rev:false},
+  {n:7,  text:'Em situações sociais, sinto que estou "atuando" em vez de ser eu mesmo(a).',                                        sub:'M', rev:false},
+  {n:8,  text:'Em minhas próprias interações sociais, uso comportamentos que aprendi ao observar outras pessoas interagindo.',       sub:'C', rev:false},
+  {n:9,  text:'Sempre penso na impressão que causo nas outras pessoas.',                                                            sub:'M', rev:false},
+  {n:10, text:'Preciso do apoio de outras pessoas para me socializar.',                                                             sub:'A', rev:false},
+  {n:11, text:'Pratico minhas expressões faciais e linguagem corporal para ter certeza de que parecem naturais.',                   sub:'C', rev:false},
+  {n:12, text:'Não sinto necessidade de fazer contato visual com outras pessoas se não quiser.',                                    sub:'M', rev:true},
+  {n:13, text:'Tenho que me forçar a interagir com as pessoas quando estou em situações sociais.',                                  sub:'A', rev:false},
+  {n:14, text:'Tentei melhorar minha compreensão das habilidades sociais observando outras pessoas.',                               sub:'C', rev:false},
+  {n:15, text:'Monitoro minha linguagem corporal ou expressões faciais para que pareça interessado(a) pela pessoa com quem estou interagindo.', sub:'M', rev:false},
+  {n:16, text:'Quando estou em situações sociais, procuro encontrar maneiras de evitar interagir com outras pessoas.',              sub:'A', rev:false},
+  {n:17, text:'Pesquisei as regras das interações sociais para melhorar minhas próprias habilidades sociais.',                      sub:'C', rev:false},
+  {n:18, text:'Estou sempre ciente da impressão que causo nas outras pessoas.',                                                     sub:'M', rev:false},
+  {n:19, text:'Sinto-me livre para ser eu mesmo(a) quando estou com outras pessoas.',                                              sub:'A', rev:true},
+  {n:20, text:'Aprendo como as pessoas usam seus corpos e rostos para interagir assistindo televisão, filmes ou lendo ficção.',     sub:'C', rev:false},
+  {n:21, text:'Ajusto minha linguagem corporal ou expressões faciais para parecer relaxado(a).',                                   sub:'M', rev:false},
+  {n:22, text:'Ao falar com outras pessoas, sinto que a conversa flui naturalmente.',                                              sub:'A', rev:true},
+  {n:23, text:'Passei um tempo aprendendo habilidades sociais em programas de televisão e filmes e tento usá-las em minhas interações.',sub:'C', rev:false},
+  {n:24, text:'Nas interações sociais, não presto atenção ao que meu rosto ou corpo estão fazendo.',                               sub:'A', rev:true},
+  {n:25, text:'Em situações sociais, sinto que estou fingindo ser "normal".',                                                      sub:'A', rev:false}
+];
+
+var SUB_COLORS = {C:'#4AABAB', M:'#8B6FBE', A:'#D4607A'};
+var SUB_NAMES  = {C:'Compensação', M:'Mascaramento', A:'Assimilação'};
+var SUB_ICONS  = {C:'🔧', M:'🎭', A:'🤝'};
+var SCALE_LABELS = ['','Discordo fortemente','Discordo','Discordo parcialmente','Neutro','Concordo parcialmente','Concordo','Concordo plenamente'];
+var SCALE_COLORS = ['','#C03A3A','#D4607A','#E8943A','#5A7A8A','#7ECECE','#4AABAB','#6DC44A'];
+
+var answers = {};
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML = '';
+  var lastSub = null;
+  QUESTIONS.forEach(function(q, i){
+    // Sub-section header
+    if(q.sub !== lastSub){
+      lastSub = q.sub;
+      var col = SUB_COLORS[q.sub];
+      c.innerHTML += '<div class="sub-header" style="background:'+col+'0D;border-left:3px solid '+col+'">'+
+        '<span class="sub-header-icon">'+SUB_ICONS[q.sub]+'</span>'+
+        '<div>'+
+          '<div class="sub-header-title" style="color:'+col+'">'+SUB_NAMES[q.sub]+'</div>'+
+          '<div class="sub-header-n">'+(q.sub==='C'?'9 itens':'8 itens')+'</div>'+
+        '</div>'+
+      '</div>';
+    }
+    var col = SUB_COLORS[q.sub];
+    var ans = answers[i];
+    var btns = '';
+    for(var v=1;v<=7;v++){
+      var isSel = ans===v;
+      btns += '<button class="sbt7'+(isSel?' sel':'')+'" id="q-'+i+'-'+v+'" '+
+        'style="'+(isSel?'background:'+SCALE_COLORS[v]+';':'')+'" '+
+        'onclick="setAns('+i+','+v+',\''+col+'\')">'+v+'</button>';
+    }
+    c.innerHTML +=
+      '<div class="q-card'+(ans!==undefined?' answered':'')+'" id="qc-'+i+'">'+
+        '<div class="q-num" style="color:'+col+'">'+q.n+'. '+SUB_NAMES[q.sub]+(q.rev?' · reversível':'')+' </div>'+
+        '<div class="q-text">'+q.text+'</div>'+
+        '<div class="scale-row-7">'+btns+'</div>'+
+      '</div>';
+  });
+  updateProg();
+}
+
+function setAns(idx, val, col){
+  answers[idx] = val;
+  for(var v=1;v<=7;v++){
+    var b = document.getElementById('q-'+idx+'-'+v);
+    if(!b) continue;
+    if(v===val){ b.className='sbt7 sel'; b.style.background=SCALE_COLORS[v]; }
+    else{ b.className='sbt7'; b.style.background=''; }
+  }
+  document.getElementById('qc-'+idx).className='q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n = Object.keys(answers).length;
+  document.getElementById('progFill').style.width = (n/25*100)+'%';
+  document.getElementById('progTxt').textContent = n+' / 25';
+  document.getElementById('pgInfo').textContent = n+' de 25 respondidas';
+}
+
+function calcScores(){
+  var total=0, comp=0, mask=0, assi=0;
+  QUESTIONS.forEach(function(q, i){
+    var raw = answers[i] || 0;
+    var scored = q.rev ? (8-raw) : raw;
+    total += scored;
+    if(q.sub==='C') comp += scored;
+    else if(q.sub==='M') mask += scored;
+    else assi += scored;
+  });
+  return {total:total, comp:comp, mask:mask, assi:assi};
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goIntro(){ document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+function startTest(){ buildQuestions(); document.getElementById('progBar').style.display='flex'; showScreen('s-questions'); }
+function restartTest(){ answers={}; document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+// ═══════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════
+function showResults(){
+  var sc = calcScores();
+  var above = sc.total >= 100;
+  var bandColor = sc.total >= 140 ? '#C03A3A' : sc.total >= 100 ? '#E8943A' : '#6DC44A';
+  var bandText  = sc.total >= 140 ? 'Camuflagem elevada' : sc.total >= 100 ? 'Acima do ponto de corte' : 'Abaixo do ponto de corte';
+  var title = sc.total >= 140
+    ? 'Uso intenso de estratégias de camuflagem'
+    : sc.total >= 100
+    ? 'Indicativo de camuflagem de traços autísticos'
+    : 'Uso limitado de estratégias de camuflagem';
+
+  document.getElementById('hsNum').textContent = sc.total;
+  document.getElementById('hsComp').textContent = sc.comp;
+  document.getElementById('hsMask').textContent = sc.mask;
+  document.getElementById('hsAssi').textContent = sc.assi;
+  document.getElementById('rhTitle').textContent = title;
+  document.getElementById('rhSub').textContent = 'Pontuação '+sc.total+'/175 · Ponto de corte: ≥ 100';
+  var band = document.getElementById('heroBand');
+  band.textContent = bandText;
+  band.style.background = bandColor+'22';
+  band.style.color = bandColor;
+  band.style.border = '1px solid '+bandColor+'44';
+
+  // Interpretation card
+  var pct = (sc.total-25)/150*100;
+  var cutPct = (100-25)/150*100;
+  var desc = sc.total >= 140
+    ? 'A pontuação indica uso intenso de estratégias de camuflagem em situações sociais. Isso pode mascarar características autísticas em avaliações padronizadas, tornando o diagnóstico de TEA mais desafiador. Avaliação especializada minuciosa é fundamental.'
+    : sc.total >= 100
+    ? 'A pontuação está acima do ponto de corte (≥ 100), sugerindo uso significativo de estratégias de camuflagem de traços autísticos. Isso não confirma diagnóstico de TEA, mas indica que uma avaliação especializada aprofundada pode ser relevante.'
+    : 'A pontuação está abaixo do ponto de corte. Isso não exclui TEA — algumas pessoas autistas apresentam menor repertório de camuflagem. O CAT-Q avalia estratégias específicas e deve ser interpretado como parte de uma avaliação clínica abrangente.';
+
+  document.getElementById('interpCard').innerHTML =
+    '<h3>Pontuação Total</h3>'+
+    '<div class="rc-sub">CAT-Q — Hull et al. (2019). Escala 25–175. Ponto de corte: ≥ 100 pontos.</div>'+
+    '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'+
+      '<span style="font-family:Cormorant Garamond,serif;font-size:56px;font-weight:300;line-height:1;color:'+bandColor+'">'+sc.total+'</span>'+
+      '<span style="font-size:14px;color:var(--muted)">/175 · '+bandText+'</span>'+
+    '</div>'+
+    '<div class="score-bar-wrap">'+
+      '<div class="score-bar-bg">'+
+        '<div class="score-bar-fill" style="width:'+pct+'%;background:'+bandColor+'"></div>'+
+        '<div class="score-marker" style="left:'+cutPct+'%;background:#E8943A;opacity:.8"></div>'+
+      '</div>'+
+      '<div class="score-labels"><span>25</span><span style="color:#E8943A">Corte: 100</span><span>175</span></div>'+
+    '</div>'+
+    '<div class="interp-text">'+desc+'</div>';
+
+  // Subscale card
+  var subDescs = {
+    C: 'Estratégias para compensar ativamente dificuldades sociais — copiar linguagem corporal, aprender scripts sociais, estudar regras de interação.',
+    M: 'Estratégias para esconder características autísticas — forçar contato visual, controlar expressões, suprimir comportamentos típicos.',
+    A: 'Estratégias para tentar se encaixar em grupos sociais — forçar ou evitar interações, fingir se sentir confortável.'
+  };
+  var subMaxes = {C:63, M:56, A:56};
+  var subRows = ['C','M','A'].map(function(s){
+    var val = s==='C'?sc.comp:s==='M'?sc.mask:sc.assi;
+    var mx = subMaxes[s];
+    var pct2 = (val/mx)*100;
+    var col = SUB_COLORS[s];
+    return '<div class="sub-score-row">'+
+      '<div class="ssr-label">'+SUB_ICONS[s]+' <span style="color:'+col+'">'+SUB_NAMES[s]+'</span></div>'+
+      '<div class="ssr-bar-bg"><div class="ssr-bar-fill" style="width:'+pct2+'%;background:'+col+'"></div></div>'+
+      '<div class="ssr-val" style="color:'+col+'">'+val+'/'+mx+'</div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin:-8px 0 14px 122px;line-height:1.5">'+subDescs[s]+'</div>';
+  }).join('');
+  document.getElementById('subCard').innerHTML =
+    '<h3>Pontuação por Subescala</h3>'+
+    '<div class="rc-sub">Perfil detalhado das três estratégias de camuflagem avaliadas.</div>'+
+    subRows;
+
+  // Item review
+  var revHtml='<h3>Respostas por Item</h3>'+
+    '<div class="rc-sub">Pontuação calculada (itens reversíveis já ajustados).</div>'+
+    '<div class="ir-grid">';
+  QUESTIONS.forEach(function(q,i){
+    var raw = answers[i]||0;
+    var scored = q.rev?(8-raw):raw;
+    var col = SUB_COLORS[q.sub];
+    var scoreColor = scored<=3?'#E8943A':scored<=5?'#4AABAB':'#6DC44A';
+    revHtml += '<div class="ir-item" style="border-left:2px solid '+col+'22">'+
+      '<div class="ir-q">'+q.n+'. '+SUB_NAMES[q.sub]+(q.rev?' ↔':'')+'</div>'+
+      '<div class="ir-ans" style="color:'+scoreColor+'">'+SCALE_LABELS[raw]+ (q.rev?' → '+scored+' pts':' ('+scored+' pts)')+'</div>'+
+    '</div>';
+  });
+  revHtml += '</div>';
+  document.getElementById('reviewCard').innerHTML = revHtml;
+
+  showScreen('s-results');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58],violet=[139,111,190],rose=[212,96,122];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var sc = calcScores();
+  var bandColor = sc.total>=140?red:sc.total>=100?amber:green;
+  var bandText  = sc.total>=140?'Camuflagem elevada':sc.total>=100?'Acima do ponto de corte':'Abaixo do ponto de corte';
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO DO ESPECTRO AUTISTA  ·  CAT-Q',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text('Questionário de Camuflagem de Traços Autísticos',W/2,25,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,35,{align:'center'});
+  doc.text('paulogomespsicologo.com  ·  Baseado em Hull et al. (2019)',W/2,42,{align:'center'});
+  y=60;
+
+  // Hero
+  chk(34);
+  sf(navy);doc.roundedRect(M,y,W-M*2,28,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('PONTUAÇÃO TOTAL (CAT-Q)',W/2,y+6,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(32);
+  doc.text(String(sc.total),W/2-7,y+20,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(12);
+  doc.text('/175',W/2-5,y+20);
+  sf(bandColor);doc.roundedRect(W/2+12,y+12,52,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(bandText,W/2+38,y+19,{align:'center'});
+  y+=36;
+
+  // Subscores
+  chk(28);
+  var subData=[{n:'Compensação',v:sc.comp,mx:63,c:teal},{n:'Mascaramento',v:sc.mask,mx:56,c:violet},{n:'Assimilação',v:sc.assi,mx:56,c:rose}];
+  var sw=(W-M*2)/3;
+  subData.forEach(function(s,i){
+    var x=M+i*sw;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(x,y,sw-4,22,3,3,'FD');
+    st(s.c);doc.setFont('helvetica','bold');doc.setFontSize(18);
+    doc.text(String(s.v),x+sw/2-2,y+13,{align:'center'});
+    st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text('/'+s.mx,x+sw/2+4,y+13);
+    st(muted);doc.setFontSize(7.5);doc.text(s.n,x+sw/2-2,y+20,{align:'center'});
+  });
+  y+=30;
+
+  // Score bar
+  chk(18);
+  var barW=W-M*2;
+  var fillW=(sc.total-25)/150*barW;
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(M,y,barW,8,3,3,'FD');
+  sf(bandColor);doc.roundedRect(M,y,Math.min(fillW,barW),8,3,3,'F');
+  var cutX=M+(100-25)/150*barW;
+  sf(amber);doc.rect(cutX-1,y,2,8,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('25',M,y+13);doc.text('Corte: 100',cutX,y+13,{align:'center'});doc.text('175',W-M,y+13,{align:'right'});
+  y+=20;
+
+  // Interpretation
+  chk(24);
+  sf(bandColor);doc.rect(M,y,3,18,'F');
+  st(bandColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text(bandText,M+8,y+8);
+  st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var descP=sc.total>=140?'Uso intenso de estratégias de camuflagem. Avaliação especializada minuciosa é fundamental.':sc.total>=100?'Pontuação acima do ponto de corte (≥ 100). Avaliação neuropsicológica especializada em TEA é recomendada.':'Pontuação abaixo do ponto de corte. Isso não exclui TEA — o CAT-Q deve ser interpretado como parte de uma avaliação clínica abrangente.';
+  var il=doc.splitTextToSize(descP,W-M*2-10);doc.text(il,M+8,y+15);
+  y+=il.length*4.5+14;
+
+  // Item table
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Respostas por Item',M,y);y+=8;
+  var bw2=(W-M*2)/2;
+  QUESTIONS.forEach(function(q,i){
+    if(i%2===0) chk(10);
+    var raw=answers[i]||0;
+    var scored=q.rev?(8-raw):raw;
+    var xPos=M+(i%2)*bw2;
+    var sc2=SUB_COLORS[q.sub];
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    var txt=q.n+'. '+q.text.substring(0,40)+(q.text.length>40?'…':'');
+    doc.text(txt,xPos,y+(i%2===0?4:4));
+    st(scored>=5?green:scored>=3?teal:amber);doc.setFont('helvetica','bold');
+    doc.text(String(scored),xPos+bw2-8,y+(i%2===0?4:4),{align:'right'});
+    if(i%2===1) y+=9;
+  });
+  if(QUESTIONS.length%2!==0) y+=9;
+
+  chk(22);y+=6;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('catq-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

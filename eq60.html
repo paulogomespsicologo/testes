@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EQ – Quociente de Empatia – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;--rose:#D4607A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(212,96,122,.2) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(74,171,171,.15) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,5vw,48px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:500px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--rose),var(--violet),var(--teal-d));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:700px;margin:0 auto;padding:28px 16px 0;}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:24px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:20px;}
+.notice{background:rgba(90,122,138,.07);border:1.5px solid rgba(90,122,138,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#3A5A6A;line-height:1.65;margin-bottom:20px;text-align:left;}
+
+/* ref cards */
+.ref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.ref-card{border-radius:12px;padding:14px 12px;text-align:center;border:1.5px solid;}
+.ref-card .rv{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;display:block;line-height:1;}
+.ref-card .rl{font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px;}
+
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* scale ref sticky */
+.scale-ref{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;margin-bottom:12px;position:sticky;top:52px;z-index:50;}
+.scale-ref p{font-size:12px;color:var(--muted);margin-bottom:8px;font-style:italic;}
+.scale-chips-4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.schip4{border-radius:7px;padding:7px 4px;text-align:center;border:1px solid var(--border);background:var(--bg);}
+.schip4 .sv{font-size:10px;font-weight:600;display:block;color:var(--navy);}
+.schip4 .sl{font-size:8.5px;color:var(--muted);line-height:1.3;margin-top:2px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:7px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 2px 10px rgba(27,58,92,.07);}
+.q-num{font-size:10px;color:var(--muted);letter-spacing:.5px;margin-bottom:6px;}
+.q-text{font-size:13px;line-height:1.65;margin-bottom:10px;font-weight:400;}
+.scale-row-4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.sbt4{padding:9px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3;}
+.sbt4:hover{border-color:var(--teal-d);color:var(--ink);}
+.sbt4.sel{color:#fff;border-color:transparent;}
+
+/* RESULTS */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(212,96,122,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,4vw,28px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.hero-score{display:flex;align-items:baseline;gap:6px;margin-top:14px;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#fff;line-height:1;}
+.hs-max{font-size:18px;color:rgba(255,255,255,.4);}
+.hero-band{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+.hero-refs{display:flex;gap:14px;margin-top:16px;flex-wrap:wrap;}
+.hr-item{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 16px;text-align:center;}
+.hr-val{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#fff;display:block;line-height:1;}
+.hr-lbl{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;display:block;margin-top:3px;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.score-bar-bg{height:12px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);position:relative;margin:10px 0 4px;}
+.score-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.score-marker{position:absolute;top:-4px;width:3px;height:20px;border-radius:99px;transform:translateX(-50%);}
+.score-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* review */
+.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;}
+.rv-item{border-radius:9px;padding:8px 10px;border:1px solid var(--border);font-size:11px;line-height:1.45;}
+.rv-q{color:var(--muted);margin-bottom:3px;font-size:10px;}
+.rv-ans{font-weight:500;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){
+  .intro-card{padding:28px 18px;}
+  .ref-grid{grid-template-columns:1fr 1fr 1fr;}
+  .review-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Triagem do Espectro Autista</div>
+  <h1>EQ — Quociente<br>de <strong>Empatia</strong></h1>
+  <p>Questionário de autorrelato de 60 itens que mede a capacidade empática — a habilidade de compreender o estado emocional e mental de outras pessoas. Desenvolvido por Baron-Cohen & Wheelwright (2004).</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baron-Cohen & Wheelwright (2004) · Para adultos</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 60</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como você se conecta com as pessoas?</h2>
+    <p>Este questionário avalia sua capacidade de empatia — reconhecer e compreender o estado emocional de outras pessoas. Responda com base em como você <strong>realmente</strong> se comporta, não como gostaria de ser.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card" style="border-color:rgba(192,58,58,.3);background:rgba(192,58,58,.04)">
+        <span class="rv" style="color:#C03A3A">≤ 30</span>
+        <span class="rl">81% dos casos de Asperger/TEA nível 1</span>
+      </div>
+      <div class="ref-card" style="border-color:rgba(74,171,171,.3);background:rgba(74,171,171,.04)">
+        <span class="rv" style="color:var(--teal-d)">42</span>
+        <span class="rl">Média homens neurotípicos</span>
+      </div>
+      <div class="ref-card" style="border-color:rgba(212,96,122,.3);background:rgba(212,96,122,.04)">
+        <span class="rv" style="color:var(--rose)">47</span>
+        <span class="rl">Média mulheres neurotípicas</span>
+      </div>
+    </div>
+
+    <div class="notice">
+      ⚠️ O EQ é uma ferramenta de <strong>triagem</strong>, não diagnóstico. Pontuações ≤ 30 indicam empatia reduzida, frequente em TEA — mas o diagnóstico requer avaliação clínica multidisciplinar especializada. O questionário contém <strong>20 itens controle</strong> (não pontuam) intercalados entre os 40 itens de empatia.
+    </div>
+
+    <div class="intro-stats">
+      <div class="stat"><strong>60</strong><span>itens totais</span></div>
+      <div class="stat"><strong>40</strong><span>itens de empatia</span></div>
+      <div class="stat"><strong>0–80</strong><span>pontuação</span></div>
+      <div class="stat"><strong>≤ 30</strong><span>ponto de corte</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div class="scale-ref">
+    <p>Para cada afirmação, escolha a opção que melhor descreve como você <strong>realmente</strong> é:</p>
+    <div class="scale-chips-4">
+      <div class="schip4"><span class="sv">CP</span><span class="sl">Concordo plenamente</span></div>
+      <div class="schip4"><span class="sv">CP+</span><span class="sl">Concordo um pouco</span></div>
+      <div class="schip4"><span class="sv">DP+</span><span class="sl">Discordo um pouco</span></div>
+      <div class="schip4"><span class="sv">DP</span><span class="sl">Discordo plenamente</span></div>
+    </div>
+  </div>
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">EQ — Quociente de Empatia</div>
+    <div class="rh-title" id="rhTitle">—</div>
+    <div class="rh-sub" id="rhSub">—</div>
+    <div class="hero-score">
+      <span class="hs-num" id="hsNum">—</span>
+      <span class="hs-max">/80</span>
+    </div>
+    <div class="hero-band" id="heroBand">—</div>
+    <div class="hero-refs">
+      <div class="hr-item"><span class="hr-val" style="color:rgba(192,58,58,.8)">≤ 30</span><span class="hr-lbl">Corte TEA/Asperger</span></div>
+      <div class="hr-item"><span class="hr-val" style="color:rgba(74,171,171,.8)">42</span><span class="hr-lbl">Média ♂ neurotípico</span></div>
+      <div class="hr-item"><span class="hr-val" style="color:rgba(212,96,122,.8)">47</span><span class="hr-lbl">Média ♀ neurotípica</span></div>
+    </div>
+  </div>
+
+  <div class="result-card" id="interpCard"></div>
+  <div class="result-card" id="reviewCard"></div>
+
+  <div class="cta-box">
+    <p>Quer uma avaliação neuropsicológica completa e especializada para TEA em adultos?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// EQ-60 QUESTIONS
+// empathy: true = pontuação; false = item controle (não pontua)
+// score1: 'agree' ou 'disagree' — direção que pontua 1 ponto
+// Pontuação: agree_fully ou disagree_fully = 2 pts; partly = 1 pt (na direção correta)
+// ═══════════════════════════════════════
+var QUESTIONS = [
+  {n:1,  text:'Reconheço facilmente quando alguém quer entrar na conversa.',         empathy:true,  score1:'agree'},
+  {n:2,  text:'Prefiro animais a humanos.',                                            empathy:false, score1:null},
+  {n:3,  text:'Procuro acompanhar a moda e as tendências atuais.',                    empathy:false, score1:null},
+  {n:4,  text:'Acho difícil explicar a alguém algo que para mim é simples, quando essa pessoa não entende de primeira.', empathy:true, score1:'disagree'},
+  {n:5,  text:'Sonho quase todas as noites.',                                          empathy:false, score1:null},
+  {n:6,  text:'Eu realmente gosto de cuidar de outras pessoas.',                      empathy:true,  score1:'agree'},
+  {n:7,  text:'Prefiro resolver meus próprios problemas a discuti-los com alguém.',   empathy:true,  score1:'disagree'},
+  {n:8,  text:'Acho difícil agir em ocasiões sociais.',                               empathy:true,  score1:'disagree'},
+  {n:9,  text:'Pela manhã me sinto ótimo(a).',                                        empathy:false, score1:null},
+  {n:10, text:'As pessoas sempre me dizem que, numa discussão, demoro a chegar ao ponto.', empathy:true, score1:'disagree'},
+  {n:11, text:'Não me incomodo em chegar atrasado a um encontro com um(a) amigo(a).', empathy:true, score1:'disagree'},
+  {n:12, text:'Amizades e relacionamentos são tão complicados que acabo não me ocupando com isso.', empathy:true, score1:'disagree'},
+  {n:13, text:'Nunca quebraria a lei, por menor que fosse o delito.',                 empathy:false, score1:null},
+  {n:14, text:'Acho difícil julgar se um ato é educado ou grosseiro.',                empathy:true,  score1:'disagree'},
+  {n:15, text:'Numa conversa, costumo me focar mais nos meus pensamentos do que nos possíveis pensamentos do meu interlocutor.', empathy:true, score1:'disagree'},
+  {n:16, text:'Gosto mais de "pegadinhas" do que de piadas.',                         empathy:false, score1:null},
+  {n:17, text:'Prefiro viver o presente do que me preocupar com o futuro.',           empathy:false, score1:null},
+  {n:18, text:'Quando eu era criança, gostava de cortar minhocas para ver o que acontecia.', empathy:true, score1:'disagree'},
+  {n:19, text:'Consigo descobrir facilmente se alguém está dizendo uma coisa e querendo dizer outra.', empathy:true, score1:'agree'},
+  {n:20, text:'Tenho opiniões muito fortes acerca de moral.',                          empathy:false, score1:null},
+  {n:21, text:'Não entendo o porquê de algumas coisas aborrecerem tanto as pessoas.', empathy:true,  score1:'disagree'},
+  {n:22, text:'Acho fácil me colocar no lugar de outra pessoa.',                      empathy:true,  score1:'agree'},
+  {n:23, text:'Acho que boas maneiras são a coisa mais importante que os pais podem ensinar aos filhos.', empathy:false, score1:null},
+  {n:24, text:'Gosto de fazer as coisas de acordo com o momento.',                    empathy:false, score1:null},
+  {n:25, text:'Sei dizer como alguém se sente.',                                      empathy:true,  score1:'agree'},
+  {n:26, text:'Percebo logo quando alguém num grupo se sente estranho ou desconfortável.', empathy:true, score1:'agree'},
+  {n:27, text:'Se alguém se ofende com o que eu digo é problema da pessoa, não meu.', empathy:true, score1:'disagree'},
+  {n:28, text:'Se alguém me perguntasse se eu gostei do novo corte de cabelo, responderia a verdade, mesmo se não tivesse gostado.', empathy:false, score1:null},
+  {n:29, text:'Não é sempre que sei dizer se alguém se ofendeu com um comentário.',   empathy:true,  score1:'disagree'},
+  {n:30, text:'As pessoas sempre me dizem que sou muito imprevisível.',               empathy:false, score1:null},
+  {n:31, text:'Gosto de ser o centro das atenções nas reuniões.',                     empathy:false, score1:null},
+  {n:32, text:'Não fico triste ao ver pessoas chorando.',                             empathy:true,  score1:'disagree'},
+  {n:33, text:'Gosto de discutir política.',                                           empathy:false, score1:null},
+  {n:34, text:'Sou muito franco(a), e algumas pessoas interpretam isso como rudeza, mesmo quando não é minha intenção ser rude.', empathy:true, score1:'disagree'},
+  {n:35, text:'Não acho situações sociais confusas.',                                  empathy:true,  score1:'agree'},
+  {n:36, text:'Outras pessoas me falam que sou bom/boa em dizer o que estão sentindo e o que estão pensando.', empathy:true, score1:'agree'},
+  {n:37, text:'Quando converso com as pessoas, costumo falar mais sobre suas experiências do que sobre as minhas.', empathy:true, score1:'agree'},
+  {n:38, text:'Não gosto de ver animais sofrendo.',                                   empathy:true,  score1:'agree'},
+  {n:39, text:'Sou capaz de tomar decisões sem ser influenciado(a) pelo sentimento alheio.', empathy:true, score1:'disagree'},
+  {n:40, text:'Não consigo relaxar até terminar de fazer tudo o que eu planejei para aquele dia.', empathy:false, score1:null},
+  {n:41, text:'Para mim é fácil dizer se alguém está interessado ou aborrecido com o que estou dizendo.', empathy:true, score1:'agree'},
+  {n:42, text:'Fico triste quando vejo pessoas sofrendo em noticiários.',             empathy:true,  score1:'agree'},
+  {n:43, text:'Meus amigos sempre falam de seus problemas para mim, pois acham que sou muito compreensivo(a).', empathy:true, score1:'agree'},
+  {n:44, text:'Consigo perceber se estou me intrometendo, mesmo quando a outra pessoa não me diz.', empathy:true, score1:'agree'},
+  {n:45, text:'Frequentemente começo novos hobbies, mas logo me canso deles e me ocupo com outra coisa.', empathy:false, score1:null},
+  {n:46, text:'As pessoas me dizem que eu fui longe demais com provocações.',         empathy:true,  score1:'disagree'},
+  {n:47, text:'Ficaria nervoso(a) demais para dar uma volta numa grande montanha-russa.', empathy:false, score1:null},
+  {n:48, text:'Outras pessoas sempre dizem que sou insensível, apesar de eu nem sempre ver a razão disso.', empathy:true, score1:'disagree'},
+  {n:49, text:'Se percebo que há um estranho num grupo, acho que o esforço de incluí-lo deve vir do grupo.', empathy:true, score1:'disagree'},
+  {n:50, text:'Quando assisto a um filme, minhas emoções geralmente permanecem distanciadas.', empathy:true, score1:'disagree'},
+  {n:51, text:'Gosto de ter um dia a dia bem organizado e sempre faço uma lista dos meus afazeres.', empathy:false, score1:null},
+  {n:52, text:'Consigo me sintonizar com os sentimentos de outra pessoa rápida e intuitivamente.', empathy:true, score1:'agree'},
+  {n:53, text:'Não gosto de arriscar.',                                               empathy:false, score1:null},
+  {n:54, text:'Consigo facilmente "captar" um assunto que seja de interesse do meu interlocutor.', empathy:true, score1:'agree'},
+  {n:55, text:'Consigo facilmente dizer se alguém está mascarando uma emoção verdadeira.', empathy:true, score1:'agree'},
+  {n:56, text:'Antes de tomar uma decisão, sempre avalio os prós e os contras.',     empathy:false, score1:null},
+  {n:57, text:'Não elaboro conscientemente as regras das situações sociais.',         empathy:true,  score1:'disagree'},
+  {n:58, text:'Sou bom/boa em prever o que os outros vão fazer.',                    empathy:true,  score1:'agree'},
+  {n:59, text:'Costumo me envolver emocionalmente com o problema de um(a) amigo(a).', empathy:true, score1:'agree'},
+  {n:60, text:'Geralmente consigo avaliar o ponto de vista de outra pessoa, mesmo quando não concordo com o mesmo.', empathy:true, score1:'agree'}
+];
+
+var OPTS = ['Concordo plenamente','Concordo um pouco','Discordo um pouco','Discordo plenamente'];
+var OPT_KEYS = ['agree_fully','agree_partly','disagree_partly','disagree_fully'];
+
+// Scoring: 
+// empathy item: agree_fully→2pts if score1=agree, 1pt if partly
+// empathy item: disagree_fully→2pts if score1=disagree, 1pt if partly
+// control items: always 0
+function calcItemScore(q, key){
+  if(!q.empathy || !key) return 0;
+  var dir = key.startsWith('agree') ? 'agree' : 'disagree';
+  var fully = key.endsWith('fully');
+  if(dir === q.score1) return fully ? 2 : 1;
+  return 0;
+}
+
+var answers = {};
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML = '';
+  QUESTIONS.forEach(function(q, i){
+    var ans = answers[i];
+    var isControl = !q.empathy;
+    var borderColor = isControl ? 'rgba(90,122,138,.2)' : 'rgba(212,96,122,.2)';
+    var labelColor = isControl ? 'var(--muted)' : 'var(--rose)';
+    var tag = isControl ? '' : '';
+
+    var btns = OPTS.map(function(label, vi){
+      var key = OPT_KEYS[vi];
+      var isSel = ans === key;
+      var bcolor = vi < 2 ? '#4AABAB' : '#D4607A';
+      return '<button class="sbt4'+(isSel?' sel':'')+'" id="qb-'+i+'-'+vi+'" '+
+        'style="'+(isSel?'background:'+bcolor+';':'')+'" '+
+        'onclick="setAns('+i+','+vi+',\''+key+'\')">'+label+'</button>';
+    }).join('');
+
+    c.innerHTML +=
+      '<div class="q-card'+(ans!==undefined?' answered':'')+'" id="qc-'+i+'" style="border-color:'+borderColor+'">'+
+        '<div class="q-num" style="color:'+labelColor+'">'+q.n+'. '+(isControl?'Item controle':'Item de empatia')+'</div>'+
+        '<div class="q-text">'+q.text+'</div>'+
+        '<div class="scale-row-4">'+btns+'</div>'+
+      '</div>';
+  });
+  updateProg();
+}
+
+function setAns(idx, vi, key){
+  answers[idx] = key;
+  OPTS.forEach(function(_, v){
+    var b = document.getElementById('qb-'+idx+'-'+v);
+    if(!b) return;
+    var bc = v < 2 ? '#4AABAB' : '#D4607A';
+    if(v===vi){ b.className='sbt4 sel'; b.style.background=bc; }
+    else{ b.className='sbt4'; b.style.background=''; }
+  });
+  document.getElementById('qc-'+idx).className='q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n = Object.keys(answers).length;
+  document.getElementById('progFill').style.width=(n/60*100)+'%';
+  document.getElementById('progTxt').textContent=n+' / 60';
+  document.getElementById('pgInfo').textContent=n+' de 60 respondidas';
+}
+
+function calcTotal(){
+  var total=0;
+  QUESTIONS.forEach(function(q,i){
+    total += calcItemScore(q, answers[i]);
+  });
+  return total;
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goIntro(){ document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+function startTest(){ buildQuestions(); document.getElementById('progBar').style.display='flex'; showScreen('s-questions'); }
+function restartTest(){ answers={}; document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+// ═══════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════
+function showResults(){
+  var score = calcTotal();
+  var bandColor, bandText, title, desc;
+
+  if(score <= 30){
+    bandColor='#C03A3A'; bandText='Empatia reduzida (≤ 30)';
+    title='Pontuação abaixo do ponto de corte — empatia reduzida';
+    desc='A pontuação está abaixo de 30, faixa associada a empatia reduzida e presente em 81% dos casos de Síndrome de Asperger/TEA nível 1. Isso não confirma diagnóstico — uma avaliação clínica e neuropsicológica especializada é necessária para interpretação adequada.';
+  } else if(score <= 42){
+    bandColor='#E8943A'; bandText='Empatia abaixo da média masculina';
+    title='Empatia abaixo da média para homens neurotípicos';
+    desc='A pontuação está abaixo da média masculina (42), mas acima do ponto de corte. Pode indicar empatia moderadamente reduzida, mas não é por si só indicativo de TEA.';
+  } else if(score <= 47){
+    bandColor='#4AABAB'; bandText='Empatia dentro da média masculina';
+    title='Empatia dentro dos parâmetros esperados';
+    desc='A pontuação está dentro ou próxima da média masculina neurotípica (42) e abaixo da média feminina (47), sugerindo capacidade empática preservada.';
+  } else {
+    bandColor='#6DC44A'; bandText='Empatia elevada';
+    title='Empatia acima da média — capacidade empática elevada';
+    desc='A pontuação está acima da média feminina neurotípica (47), indicando capacidade empática bem desenvolvida — facilidade em reconhecer e responder ao estado emocional de outros.';
+  }
+
+  document.getElementById('hsNum').textContent=score;
+  document.getElementById('rhTitle').textContent=title;
+  document.getElementById('rhSub').textContent='Pontuação '+score+'/80 · Ponto de corte: ≤ 30';
+  var band=document.getElementById('heroBand');
+  band.textContent=bandText; band.style.background=bandColor+'22'; band.style.color=bandColor; band.style.border='1px solid '+bandColor+'44';
+
+  // Interp card
+  var pct=score/80*100;
+  document.getElementById('interpCard').innerHTML=
+    '<h3>Pontuação Total</h3>'+
+    '<div class="rc-sub">EQ-60 — Baron-Cohen & Wheelwright (2004). Escala 0–80. Ponto de corte: ≤ 30 pontos. Médias: ♂ 42 · ♀ 47.</div>'+
+    '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'+
+      '<span style="font-family:Cormorant Garamond,serif;font-size:56px;font-weight:300;line-height:1;color:'+bandColor+'">'+score+'</span>'+
+      '<span style="font-size:14px;color:var(--muted)">/80 · '+bandText+'</span>'+
+    '</div>'+
+    '<div class="score-bar-bg">'+
+      '<div class="score-bar-fill" style="width:'+pct+'%;background:'+bandColor+'"></div>'+
+      '<div class="score-marker" style="left:'+(30/80*100)+'%;background:#C03A3A;opacity:.8"></div>'+
+      '<div class="score-marker" style="left:'+(42/80*100)+'%;background:#4AABAB;opacity:.8"></div>'+
+      '<div class="score-marker" style="left:'+(47/80*100)+'%;background:#D4607A;opacity:.8"></div>'+
+    '</div>'+
+    '<div class="score-labels">'+
+      '<span>0</span>'+
+      '<span style="color:#C03A3A">Corte ≤30</span>'+
+      '<span style="color:#4AABAB">♂ 42</span>'+
+      '<span style="color:#D4607A">♀ 47</span>'+
+      '<span>80</span>'+
+    '</div>'+
+    '<div class="interp-text">'+desc+'</div>';
+
+  // Review — only empathy items
+  var empItems = QUESTIONS.filter(function(q){return q.empathy;});
+  var revHtml='<h3>Respostas — Itens de Empatia (40)</h3>'+
+    '<div class="rc-sub">Somente os 40 itens que pontuam são exibidos. Os 20 itens controle não contribuem para o escore.</div>'+
+    '<div class="review-grid">';
+  QUESTIONS.forEach(function(q,i){
+    if(!q.empathy) return;
+    var key=answers[i];
+    var s=calcItemScore(q,key);
+    var ansLabel=key!==undefined?OPTS[OPT_KEYS.indexOf(key)]:'—';
+    var sColor=s===2?'#6DC44A':s===1?'#4AABAB':'#C03A3A';
+    revHtml+='<div class="rv-item">'+
+      '<div class="rv-q">'+q.n+'. '+q.text.substring(0,50)+(q.text.length>50?'…':'')+'</div>'+
+      '<div class="rv-ans" style="color:'+sColor+'">'+ansLabel+' → '+s+' pt'+(s!==1?'s':'')+'</div>'+
+    '</div>';
+  });
+  revHtml+='</div>';
+  document.getElementById('reviewCard').innerHTML=revHtml;
+
+  showScreen('s-results');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58],rose=[212,96,122];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var score=calcTotal();
+  var bColor=score<=30?red:score<=42?amber:score<=47?teal:green;
+  var bText=score<=30?'Empatia reduzida':score<=42?'Abaixo da média masc.':score<=47?'Dentro da média':'Empatia elevada';
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('TRIAGEM DO ESPECTRO AUTISTA  ·  EQ-60',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Quociente de Empatia (EQ)',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com  ·  Baron-Cohen & Wheelwright (2004)',W/2,43,{align:'center'});
+  y=60;
+
+  // Hero
+  chk(32);
+  sf(navy);doc.roundedRect(M,y,W-M*2,26,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('PONTUAÇÃO TOTAL (EQ-60)',W/2,y+6,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(30);
+  doc.text(String(score),W/2-5,y+19,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(12);
+  doc.text('/80',W/2-3,y+19);
+  sf(bColor);doc.roundedRect(W/2+10,y+11,52,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(bText,W/2+36,y+18,{align:'center'});
+  y+=34;
+
+  // Ref bars
+  chk(18);
+  var barW=W-M*2;
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(M,y,barW,8,3,3,'FD');
+  sf(bColor);doc.roundedRect(M,y,(score/80)*barW,8,3,3,'F');
+  sf(red);doc.rect(M+(30/80)*barW-1,y,2,8,'F');
+  sf(teal);doc.rect(M+(42/80)*barW-1,y,2,8,'F');
+  sf(rose);doc.rect(M+(47/80)*barW-1,y,2,8,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0',M,y+13);doc.text('Corte 30',M+(30/80)*barW,y+13,{align:'center'});
+  doc.text('♂ 42',M+(42/80)*barW,y+13,{align:'center'});doc.text('♀ 47',M+(47/80)*barW,y+13,{align:'center'});
+  doc.text('80',W-M,y+13,{align:'right'});
+  y+=20;
+
+  // Interpretation
+  chk(22);
+  sf(bColor);doc.rect(M,y,3,18,'F');
+  st(bColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text(bText,M+8,y+8);
+  st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var dp=score<=30?'Pontuação abaixo de 30 — empatia reduzida, presente em 81% dos casos de Asperger/TEA nível 1. Avaliação especializada recomendada.':score<=42?'Pontuação abaixo da média masculina (42). Empatia moderadamente reduzida — não diagnóstico isolado de TEA.':score<=47?'Pontuação dentro da faixa masculina neurotípica. Capacidade empática preservada.':'Pontuação acima da média feminina (47). Capacidade empática muito desenvolvida.';
+  var il=doc.splitTextToSize(dp,W-M*2-10);doc.text(il,M+8,y+15);
+  y+=il.length*4.5+14;
+
+  // Item table — only empathy items
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Itens de Empatia (40 itens pontuados)',M,y);y+=8;
+  var bw3=(W-M*2)/2;
+  var ei=0;
+  QUESTIONS.forEach(function(q,i){
+    if(!q.empathy) return;
+    if(ei%2===0) chk(10);
+    var key=answers[i]; var s=calcItemScore(q,key);
+    var xPos=M+(ei%2)*bw3;
+    st(s>0?green:muted);doc.setFont('helvetica',s>0?'bold':'normal');doc.setFontSize(8);
+    var txt=q.n+'. '+q.text.substring(0,44)+(q.text.length>44?'…':'');
+    doc.text(txt,xPos,y+(ei%2===0?4:4));
+    st(s>0?green:muted);doc.setFont('helvetica','bold');
+    doc.text(String(s),xPos+bw3-8,y+(ei%2===0?4:4),{align:'right'});
+    if(ei%2===1) y+=9;
+    ei++;
+  });
+  if(ei%2!==0) y+=9;
+
+  chk(22);y+=6;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('eq60-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>

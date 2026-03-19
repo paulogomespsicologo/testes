@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AQ – Quociente do Espectro Autista – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+  --s1:#4AABAB;  /* Habilidades sociais */
+  --s2:#8B6FBE;  /* Mudanças de atenção */
+  --s3:#D4607A;  /* Atenção a detalhes */
+  --s4:#E8943A;  /* Comunicação */
+  --s5:#6DC44A;  /* Imaginação */
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(74,171,171,.2) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(139,111,190,.15) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,5vw,48px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:500px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--s1),var(--s2),var(--s3),var(--s4),var(--s5));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:700px;margin:0 auto;padding:28px 16px 0;}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:24px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:20px;}
+.notice{background:rgba(90,122,138,.07);border:1.5px solid rgba(90,122,138,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#3A5A6A;line-height:1.65;margin-bottom:20px;text-align:left;}
+
+/* Sub legend */
+.sub-legend{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px;}
+.sub-chip{border-radius:10px;padding:10px 6px;text-align:center;border:1.5px solid;}
+.sub-chip .sn{font-size:10px;font-weight:600;display:block;margin-bottom:2px;line-height:1.3;}
+.sub-chip .si{font-size:9px;color:var(--muted);display:block;}
+
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* SCALE LEGEND */
+.scale-ref{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:12px;position:sticky;top:52px;z-index:50;}
+.scale-ref p{font-size:12px;color:var(--muted);margin-bottom:8px;font-style:italic;}
+.scale-chips-4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.schip4{border-radius:8px;padding:8px 6px;text-align:center;border:1px solid var(--border);background:var(--bg);}
+.schip4 .sv{font-size:11px;font-weight:600;display:block;color:var(--navy);}
+.schip4 .sl{font-size:9px;color:var(--muted);line-height:1.3;margin-top:2px;}
+
+/* SUB HEADERS */
+.sub-header{display:flex;align-items:center;gap:10px;margin:20px 0 8px;padding:10px 14px;border-radius:10px;}
+.sh-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;}
+.sh-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:8px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 2px 10px rgba(27,58,92,.07);}
+.q-num{font-size:10px;color:var(--muted);letter-spacing:.5px;margin-bottom:6px;}
+.q-text{font-size:13px;line-height:1.65;margin-bottom:11px;font-weight:400;}
+.scale-row-4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.sbt4{padding:10px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3;}
+.sbt4:hover{border-color:var(--teal-d);color:var(--ink);}
+.sbt4.sel{color:#fff;border-color:transparent;}
+
+/* RESULTS */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(74,171,171,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,4vw,28px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.hero-score{display:flex;align-items:baseline;gap:6px;margin-top:14px;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#fff;line-height:1;}
+.hs-max{font-size:18px;color:rgba(255,255,255,.4);}
+.hero-band{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+.hero-subs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px;}
+.hs-sub{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 6px;text-align:center;}
+.hs-sub-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;display:block;line-height:1;}
+.hs-sub-lbl{font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.3px;display:block;margin-top:3px;line-height:1.3;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.score-bar-bg{height:12px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);position:relative;margin:10px 0 4px;}
+.score-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.score-marker{position:absolute;top:-4px;width:3px;height:20px;border-radius:99px;transform:translateX(-50%);}
+.score-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+
+/* Sub bars */
+.sub-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sbr-lbl{min-width:120px;font-size:12px;}
+.sbr-bg{flex:1;height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.sbr-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+.sbr-val{font-size:12px;font-weight:500;min-width:36px;text-align:right;}
+
+/* Item review grid */
+.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.rv-item{border-radius:9px;padding:8px 10px;border:1px solid var(--border);font-size:11px;line-height:1.45;}
+.rv-q{color:var(--muted);margin-bottom:3px;font-size:10px;}
+.rv-ans{font-weight:500;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:520px){
+  .intro-card{padding:28px 18px;}
+  .sub-legend{grid-template-columns:repeat(3,1fr);}
+  .hero-subs{grid-template-columns:repeat(3,1fr);}
+  .review-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Triagem do Espectro Autista</div>
+  <h1>AQ — Quociente do<br><strong>Espectro Autista</strong></h1>
+  <p>Escala de autorrelato de 50 itens para triagem de características do espectro autista em adultos. Desenvolvida por Baron-Cohen et al. (2001) na Universidade de Cambridge.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baron-Cohen et al. (2001) · Para adultos com inteligência média a alta</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 50</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como você percebe o mundo ao seu redor?</h2>
+    <p>Este questionário avalia características relacionadas ao espectro autista em adultos. Responda com base em como você <strong>realmente é</strong>, não como você gostaria de ser. Não há respostas certas ou erradas.</p>
+
+    <div class="sub-legend">
+      <div class="sub-chip" style="border-color:rgba(74,171,171,.4);background:rgba(74,171,171,.05)">
+        <span class="sn" style="color:var(--s1)">Habilidades Sociais</span>
+        <span class="si">10 itens</span>
+      </div>
+      <div class="sub-chip" style="border-color:rgba(139,111,190,.4);background:rgba(139,111,190,.05)">
+        <span class="sn" style="color:var(--s2)">Mudança de Atenção</span>
+        <span class="si">10 itens</span>
+      </div>
+      <div class="sub-chip" style="border-color:rgba(212,96,122,.4);background:rgba(212,96,122,.05)">
+        <span class="sn" style="color:var(--s3)">Atenção a Detalhes</span>
+        <span class="si">10 itens</span>
+      </div>
+      <div class="sub-chip" style="border-color:rgba(232,148,58,.4);background:rgba(232,148,58,.05)">
+        <span class="sn" style="color:var(--s4)">Comunicação</span>
+        <span class="si">10 itens</span>
+      </div>
+      <div class="sub-chip" style="border-color:rgba(109,196,74,.4);background:rgba(109,196,74,.05)">
+        <span class="sn" style="color:var(--s5)">Imaginação</span>
+        <span class="si">10 itens</span>
+      </div>
+    </div>
+
+    <div class="notice">
+      ⚠️ Este questionário é uma <strong>ferramenta de triagem</strong>, não um diagnóstico. Uma pontuação ≥ 32 indica maior probabilidade de características autísticas, mas o diagnóstico de TEA requer avaliação clínica multidisciplinar especializada.
+    </div>
+
+    <div class="intro-stats">
+      <div class="stat"><strong>50</strong><span>perguntas</span></div>
+      <div class="stat"><strong>0–50</strong><span>pontuação total</span></div>
+      <div class="stat"><strong>≥ 32</strong><span>ponto de corte</span></div>
+      <div class="stat"><strong>~10 min</strong><span>para completar</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div class="scale-ref">
+    <p>Para cada afirmação, escolha a opção que melhor descreve como você <strong>realmente</strong> é:</p>
+    <div class="scale-chips-4">
+      <div class="schip4"><span class="sv">CP</span><span class="sl">Concordo plenamente</span></div>
+      <div class="schip4"><span class="sv">CP+</span><span class="sl">Concordo um pouco</span></div>
+      <div class="schip4"><span class="sv">DP+</span><span class="sl">Discordo um pouco</span></div>
+      <div class="schip4"><span class="sv">DP</span><span class="sl">Discordo plenamente</span></div>
+    </div>
+  </div>
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">AQ — Quociente do Espectro Autista</div>
+    <div class="rh-title" id="rhTitle">—</div>
+    <div class="rh-sub" id="rhSub">—</div>
+    <div class="hero-score">
+      <span class="hs-num" id="hsNum">—</span>
+      <span class="hs-max">/50</span>
+    </div>
+    <div class="hero-band" id="heroBand">—</div>
+    <div class="hero-subs" id="heroSubs"></div>
+  </div>
+
+  <div class="result-card" id="interpCard"></div>
+  <div class="result-card" id="subCard"></div>
+  <div class="result-card" id="reviewCard"></div>
+
+  <div class="cta-box">
+    <p>Quer uma avaliação neuropsicológica completa e especializada para TEA em adultos?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// AQ-50 QUESTIONS
+// sub: 1=HabSociais, 2=MudAtencao, 3=AtDetalhes, 4=Comunicacao, 5=Imaginacao
+// score1: resposta que pontua 1 ponto ('agree'=concordar / 'disagree'=discordar)
+// ═══════════════════════════════════════
+var QUESTIONS = [
+  {n:1,  text:'Prefiro fazer coisas com outras pessoas do que sozinho(a).', sub:1, score1:'disagree'},
+  {n:2,  text:'Prefiro fazer as coisas sempre da mesma maneira.', sub:2, score1:'agree'},
+  {n:3,  text:'Quando tento imaginar uma coisa, tenho muita facilidade em criar uma imagem na minha mente.', sub:5, score1:'disagree'},
+  {n:4,  text:'Com frequência fico tão absorvido(a) com uma coisa que esqueço todo o resto.', sub:2, score1:'agree'},
+  {n:5,  text:'Frequentemente noto pequenos ruídos que outras pessoas não ouvem.', sub:3, score1:'agree'},
+  {n:6,  text:'Costumo prestar atenção aos números das placas dos automóveis ou a outras sequências de informação do mesmo tipo.', sub:3, score1:'agree'},
+  {n:7,  text:'As outras pessoas com frequência me dizem que falei algo indelicado, apesar de eu achar que fui delicado(a).', sub:4, score1:'agree'},
+  {n:8,  text:'Quando leio uma história, consigo imaginar facilmente a aparência dos personagens.', sub:5, score1:'disagree'},
+  {n:9,  text:'Sou fascinado(a) por datas.', sub:3, score1:'agree'},
+  {n:10, text:'Quando estou em grupo, tenho facilidade em seguir várias conversas ao mesmo tempo.', sub:1, score1:'disagree'},
+  {n:11, text:'Tenho facilidade em compreender situações sociais.', sub:1, score1:'disagree'},
+  {n:12, text:'Tenho tendência a notar detalhes que os outros não reparam.', sub:3, score1:'agree'},
+  {n:13, text:'Prefiro ir a uma biblioteca do que a uma festa.', sub:1, score1:'agree'},
+  {n:14, text:'Tenho facilidade em inventar histórias.', sub:5, score1:'disagree'},
+  {n:15, text:'Tenho maior tendência a me aproximar de pessoas do que de coisas.', sub:1, score1:'disagree'},
+  {n:16, text:'Tenho tendência a ter interesses fortes e fico incomodado(a) se não posso me dedicar a eles.', sub:2, score1:'agree'},
+  {n:17, text:'Gosto de bater papo.', sub:4, score1:'disagree'},
+  {n:18, text:'Quando estou falando, as outras pessoas têm dificuldade em tomar a palavra.', sub:4, score1:'agree'},
+  {n:19, text:'Sou fascinado(a) por números.', sub:3, score1:'agree'},
+  {n:20, text:'Quando leio uma história, sinto dificuldade em entender as intenções dos personagens.', sub:5, score1:'agree'},
+  {n:21, text:'Não gosto de ler livros de ficção.', sub:5, score1:'agree'},
+  {n:22, text:'Tenho dificuldade em fazer novos amigos.', sub:1, score1:'agree'},
+  {n:23, text:'Vejo constantemente padrões nas coisas que me rodeiam.', sub:3, score1:'agree'},
+  {n:24, text:'Prefiro ir ao teatro do que ir a um museu.', sub:5, score1:'disagree'},
+  {n:25, text:'Não fico incomodado(a) se minha rotina diária for alterada.', sub:2, score1:'disagree'},
+  {n:26, text:'Com frequência sinto que não sei manter uma conversa.', sub:4, score1:'agree'},
+  {n:27, text:'Tenho facilidade em "ler nas entrelinhas" quando falam comigo.', sub:4, score1:'disagree'},
+  {n:28, text:'Geralmente me concentro mais no todo do que nos detalhes.', sub:3, score1:'disagree'},
+  {n:29, text:'Não sou muito bom/boa em lembrar números de telefone.', sub:3, score1:'disagree'},
+  {n:30, text:'Geralmente não reparo nas pequenas mudanças de uma situação ou na aparência de uma pessoa.', sub:3, score1:'disagree'},
+  {n:31, text:'Consigo dizer quando a pessoa com quem estou conversando fica entediada.', sub:1, score1:'disagree'},
+  {n:32, text:'Consigo facilmente fazer mais do que uma coisa ao mesmo tempo.', sub:2, score1:'disagree'},
+  {n:33, text:'Quando falo no telefone, não tenho certeza quando é a minha vez de falar.', sub:4, score1:'agree'},
+  {n:34, text:'Gosto de fazer as coisas de forma espontânea.', sub:2, score1:'disagree'},
+  {n:35, text:'Com frequência sou o(a) último(a) que entende uma piada.', sub:4, score1:'agree'},
+  {n:36, text:'Tenho facilidade em entender o que uma pessoa está pensando ou sentindo apenas olhando para o seu rosto.', sub:1, score1:'disagree'},
+  {n:37, text:'Se sou interrompido(a), consigo rapidamente voltar ao que estava fazendo.', sub:2, score1:'disagree'},
+  {n:38, text:'Sou bom/boa de papo.', sub:4, score1:'disagree'},
+  {n:39, text:'Os outros frequentemente me dizem que eu insisto muito nas mesmas coisas.', sub:4, score1:'agree'},
+  {n:40, text:'Quando era criança, gostava de brincar de faz-de-conta com as outras crianças.', sub:5, score1:'disagree'},
+  {n:41, text:'Gosto de colecionar informação sobre categorias de coisas (ex.: tipos de carros, de aves, de plantas, etc.).', sub:3, score1:'agree'},
+  {n:42, text:'Tenho dificuldade de me imaginar na pele de outra pessoa.', sub:5, score1:'agree'},
+  {n:43, text:'Gosto de planejar com cuidado todas as atividades em que participo.', sub:2, score1:'agree'},
+  {n:44, text:'Aprecio eventos sociais.', sub:1, score1:'disagree'},
+  {n:45, text:'Tenho dificuldade em entender as intenções das outras pessoas.', sub:5, score1:'agree'},
+  {n:46, text:'Situações novas me deixam ansioso(a).', sub:2, score1:'agree'},
+  {n:47, text:'Gosto de conhecer novas pessoas.', sub:1, score1:'disagree'},
+  {n:48, text:'Tenho uma postura conciliadora em situações de interação social.', sub:1, score1:'disagree'},
+  {n:49, text:'Tenho dificuldade em lembrar o dia de aniversário dos outros.', sub:5, score1:'agree'},
+  {n:50, text:'Tenho muita facilidade em brincar de faz-de-conta com as crianças.', sub:5, score1:'disagree'}
+];
+
+var SUB_NAMES = {1:'Habilidades Sociais', 2:'Mudança de Atenção', 3:'Atenção a Detalhes', 4:'Comunicação', 5:'Imaginação'};
+var SUB_COLORS = {1:'#4AABAB', 2:'#8B6FBE', 3:'#D4607A', 4:'#E8943A', 5:'#6DC44A'};
+var OPTS = ['Concordo plenamente','Concordo um pouco','Discordo um pouco','Discordo plenamente'];
+var OPT_KEYS = ['agree_fully','agree_partly','disagree_partly','disagree_fully'];
+// agree_fully / agree_partly → 'agree'; disagree_partly / disagree_fully → 'disagree'
+function optToDir(key){ return key.startsWith('agree') ? 'agree' : 'disagree'; }
+function scores1(q, key){
+  var dir = optToDir(key);
+  // fully counts 1, partly also counts 1 (AQ uses binary scoring)
+  return dir === q.score1 ? 1 : 0;
+}
+
+var answers = {}; // idx -> OPT_KEY
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML = '';
+  var lastSub = null;
+  QUESTIONS.forEach(function(q, i){
+    if(q.sub !== lastSub){
+      lastSub = q.sub;
+      var col = SUB_COLORS[q.sub];
+      c.innerHTML += '<div class="sub-header" style="background:'+col+'0D;border-left:3px solid '+col+'">'+
+        '<div>'+
+          '<div class="sh-title" style="color:'+col+'">'+SUB_NAMES[q.sub]+'</div>'+
+          '<div class="sh-sub">10 itens · 0–10 pontos</div>'+
+        '</div>'+
+      '</div>';
+    }
+    var col = SUB_COLORS[q.sub];
+    var ans = answers[i];
+    var btns = OPTS.map(function(label, vi){
+      var key = OPT_KEYS[vi];
+      var isSel = ans === key;
+      var bcolor = vi < 2 ? '#4AABAB' : '#D4607A';
+      return '<button class="sbt4'+(isSel?' sel':'')+'" id="qb-'+i+'-'+vi+'" '+
+        'style="'+(isSel?'background:'+bcolor+';':'')+'" '+
+        'onclick="setAns('+i+','+vi+',\''+key+'\',\''+bcolor+'\')">'+label+'</button>';
+    }).join('');
+    c.innerHTML +=
+      '<div class="q-card'+(ans!==undefined?' answered':'')+'" id="qc-'+i+'">'+
+        '<div class="q-num" style="color:'+col+'">'+q.n+'. '+SUB_NAMES[q.sub]+'</div>'+
+        '<div class="q-text">'+q.text+'</div>'+
+        '<div class="scale-row-4">'+btns+'</div>'+
+      '</div>';
+  });
+  updateProg();
+}
+
+function setAns(idx, vi, key, col){
+  answers[idx] = key;
+  OPTS.forEach(function(_, v){
+    var b = document.getElementById('qb-'+idx+'-'+v);
+    if(!b) return;
+    var bc = v < 2 ? '#4AABAB' : '#D4607A';
+    if(v===vi){ b.className='sbt4 sel'; b.style.background=bc; }
+    else{ b.className='sbt4'; b.style.background=''; }
+  });
+  document.getElementById('qc-'+idx).className='q-card answered';
+  updateProg();
+}
+
+function updateProg(){
+  var n = Object.keys(answers).length;
+  document.getElementById('progFill').style.width = (n/50*100)+'%';
+  document.getElementById('progTxt').textContent = n+' / 50';
+  document.getElementById('pgInfo').textContent = n+' de 50 respondidas';
+}
+
+function calcScores(){
+  var total=0, sub={1:0,2:0,3:0,4:0,5:0};
+  QUESTIONS.forEach(function(q,i){
+    var key = answers[i];
+    if(key===undefined) return;
+    var s = scores1(q, key);
+    total += s;
+    sub[q.sub] += s;
+  });
+  return {total:total, sub:sub};
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goIntro(){ document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+function startTest(){ buildQuestions(); document.getElementById('progBar').style.display='flex'; showScreen('s-questions'); }
+function restartTest(){ answers={}; document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+// ═══════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════
+function showResults(){
+  var sc = calcScores();
+  var above = sc.total >= 32;
+  var bandColor = sc.total >= 40 ? '#C03A3A' : sc.total >= 32 ? '#E8943A' : '#6DC44A';
+  var bandText = sc.total >= 40 ? 'Pontuação elevada' : sc.total >= 32 ? 'Acima do ponto de corte' : 'Abaixo do ponto de corte';
+  var title = sc.total >= 40
+    ? 'Pontuação muito elevada — forte indicativo de características autísticas'
+    : sc.total >= 32
+    ? 'Pontuação acima do ponto de corte — indicativo de características autísticas'
+    : 'Pontuação abaixo do ponto de corte';
+
+  document.getElementById('hsNum').textContent = sc.total;
+  document.getElementById('rhTitle').textContent = title;
+  document.getElementById('rhSub').textContent = 'Pontuação '+sc.total+'/50 · Ponto de corte: ≥ 32';
+  var band = document.getElementById('heroBand');
+  band.textContent = bandText; band.style.background=bandColor+'22'; band.style.color=bandColor; band.style.border='1px solid '+bandColor+'44';
+
+  // Hero subs
+  var hs = document.getElementById('heroSubs'); hs.innerHTML='';
+  [1,2,3,4,5].forEach(function(s){
+    hs.innerHTML += '<div class="hs-sub">'+
+      '<span class="hs-sub-val" style="color:'+SUB_COLORS[s]+'">'+sc.sub[s]+'</span>'+
+      '<span class="hs-sub-lbl">'+SUB_NAMES[s]+'</span>'+
+    '</div>';
+  });
+
+  // Interp card
+  var pct = sc.total/50*100;
+  var desc = sc.total >= 40
+    ? 'A pontuação é muito elevada, com forte indicativo de características do espectro autista. É altamente recomendável buscar avaliação neuropsicológica e clínica especializada em TEA. Lembre-se: este questionário é triagem, não diagnóstico.'
+    : sc.total >= 32
+    ? 'A pontuação está acima do ponto de corte (≥ 32), sugerindo presença de características autísticas. Uma avaliação clínica e neuropsicológica especializada é recomendada para investigação diagnóstica adequada.'
+    : 'A pontuação está abaixo do ponto de corte. Isso não exclui TEA — o diagnóstico depende de avaliação clínica abrangente que considere histórico de desenvolvimento, funcionamento e outros instrumentos.';
+
+  document.getElementById('interpCard').innerHTML =
+    '<h3>Pontuação Total</h3>'+
+    '<div class="rc-sub">AQ-50 — Baron-Cohen et al. (2001). Escala 0–50. Ponto de corte: ≥ 32 pontos.</div>'+
+    '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'+
+      '<span style="font-family:Cormorant Garamond,serif;font-size:56px;font-weight:300;line-height:1;color:'+bandColor+'">'+sc.total+'</span>'+
+      '<span style="font-size:14px;color:var(--muted)">/50 · '+bandText+'</span>'+
+    '</div>'+
+    '<div class="score-bar-bg">'+
+      '<div class="score-bar-fill" style="width:'+pct+'%;background:'+bandColor+'"></div>'+
+      '<div class="score-marker" style="left:'+(32/50*100)+'%;background:#E8943A;opacity:.8"></div>'+
+    '</div>'+
+    '<div class="score-labels"><span>0</span><span style="color:#E8943A">Corte: 32</span><span>50</span></div>'+
+    '<div class="interp-text">'+desc+'</div>';
+
+  // Sub card
+  var subDescs = {
+    1:'Dificuldades de habilidades sociais — fazer amigos, compreender situações sociais, interagir em grupo.',
+    2:'Dificuldades na mudança de atenção — preferência por rotinas, interesse em padrões, resistência a mudanças.',
+    3:'Atenção excessiva a detalhes — percepção de padrões, ruídos e detalhes que outros ignoram.',
+    4:'Dificuldades de comunicação — manter conversa, entender subentendidos, perceber o tédio do interlocutor.',
+    5:'Dificuldades de imaginação — ficção, jogo simbólico, imaginar perspectivas alheias.'
+  };
+  var subRows = [1,2,3,4,5].map(function(s){
+    var v = sc.sub[s];
+    var pct2 = v/10*100;
+    var col = SUB_COLORS[s];
+    return '<div class="sub-bar-row">'+
+      '<div class="sbr-lbl"><span style="color:'+col+'">'+SUB_NAMES[s]+'</span></div>'+
+      '<div class="sbr-bg"><div class="sbr-fill" style="width:'+pct2+'%;background:'+col+'"></div></div>'+
+      '<div class="sbr-val" style="color:'+col+'">'+v+'/10</div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin:-6px 0 12px 120px;line-height:1.5">'+subDescs[s]+'</div>';
+  }).join('');
+  document.getElementById('subCard').innerHTML =
+    '<h3>Pontuação por Subescala</h3>'+
+    '<div class="rc-sub">Perfil das 5 dimensões avaliadas pelo AQ-50.</div>'+
+    subRows;
+
+  // Item review
+  var revHtml = '<h3>Respostas por Item</h3>'+
+    '<div class="rc-sub">Itens que pontuaram (1) e não pontuaram (0) para o rastreio de TEA.</div>'+
+    '<div class="review-grid">';
+  QUESTIONS.forEach(function(q,i){
+    var key = answers[i];
+    var s = key!==undefined ? scores1(q,key) : 0;
+    var col = SUB_COLORS[q.sub];
+    var ansLabel = key!==undefined ? OPTS[OPT_KEYS.indexOf(key)] : '—';
+    revHtml += '<div class="rv-item" style="border-left:2px solid '+(s?col:'var(--border)')+'">'+
+      '<div class="rv-q">'+q.n+'. '+SUB_NAMES[q.sub]+'</div>'+
+      '<div class="rv-ans" style="color:'+(s?col:'var(--muted)')+'">'+ansLabel+' → '+(s?'1 pt':'0 pt')+'</div>'+
+    '</div>';
+  });
+  revHtml += '</div>';
+  document.getElementById('reviewCard').innerHTML = revHtml;
+
+  showScreen('s-results');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var sc=calcScores();
+  var bColor=sc.total>=40?red:sc.total>=32?amber:green;
+  var bText=sc.total>=40?'Pontuação elevada':sc.total>=32?'Acima do ponto de corte':'Abaixo do ponto de corte';
+  var subColorsRGB={1:teal,2:[139,111,190],3:[212,96,122],4:amber,5:green};
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('TRIAGEM DO ESPECTRO AUTISTA  ·  AQ-50',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Quociente do Espectro Autista (AQ)',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com  ·  Baron-Cohen et al. (2001)',W/2,43,{align:'center'});
+  y=60;
+
+  // Hero
+  chk(32);
+  sf(navy);doc.roundedRect(M,y,W-M*2,26,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('PONTUAÇÃO TOTAL (AQ-50)',W/2,y+6,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(30);
+  doc.text(String(sc.total),W/2-5,y+19,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(12);
+  doc.text('/50',W/2-3,y+19);
+  sf(bColor);doc.roundedRect(W/2+10,y+11,52,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text(bText,W/2+36,y+18,{align:'center'});
+  y+=34;
+
+  // Sub scores
+  chk(22);
+  var sw=(W-M*2)/5;
+  [1,2,3,4,5].forEach(function(s,i){
+    var x=M+i*sw;
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(x,y,sw-3,18,2,2,'FD');
+    st(subColorsRGB[s]);doc.setFont('helvetica','bold');doc.setFontSize(16);
+    doc.text(String(sc.sub[s]),x+sw/2-1.5,y+11,{align:'center'});
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(6.5);
+    doc.text(SUB_NAMES[s].substring(0,12),x+sw/2-1.5,y+16.5,{align:'center'});
+  });
+  y+=26;
+
+  // Score bar
+  chk(18);
+  var barW=W-M*2;
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(M,y,barW,8,3,3,'FD');
+  sf(bColor);doc.roundedRect(M,y,(sc.total/50)*barW,8,3,3,'F');
+  sf(amber);doc.rect(M+(32/50)*barW-1,y,2,8,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0',M,y+13);doc.text('Corte: 32',M+(32/50)*barW,y+13,{align:'center'});doc.text('50',W-M,y+13,{align:'right'});
+  y+=22;
+
+  // Interpretation
+  chk(22);
+  sf(bColor);doc.rect(M,y,3,18,'F');
+  st(bColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text(bText,M+8,y+8);
+  st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var dp=sc.total>=40?'Pontuação muito elevada — avaliação neuropsicológica especializada é altamente recomendada.':sc.total>=32?'Pontuação acima do ponto de corte (≥ 32). Avaliação clínica e neuropsicológica especializada é recomendada.':'Pontuação abaixo do ponto de corte. O diagnóstico de TEA depende de avaliação clínica abrangente.';
+  var il=doc.splitTextToSize(dp,W-M*2-10);doc.text(il,M+8,y+15);
+  y+=il.length*4.5+14;
+
+  // Item table
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Respostas por Item',M,y);y+=8;
+  var bw3=(W-M*2)/2;
+  QUESTIONS.forEach(function(q,i){
+    if(i%2===0) chk(10);
+    var key=answers[i]; var s=key!==undefined?scores1(q,key):0;
+    var xPos=M+(i%2)*bw3;
+    st(s?subColorsRGB[q.sub]:muted);doc.setFont('helvetica',s?'bold':'normal');doc.setFontSize(8);
+    var txt=q.n+'. '+q.text.substring(0,44)+(q.text.length>44?'…':'');
+    doc.text(txt,xPos,y+(i%2===0?4:4));
+    st(s?subColorsRGB[q.sub]:muted);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text(String(s),xPos+bw3-8,y+(i%2===0?4:4),{align:'right'});
+    if(i%2===1) y+=9;
+  });
+  if(QUESTIONS.length%2!==0) y+=9;
+
+  chk(22);y+=6;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('aq50-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>
