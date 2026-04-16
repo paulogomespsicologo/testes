@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionário de Escolhas — Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F5F0;
+  --ink: #1A1410;
+  --navy: #1B3A5C;
+  --teal: #4AABAB;
+  --gold: #C8A96E;
+  --gold-light: #E8D5A8;
+  --muted: #7A6E62;
+  --border: #DDD8CE;
+  --card: #FDFCF9;
+  --accent: #C8553D;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── DECORATIVE LINES ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+  z-index: 100;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ═══════════════════════
+   INTRO SCREEN
+═══════════════════════ */
+#s-intro {
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  position: relative;
+}
+
+.intro-layout {
+  max-width: 640px;
+  width: 100%;
+  animation: fadeUp .8s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.intro-kicker {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.intro-kicker::before, .intro-kicker::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.intro-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 6vw, 58px);
+  font-weight: 400;
+  line-height: 1.08;
+  color: var(--navy);
+  margin-bottom: 28px;
+}
+.intro-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.intro-body {
+  font-family: 'Source Serif 4', serif;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--muted);
+  margin-bottom: 32px;
+  border-left: 2px solid var(--gold);
+  padding-left: 20px;
+}
+
+.intro-meta {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .3px;
+}
+.meta-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+}
+
+/* ID form */
+.id-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.id-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.id-field.full { grid-column: span 2; }
+.id-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.id-field input, .id-field select {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--card);
+  outline: none;
+  transition: border-color .2s;
+}
+.id-field input:focus, .id-field select:focus { border-color: var(--teal); }
+
+.btn-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 32px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .3px;
+}
+.btn-start:hover { background: #0D2640; transform: translateY(-1px); }
+.btn-start:active { transform: translateY(0); }
+.btn-arrow {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+
+.intro-credit {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+.intro-credit a { color: var(--teal); text-decoration: none; }
+
+/* ═══════════════════════
+   QUESTION SCREEN
+═══════════════════════ */
+#s-question {
+  flex-direction: row;
+}
+
+.q-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--navy);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.q-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .5px;
+  margin-bottom: 48px;
+}
+.q-brand strong { color: #fff; display: block; font-size: 18px; margin-bottom: 2px; }
+
+/* Progress steps */
+.q-steps { flex: 1; }
+.q-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  opacity: .35;
+  transition: opacity .3s;
+}
+.q-step.done { opacity: .7; }
+.q-step.active { opacity: 1; }
+.q-step-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+  flex-shrink: 0;
+  transition: all .3s;
+}
+.q-step.done .q-step-num {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+  font-size: 10px;
+}
+.q-step.active .q-step-num {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
+}
+.q-step-label {
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  line-height: 1.4;
+}
+.q-step.active .q-step-label { color: #fff; font-weight: 500; }
+.q-step.done .q-step-label { color: rgba(255,255,255,.7); }
+
+.q-sidebar-footer {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  line-height: 1.6;
+}
+
+/* Main question area */
+.q-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 56px;
+}
+
+.q-content {
+  max-width: 580px;
+  width: 100%;
+  animation: questionIn .5s ease both;
+}
+
+@keyframes questionIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.q-counter {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 16px;
+}
+
+.q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 3.5vw, 34px);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.q-hint {
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  font-style: italic;
+}
+
+.q-textarea {
+  width: 100%;
+  min-height: 160px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--ink);
+  background: var(--card);
+  outline: none;
+  resize: vertical;
+  transition: border-color .2s, box-shadow .2s;
+  line-height: 1.7;
+}
+.q-textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(74,171,171,.1);
+}
+.q-textarea::placeholder { color: #B8B2A8; font-style: italic; }
+
+.q-char-count {
+  text-align: right;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  margin-bottom: 28px;
+}
+
+.q-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-prev {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-prev:hover { border-color: var(--navy); color: var(--navy); }
+
+.btn-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 26px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-next:hover { background: #0D2640; }
+.btn-next.finish { background: var(--accent); }
+.btn-next.finish:hover { background: #a83d28; }
+
+/* Progress bar */
+.q-prog-bar {
+  position: fixed;
+  bottom: 0; left: 280px; right: 0;
+  height: 3px;
+  background: var(--border);
+}
+.q-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
+  transition: width .4s ease;
+}
+
+/* ═══════════════════════
+   LOADING SCREEN
+═══════════════════════ */
+#s-loading {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.loading-inner { max-width: 480px; animation: fadeUp .6s ease both; }
+
+.loading-orb {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
+  border-right-color: var(--gold);
+  animation: spin 1.2s linear infinite;
+  margin: 0 auto 32px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+.loading-sub {
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-style: italic;
+}
+.loading-dots {
+  margin-top: 32px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.loading-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  animation: dotPulse 1.2s ease infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: .2s; background: var(--gold); }
+.loading-dot:nth-child(3) { animation-delay: .4s; background: var(--accent); }
+@keyframes dotPulse {
+  0%,100% { transform: scale(1); opacity: .4; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+/* ═══════════════════════
+   RESULT SCREEN
+═══════════════════════ */
+#s-result {
+  align-items: center;
+  padding: 60px 24px 80px;
+}
+
+.result-wrap {
+  max-width: 720px;
+  width: 100%;
+  animation: fadeUp .7s ease both;
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.result-kicker {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 16px;
+}
+
+.result-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.result-name em { color: var(--accent); font-style: italic; }
+
+.result-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* AI reflection card */
+.reflection-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 44px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.reflection-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--gold), var(--accent));
+}
+.reflection-card::after {
+  content: '\201C';
+  position: absolute;
+  top: 24px; right: 32px;
+  font-family: 'Playfair Display', serif;
+  font-size: 80px;
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.reflection-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reflection-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.reflection-text {
+  font-family: 'Source Serif 4', serif;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--ink);
+}
+.reflection-text p { margin-bottom: 16px; }
+.reflection-text p:last-child { margin-bottom: 0; }
+
+/* Answers summary */
+.answers-section {
+  margin-bottom: 24px;
+}
+.answers-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+.answer-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 10px;
+}
+.answer-q {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.answer-a {
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.65;
+}
+.answer-empty {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Actions */
+.result-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: 9px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+}
+.btn-primary-action {
+  background: var(--navy);
+  color: #fff;
+}
+.btn-primary-action:hover { background: #0D2640; }
+.btn-secondary-action {
+  background: transparent;
+  color: var(--navy);
+  border: 1.5px solid var(--border);
+}
+.btn-secondary-action:hover { border-color: var(--navy); }
+
+/* Footer */
+.page-footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+.page-footer a { color: var(--teal); text-decoration: none; }
+
+/* ═══════════════════════
+   RESPONSIVE
+═══════════════════════ */
+@media (max-width: 768px) {
+  #s-question { flex-direction: column; }
+  .q-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 20px 20px 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .q-steps { display: none; }
+  .q-brand { margin-bottom: 0; font-size: 13px; }
+  .q-sidebar-footer { display: none; }
+  .q-main { padding: 32px 20px; }
+  .q-prog-bar { left: 0; }
+  .reflection-card { padding: 28px 24px; }
+  .id-grid { grid-template-columns: 1fr; }
+  .id-field.full { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ INTRO ═══════════════════ -->
+<div class="screen active" id="s-intro">
+  <div class="intro-layout">
+    <div class="intro-kicker">Orientação Vocacional</div>
+
+    <h1 class="intro-title">
+      Questionário<br>de <em>Escolhas</em>
+    </h1>
+
+    <p class="intro-body">
+      As escolhas que fazemos ao longo da vida revelam padrões, valores e tendências que muitas vezes passam despercebidos. Este instrumento tem como objetivo auxiliar o processo de orientação vocacional, promovendo autoconhecimento e reflexão sobre a forma como você toma decisões — especialmente aquelas que definem seu caminho profissional.
+    </p>
+
+    <div class="intro-meta">
+      <div class="meta-item"><div class="meta-dot"></div>11 perguntas reflexivas</div>
+      <div class="meta-item"><div class="meta-dot" style="background:var(--gold)"></div>~10 a 15 minutos</div>
+      <div class="meta-item"><div class="meta-dot" style="background:var(--accent)"></div>Reflexão personalizada ao final</div>
+    </div>
+
+    <div class="id-grid">
+      <div class="id-field full"><div class="id-label">Nome completo</div><input type="text" id="id-nome" placeholder="Como você se chama?"></div>
+      <div class="id-field"><div class="id-label">Idade</div><input type="number" id="id-idade" placeholder="Ex: 17" min="13" max="30"></div>
+      <div class="id-field"><div class="id-label">Escolaridade</div>
+        <select id="id-escolaridade">
+          <option value="">Selecione…</option>
+          <option>Ensino fundamental</option>
+          <option>Ensino médio em curso</option>
+          <option>Ensino médio completo</option>
+          <option>Ensino superior em curso</option>
+          <option>Ensino superior completo</option>
+        </select>
+      </div>
+      <div class="id-field full"><div class="id-label">Profissão atual ou área de interesse</div><input type="text" id="id-profissao" placeholder="Ex: Estudante, Estagiário, Interessado em Medicina…"></div>
+    </div>
+
+    <button class="btn-start" onclick="startWizard()">
+      Iniciar questionário
+      <div class="btn-arrow">→</div>
+    </button>
+
+    <div class="intro-credit">
+      Aplicado por <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235 ·
+      <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ QUESTION ═══════════════════ -->
+<div class="screen" id="s-question">
+  <div class="q-sidebar">
+    <div>
+      <div class="q-brand">
+        <strong>Paulo Gomes</strong>
+        Questionário de Escolhas
+      </div>
+      <div class="q-steps" id="qSteps"></div>
+    </div>
+    <div class="q-sidebar-footer">
+      Suas respostas são confidenciais<br>e serão analisadas pelo profissional.
+    </div>
+  </div>
+
+  <div class="q-main">
+    <div class="q-content">
+      <div class="q-counter" id="qCounter">Pergunta 1 de 11</div>
+      <div class="q-text" id="qText"></div>
+      <div class="q-hint" id="qHint"></div>
+      <textarea class="q-textarea" id="qAnswer" placeholder="Escreva aqui sua resposta…" oninput="updateChar()"></textarea>
+      <div class="q-char-count" id="charCount">0 caracteres</div>
+      <div class="q-nav">
+        <button class="btn-prev" id="btnPrev" onclick="prevQ()">← Anterior</button>
+        <button class="btn-next" id="btnNext" onclick="nextQ()">Próxima →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-prog-bar"><div class="q-prog-fill" id="qProgFill" style="width:0%"></div></div>
+</div>
+
+<!-- ═══════════════════ LOADING ═══════════════════ -->
+<div class="screen" id="s-loading">
+  <div class="loading-inner">
+    <div class="loading-orb"></div>
+    <div class="loading-title">Gerando sua reflexão…</div>
+    <div class="loading-sub">Suas respostas estão sendo analisadas.<br>Isso pode levar alguns segundos.</div>
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ RESULT ═══════════════════ -->
+<div class="screen" id="s-result">
+  <div class="result-wrap">
+    <div class="result-header">
+      <div class="result-kicker">Análise Personalizada</div>
+      <div class="result-name" id="resultName">—</div>
+      <div class="result-meta" id="resultMeta">—</div>
+    </div>
+
+    <div class="reflection-card">
+      <div class="reflection-label">Reflexão · Gerada por Inteligência Artificial</div>
+      <div class="reflection-text" id="reflectionText">
+        <p>Carregando…</p>
+      </div>
+    </div>
+
+    <div class="answers-section">
+      <div class="answers-title">Suas respostas</div>
+      <div id="answersList"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-action btn-primary-action" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
+      <button class="btn-action btn-secondary-action" onclick="restartAll()">↺ Refazer questionário</button>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235 ·
+    <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+    <br><br>
+    <em style="font-size:11px">A reflexão gerada por IA é um recurso auxiliar e não substitui a interpretação clínica do profissional.</em>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// QUESTIONS
+// ════════════════════════════════════════
+var QUESTIONS = [
+  {
+    text: 'O que tem de positivo na dúvida?',
+    hint: 'Reflita sobre o valor de não ter certeza — a dúvida também nos protege e nos move.',
+    placeholder: 'Escreva com suas próprias palavras…'
+  },
+  {
+    text: 'Como ter 100% de certeza?',
+    hint: 'Existe alguma forma de ter certeza absoluta antes de escolher? O que seria necessário para isso?',
+    placeholder: 'Pense sobre o que te daria mais segurança…'
+  },
+  {
+    text: 'Você tem mais certeza do que quer ou do que não quer?',
+    hint: 'Às vezes é mais fácil identificar o que rejeitamos do que o que desejamos. E para você, como é?',
+    placeholder: 'Explore essa diferença na sua resposta…'
+  },
+  {
+    text: 'De qual escolha você mais se orgulha? De qual você mais se arrependeu?',
+    hint: 'Não precisa ser uma escolha grande. Pode ser algo simples, mas que ficou marcado.',
+    placeholder: 'Fale sobre as duas situações se quiser…'
+  },
+  {
+    text: 'Quanto tempo você leva para escolher algo importante?',
+    hint: 'Você é alguém que decide rápido, espera muito, ou depende da situação?',
+    placeholder: 'Descreva como costuma ser esse processo…'
+  },
+  {
+    text: 'Quem apoia as suas escolhas?',
+    hint: 'Família, amigos, você mesmo? Essa rede de apoio influencia como você decide?',
+    placeholder: 'Conte sobre as pessoas ou fatores que te sustentam…'
+  },
+  {
+    text: 'O que faz você desistir de algo?',
+    hint: 'Quais são os gatilhos que levam você a abandonar um caminho já iniciado?',
+    placeholder: 'Seja honesto — não há resposta errada…'
+  },
+  {
+    text: 'O que é mais desafiador no processo de escolha?',
+    hint: 'O medo de errar, as opiniões dos outros, a falta de informação, ou algo diferente?',
+    placeholder: 'Descreva o que mais pesa nas suas decisões…'
+  },
+  {
+    text: 'O que é sucesso para você?',
+    hint: 'Não o que os outros dizem que é. O que você, pessoalmente, sente quando se considera bem-sucedido?',
+    placeholder: 'Defina sucesso com as suas próprias palavras…'
+  },
+  {
+    text: 'Qual profissão você mais se identifica?',
+    hint: 'Não precisa ser a mais "segura" ou a que a família espera. Com qual você realmente se vê?',
+    placeholder: 'Uma ou mais — e por quê, se quiser explicar…'
+  },
+  {
+    text: 'Onde você estará daqui a cinco anos?',
+    hint: 'Imagine o melhor cenário possível. O que você estará fazendo, onde, com quem?',
+    placeholder: 'Deixe a imaginação falar…'
+  }
+];
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+var currentQ = 0;
+var answers = new Array(QUESTIONS.length).fill('');
+var userData = {};
+
+// ════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) {
+    s.classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ════════════════════════════════════════
+// INTRO → WIZARD
+// ════════════════════════════════════════
+function startWizard() {
+  userData.nome     = document.getElementById('id-nome').value.trim() || 'Participante';
+  userData.idade    = document.getElementById('id-idade').value.trim();
+  userData.escol    = document.getElementById('id-escolaridade').value;
+  userData.profissao = document.getElementById('id-profissao').value.trim();
+
+  buildSidebar();
+  currentQ = 0;
+  renderQuestion();
+  showScreen('s-question');
+}
+
+function buildSidebar() {
+  var el = document.getElementById('qSteps');
+  el.innerHTML = '';
+  QUESTIONS.forEach(function(q, i) {
+    var short = q.text.length > 36 ? q.text.substring(0, 34) + '…' : q.text;
+    el.innerHTML +=
+      '<div class="q-step" id="step-' + i + '">' +
+        '<div class="q-step-num" id="stepnum-' + i + '">' + (i + 1) + '</div>' +
+        '<div class="q-step-label">' + short + '</div>' +
+      '</div>';
+  });
+}
+
+function updateSidebar() {
+  QUESTIONS.forEach(function(_, i) {
+    var el = document.getElementById('step-' + i);
+    var num = document.getElementById('stepnum-' + i);
+    if (!el || !num) return;
+    el.className = 'q-step' + (i < currentQ ? ' done' : '') + (i === currentQ ? ' active' : '');
+    num.textContent = i < currentQ ? '✓' : (i + 1);
+  });
+}
+
+// ════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════
+function renderQuestion() {
+  var q = QUESTIONS[currentQ];
+  var total = QUESTIONS.length;
+
+  document.getElementById('qCounter').textContent = 'Pergunta ' + (currentQ + 1) + ' de ' + total;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('qHint').textContent = q.hint;
+
+  var ta = document.getElementById('qAnswer');
+  ta.value = answers[currentQ] || '';
+  ta.placeholder = q.placeholder;
+  ta.style.animation = 'none';
+  void ta.offsetWidth;
+  updateChar();
+
+  // Reanimate content
+  var content = document.querySelector('.q-content');
+  content.style.animation = 'none';
+  void content.offsetWidth;
+  content.style.animation = 'questionIn .4s ease both';
+
+  // Prev button
+  document.getElementById('btnPrev').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+
+  // Next button
+  var btn = document.getElementById('btnNext');
+  var isLast = currentQ === total - 1;
+  btn.textContent = isLast ? 'Ver minha reflexão ✦' : 'Próxima →';
+  btn.className = 'btn-next' + (isLast ? ' finish' : '');
+  btn.onclick = isLast ? finishWizard : nextQ;
+
+  // Progress
+  var pct = ((currentQ + 1) / total * 100).toFixed(1);
+  document.getElementById('qProgFill').style.width = pct + '%';
+
+  updateSidebar();
+  setTimeout(function() { document.getElementById('qAnswer').focus(); }, 100);
+}
+
+function updateChar() {
+  var val = document.getElementById('qAnswer').value;
+  document.getElementById('charCount').textContent = val.length + ' caracteres';
+  answers[currentQ] = val;
+}
+
+function nextQ() {
+  answers[currentQ] = document.getElementById('qAnswer').value;
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+  }
+}
+
+function prevQ() {
+  answers[currentQ] = document.getElementById('qAnswer').value;
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+// ════════════════════════════════════════
+// FINISH → AI REFLECTION
+// ════════════════════════════════════════
+async function finishWizard() {
+  answers[currentQ] = document.getElementById('qAnswer').value;
+  showScreen('s-loading');
+  await generateReflection();
+}
+
+async function generateReflection() {
+  var nome    = userData.nome;
+  var idade   = userData.idade || 'não informada';
+  var escol   = userData.escol  || 'não informada';
+  var profissao = userData.profissao || 'não informada';
+
+  var qaBlock = QUESTIONS.map(function(q, i) {
+    var resp = (answers[i] || '').trim();
+    return 'Pergunta ' + (i+1) + ': ' + q.text + '\nResposta: ' + (resp || '[não respondida]');
+  }).join('\n\n');
+
+  var prompt =
+    'Você é um psicólogo clínico especializado em orientação vocacional, com uma escrita cuidadosa, empática e profissional.\n\n' +
+    'Um jovem completou o Questionário de Escolhas no consultório. Aqui estão os dados:\n\n' +
+    'Nome: ' + nome + '\n' +
+    'Idade: ' + idade + '\n' +
+    'Escolaridade: ' + escol + '\n' +
+    'Profissão/interesse: ' + profissao + '\n\n' +
+    'RESPOSTAS:\n' + qaBlock + '\n\n' +
+    'Com base nessas respostas, escreva uma reflexão clínica personalizada de 4 a 5 parágrafos para ' + nome + '. ' +
+    'A reflexão deve:\n' +
+    '1. Começar reconhecendo algo específico e genuíno que emergiu das respostas\n' +
+    '2. Identificar padrões no estilo de tomada de decisão do jovem\n' +
+    '3. Destacar pontos de força percebidos nas respostas\n' +
+    '4. Abordar com cuidado os desafios e ambivalências expressados\n' +
+    '5. Encerrar com uma provocação reflexiva orientada ao futuro\n\n' +
+    'Tom: clínico, cuidadoso, não diretivo. Evite jargões. Não use listas — escreva em prosa fluida. ' +
+    'Dirija-se diretamente a ' + nome + '. Não use aspas nas respostas do participante.';
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    var data = await response.json();
+    var text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : null;
+
+    if (text) {
+      buildResult(text);
+    } else {
+      buildResult(null);
+    }
+  } catch (e) {
+    buildResult(null);
+  }
+}
+
+// ════════════════════════════════════════
+// BUILD RESULT PAGE
+// ════════════════════════════════════════
+function buildResult(aiText) {
+  var nome = userData.nome;
+  var date = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+
+  document.getElementById('resultName').innerHTML = 'Reflexão de <em>' + escHtml(nome) + '</em>';
+  document.getElementById('resultMeta').textContent =
+    date +
+    (userData.idade ? ' · ' + userData.idade + ' anos' : '') +
+    (userData.escol ? ' · ' + userData.escol : '') +
+    (userData.profissao ? ' · ' + userData.profissao : '');
+
+  // Reflection text
+  var rtEl = document.getElementById('reflectionText');
+  if (aiText) {
+    var paragraphs = aiText.trim().split(/\n+/).filter(function(p) { return p.trim(); });
+    rtEl.innerHTML = paragraphs.map(function(p) {
+      return '<p>' + escHtml(p.trim()) + '</p>';
+    }).join('');
+  } else {
+    rtEl.innerHTML =
+      '<p>Não foi possível gerar a reflexão automaticamente neste momento. ' +
+      'Suas respostas foram registradas e serão analisadas pelo profissional durante a consulta.</p>' +
+      '<p>Obrigado por completar o questionário, ' + escHtml(nome) + '.</p>';
+  }
+
+  // Answers list
+  var listEl = document.getElementById('answersList');
+  listEl.innerHTML = '';
+  QUESTIONS.forEach(function(q, i) {
+    var resp = (answers[i] || '').trim();
+    var div = document.createElement('div');
+    div.className = 'answer-item';
+    div.innerHTML =
+      '<div class="answer-q">' + (i+1) + '. ' + escHtml(q.text) + '</div>' +
+      '<div class="answer-a">' +
+        (resp ? escHtml(resp) : '<span class="answer-empty">Não respondida</span>') +
+      '</div>';
+    listEl.appendChild(div);
+  });
+
+  showScreen('s-result');
+}
+
+function restartAll() {
+  answers = new Array(QUESTIONS.length).fill('');
+  currentQ = 0;
+  document.getElementById('id-nome').value = '';
+  document.getElementById('id-idade').value = '';
+  document.getElementById('id-escolaridade').value = '';
+  document.getElementById('id-profissao').value = '';
+  showScreen('s-intro');
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
