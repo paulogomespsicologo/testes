@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>CogniMap — Materiais Impressos · Trilha Infantil</title>
+<style>
+  /* ─── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f0f4f8; color: #333; }
+
+  /* ─── COLORS ────────────────────────────────────────────── */
+  :root {
+    --navy:   #1B3A6B;
+    --teal:   #0F7173;
+    --amber:  #E07B39;
+    --green:  #2A7D4F;
+    --purple: #6B3FA0;
+    --ltgray: #F5F7FA;
+    --ltblue: #EBF2FB;
+    --ltteal: #E6F4F4;
+    --ltamb:  #FDF3E7;
+    --ltgrn:  #EAF5EF;
+  }
+
+  /* ─── PAGE LAYOUT ───────────────────────────────────────── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 12px auto;
+    background: #fff;
+    padding: 14mm 16mm 12mm;
+    box-shadow: 0 2px 12px rgba(0,0,0,.15);
+    position: relative;
+    page-break-after: always;
+  }
+
+  /* ─── HEADER / FOOTER ───────────────────────────────────── */
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 3px solid var(--teal);
+    padding-bottom: 6px; margin-bottom: 14px;
+  }
+  .page-header .logo { font-size: 17px; font-weight: 700; color: var(--navy); }
+  .page-header .logo span { color: var(--teal); }
+  .page-header .tag {
+    font-size: 11px; background: var(--teal); color: #fff;
+    padding: 3px 10px; border-radius: 20px; font-weight: 600;
+  }
+  .page-footer {
+    position: absolute; bottom: 10mm; left: 16mm; right: 16mm;
+    border-top: 1px solid #ccc; padding-top: 5px;
+    font-size: 10px; color: #888;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ─── SECTION TITLES ────────────────────────────────────── */
+  .module-badge {
+    display: inline-block;
+    background: var(--navy); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 10px; border-radius: 4px; margin-bottom: 4px;
+  }
+  h1 { font-size: 20px; color: var(--navy); margin-bottom: 3px; }
+  h2 { font-size: 14px; color: var(--teal); margin: 12px 0 6px; border-bottom: 1.5px solid var(--teal); padding-bottom: 3px; }
+  h3 { font-size: 12px; color: var(--amber); margin: 10px 0 5px; }
+  p  { font-size: 11.5px; line-height: 1.55; margin-bottom: 6px; color: #444; }
+  .subtitle { font-size: 12px; color: #666; margin-bottom: 10px; }
+
+  /* ─── INSTRUCTION BOX ───────────────────────────────────── */
+  .instr {
+    background: var(--ltblue); border-left: 4px solid var(--teal);
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    font-size: 11.5px; color: #2a4a6b; margin-bottom: 10px;
+  }
+  .instr strong { color: var(--navy); }
+
+  /* ─── CANCELLATION MATRIX ───────────────────────────────── */
+  .matrix-wrap { margin: 8px 0; }
+  .matrix {
+    display: inline-grid; gap: 1px;
+    border: 1.5px solid #bbb; border-radius: 4px;
+    overflow: hidden;
+  }
+  .matrix span {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; font-family: 'Courier New', monospace;
+    background: #fafafa; border: 0.5px solid #e0e0e0;
+    user-select: none;
+  }
+  .matrix.dense span { width: 18px; height: 18px; font-size: 11px; }
+  .matrix.xl span { width: 28px; height: 28px; font-size: 15px; }
+  .target-box {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--ltamb); border: 2px solid var(--amber);
+    border-radius: 8px; padding: 6px 14px; margin: 6px 0 10px;
+    font-size: 13px; font-weight: 700;
+  }
+  .target-box .lbl { font-size: 10.5px; color: #888; font-weight: 400; }
+  .score-row { display: flex; gap: 20px; margin-top: 8px; font-size: 11px; color: #555; }
+  .score-row .sf { background: var(--ltgray); border-radius: 4px; padding: 4px 10px; }
+
+  /* ─── SEQUENCE TABLE ────────────────────────────────────── */
+  .seq-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  .seq-table td, .seq-table th {
+    border: 1.5px solid #ccc; padding: 7px 10px;
+    font-size: 12px; text-align: center;
+  }
+  .seq-table th { background: var(--navy); color: #fff; font-size: 11px; }
+  .seq-table .blank {
+    background: #fff; border: 2px dashed var(--teal);
+    min-width: 38px; height: 28px;
+  }
+  .seq-table tr:nth-child(even) td { background: var(--ltgray); }
+  .seq-table .blank-td { background: #fff !important; }
+
+  /* ─── WORD LIST ─────────────────────────────────────────── */
+  .word-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0;
+  }
+  .word-card {
+    background: var(--ltblue); border: 1.5px solid #b0c8e8;
+    border-radius: 6px; padding: 7px 6px;
+    text-align: center; font-size: 12px; font-weight: 600; color: var(--navy);
+  }
+
+  /* ─── ANSWER LINES ──────────────────────────────────────── */
+  .answer-block { margin: 8px 0; }
+  .answer-line {
+    border-bottom: 1.5px solid #aaa;
+    min-height: 24px; margin-bottom: 8px;
+    display: flex; align-items: flex-end;
+    font-size: 11px; color: #999; padding-bottom: 2px;
+  }
+  .answer-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 8px 0;
+  }
+  .answer-box {
+    border: 1.5px solid #bbb; border-radius: 4px;
+    min-height: 30px; background: var(--ltgray);
+  }
+
+  /* ─── LIKERT SCALE ──────────────────────────────────────── */
+  .likert-row {
+    display: grid; grid-template-columns: 1fr repeat(5, 44px);
+    align-items: center; gap: 4px;
+    padding: 6px 0; border-bottom: 1px solid #eee; font-size: 11.5px;
+  }
+  .likert-row:first-child { border-top: 1px solid #eee; }
+  .likert-num {
+    width: 44px; text-align: center;
+    background: var(--ltgray); border-radius: 50%;
+    height: 30px; line-height: 30px; font-size: 12px; font-weight: 700;
+    cursor: pointer;
+  }
+  .likert-header {
+    display: grid; grid-template-columns: 1fr repeat(5, 44px);
+    gap: 4px; margin-bottom: 4px;
+  }
+  .likert-header span { text-align: center; font-size: 10px; color: #888; font-weight: 600; }
+  .emoji-scale { font-size: 20px; }
+
+  /* ─── MAZE ──────────────────────────────────────────────── */
+  .maze-wrap { display: flex; justify-content: center; margin: 10px 0; }
+  .maze-svg { border: 2px solid var(--navy); border-radius: 6px; }
+
+  /* ─── TIMELINE ──────────────────────────────────────────── */
+  .timeline {
+    display: flex; align-items: flex-start;
+    gap: 0; margin: 12px 0; position: relative;
+  }
+  .timeline::before {
+    content: ''; position: absolute; top: 28px; left: 0; right: 0;
+    height: 3px; background: var(--teal); z-index: 0;
+  }
+  .tl-item {
+    flex: 1; text-align: center; position: relative; z-index: 1;
+  }
+  .tl-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--teal); border: 3px solid #fff;
+    box-shadow: 0 0 0 2px var(--teal);
+    margin: 18px auto 6px;
+  }
+  .tl-label { font-size: 10px; color: var(--navy); font-weight: 700; }
+  .tl-line {
+    border: 1.5px dashed var(--teal);
+    min-height: 40px; margin: 4px 20px;
+    border-radius: 4px;
+  }
+
+  /* ─── PLANNING SHEET ────────────────────────────────────── */
+  .plan-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  .plan-table td, .plan-table th {
+    border: 1.5px solid #ccc; padding: 8px 10px; font-size: 12px;
+  }
+  .plan-table th { background: var(--navy); color: #fff; width: 120px; }
+  .plan-table td { min-height: 32px; }
+
+  /* ─── EMOTION CARDS ─────────────────────────────────────── */
+  .emotion-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0;
+  }
+  .emotion-card {
+    border: 2px solid #ddd; border-radius: 8px;
+    padding: 10px 6px; text-align: center;
+    background: var(--ltgray);
+  }
+  .emotion-face { font-size: 32px; display: block; margin-bottom: 4px; }
+  .emotion-name { font-size: 11px; font-weight: 700; color: var(--navy); }
+  .emotion-line { border-bottom: 1.5px solid #aaa; margin-top: 8px; min-height: 18px; }
+
+  /* ─── CERTIFICATE ───────────────────────────────────────── */
+  .cert {
+    border: 6px double var(--navy);
+    border-radius: 16px; padding: 24px 30px;
+    text-align: center; background: linear-gradient(135deg,#f8faff,#e8f4f4);
+    margin: 10px 0;
+  }
+  .cert-title { font-size: 11px; letter-spacing: 3px; color: var(--teal); text-transform: uppercase; margin-bottom: 6px; }
+  .cert-main { font-size: 26px; font-weight: 700; color: var(--navy); margin: 10px 0; }
+  .cert-name { font-size: 22px; color: var(--teal); border-bottom: 2px solid var(--teal); display: inline-block; padding: 0 40px; margin: 8px 0; }
+  .cert-body { font-size: 13px; color: #555; line-height: 1.7; margin: 10px 0; }
+  .cert-skills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+  .cert-skill { background: var(--navy); color: #fff; font-size: 10.5px; padding: 4px 12px; border-radius: 20px; }
+  .cert-footer { display: flex; justify-content: space-between; margin-top: 18px; padding-top: 10px; border-top: 1px solid #bbb; }
+  .cert-sign { text-align: center; }
+  .cert-sign-line { width: 120px; border-top: 1.5px solid #aaa; margin: 0 auto 3px; }
+  .cert-sign-lbl { font-size: 10px; color: #888; }
+
+  /* ─── BRAIN MAP ─────────────────────────────────────────── */
+  .brain-wrap { display: flex; justify-content: center; margin: 10px 0; }
+
+  /* ─── UTILS ─────────────────────────────────────────────── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .box {
+    background: var(--ltgray); border-radius: 8px;
+    border: 1.5px solid #ddd; padding: 10px 12px;
+  }
+  .box-teal { background: var(--ltteal); border-color: var(--teal); }
+  .box-amber { background: var(--ltamb); border-color: var(--amber); }
+  .box-green { background: var(--ltgrn); border-color: var(--green); }
+  .chip {
+    display: inline-block; background: var(--navy); color: #fff;
+    font-size: 10px; padding: 2px 8px; border-radius: 12px;
+    margin-right: 4px; margin-bottom: 3px;
+  }
+  .chip.teal { background: var(--teal); }
+  .chip.amber { background: var(--amber); }
+  .divider { border: none; border-top: 1px dashed #ccc; margin: 12px 0; }
+  .small { font-size: 10px; color: #888; }
+
+  /* ─── PRINT ─────────────────────────────────────────────── */
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CAPA
+═══════════════════════════════════════════════════════════ -->
+<div class="page" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:16px;">
+  <div style="font-size:80px;">🌱</div>
+  <div style="font-size:42px;font-weight:800;color:var(--navy);">CogniMap</div>
+  <div style="font-size:22px;font-weight:700;color:var(--teal);">TRILHA INFANTIL</div>
+  <div style="font-size:15px;color:#666;max-width:320px;line-height:1.6;">Materiais Impressos — Fichas de Atividade<br>e Instrumentos de Autoavaliação</div>
+  <div style="background:var(--navy);color:#fff;padding:12px 30px;border-radius:10px;margin-top:10px;">
+    <div style="font-size:13px;font-weight:700;">Crianças de 4 a 14 anos</div>
+    <div style="font-size:11px;color:#c0d8f0;margin-top:3px;">Grupos A · B · C &nbsp;|&nbsp; DT · DA · TDAH · TEA</div>
+  </div>
+  <div style="position:absolute;bottom:20mm;font-size:11px;color:#aaa;">Para uso pelo participante sob orientação do profissional aplicador</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ÍNDICE
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">Trilha Infantil · Índice</div>
+  </div>
+  <h1>Índice de Materiais</h1>
+  <p class="subtitle">Fichas de atividade e questionários organizados por módulo</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+    <!-- col 1 -->
+    <div>
+      <div class="box box-teal" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px;">📋 QUESTIONÁRIOS</div>
+        <div style="font-size:11px;line-height:2;">Q1 · Autoavaliação Cognitiva (Módulo 1)<br>Q2 · Inventário de Expectativas (Módulo 1)<br>Q3 · Reavaliação Final (Módulo 12)<br>Q4 · Mapa do Meu Cérebro (Módulo 12)</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">🔤 ATENÇÃO (Módulo 2)</div>
+        <div style="font-size:11px;line-height:2;">F2-A · Cancelamento — Grupo A (figuras)<br>F2-B · Cancelamento — Grupo B (letras)<br>F2-C · Cancelamento — Grupo C (duplo)</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">🧩 MEMÓRIA (Módulo 3)</div>
+        <div style="font-size:11px;line-height:2;">F3-A · Listas de Palavras para Evocar<br>F3-B · Sequências para Completar</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">📅 ORIENTAÇÃO (Módulo 4)</div>
+        <div style="font-size:11px;line-height:2;">F4-A · Calendário do Mês<br>F4-B · Linha do Tempo da Minha Vida</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">💬 LINGUAGEM (Módulo 5)</div>
+        <div style="font-size:11px;line-height:2;">F5-A · Fluência Verbal por Categoria<br>F5-B · Sequência de História</div>
+      </div>
+    </div>
+    <!-- col 2 -->
+    <div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">🗺️ PLANEJAMENTO (Módulo 7)</div>
+        <div style="font-size:11px;line-height:2;">F7-A · Ficha de Sequenciamento<br>F7-B · Projeto em 5 Passos (Grupo C)</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">🌀 FLEXIBILIDADE (Módulo 8)</div>
+        <div style="font-size:11px;line-height:2;">F8-A · Stroop Infantil (Grupos B e C)</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">🎨 CRIATIVIDADE (Módulo 9)</div>
+        <div style="font-size:11px;line-height:2;">F9-A · Escrita Criativa — Microconto</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">🔢 RACIOCÍNIO (Módulo 10)</div>
+        <div style="font-size:11px;line-height:2;">F10-A · Enigmas por Nível<br>F10-B · Classificação Múltipla</div>
+      </div>
+      <div class="box" style="margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;">💛 SOCIOEMOCIONAL (Módulo 11)</div>
+        <div style="font-size:11px;line-height:2;">F11-A · Cartões de Emoções<br>F11-B · Situações Sociais para Debate</div>
+      </div>
+      <div class="box box-amber">
+        <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:6px;">🖥️ MAZES E COORDENAÇÃO (Módulo 5 / 8)</div>
+        <div style="font-size:11px;line-height:2;">FM-A · Labirinto Simples — Grupo A<br>FM-B · Labirinto Médio — Grupo B<br>FM-C · Labirinto Complexo — Grupo C</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · Materiais Impressos</span><span>Índice</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Q1 · AUTOAVALIAÇÃO COGNITIVA (Módulo 1) — Grupos B e C
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">Q1 · Módulo 1 · Grupos B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 1 — ACOLHIMENTO</div>
+  <h1>Como eu me sinto quando aprendo?</h1>
+  <p class="subtitle">Questionário de Autoavaliação Cognitiva · Para crianças de 7 a 14 anos</p>
+  <div class="instr"><strong>Instrução:</strong> Leia cada frase com atenção. Marque com um ✗ o rosto que melhor representa como você se sente em relação à afirmação.</div>
+
+  <div class="likert-header" style="margin-top:14px;">
+    <span></span>
+    <span class="emoji-scale">😟</span>
+    <span class="emoji-scale">🙁</span>
+    <span class="emoji-scale">😐</span>
+    <span class="emoji-scale">🙂</span>
+    <span class="emoji-scale">😄</span>
+  </div>
+  <div class="likert-header" style="margin-bottom:6px;">
+    <span style="font-size:10px;color:#666;">Afirmação</span>
+    <span style="font-size:10px;color:#888;">Nunca</span>
+    <span style="font-size:10px;color:#888;">Raramente</span>
+    <span style="font-size:10px;color:#888;">Às vezes</span>
+    <span style="font-size:10px;color:#888;">Quase sempre</span>
+    <span style="font-size:10px;color:#888;">Sempre</span>
+  </div>
+
+  <div id="qs">
+  </div>
+
+  <script>
+    const questions = [
+      "Consigo prestar atenção na aula ou quando alguém me explica algo.",
+      "Lembro de coisas que aprendi na escola ou em casa.",
+      "Consigo me concentrar quando leio ou faço uma tarefa.",
+      "Entendo as instruções logo da primeira vez.",
+      "Termino minhas tarefas sem precisar que me lembrem.",
+      "Consigo organizar minhas coisas e meu tempo.",
+      "Quando erro, consigo tentar de novo sem desistir.",
+      "Me sinto bem quando aprendo coisas novas.",
+      "Lembro do que estudei quando preciso usar.",
+      "Consigo explicar para alguém algo que aprendi.",
+    ];
+    const wrap = document.getElementById('qs');
+    questions.forEach((q,i) => {
+      const row = document.createElement('div');
+      row.className = 'likert-row';
+      row.style.background = i%2===0 ? '#fafafe' : '#fff';
+      row.innerHTML = `<span>${i+1}. ${q}</span>` + [1,2,3,4,5].map(n =>
+        `<div class="likert-num">${n}</div>`).join('');
+      wrap.appendChild(row);
+    });
+  </script>
+
+  <div style="margin-top:16px;">
+    <h3>Espaço livre — Algo que você gostaria de contar sobre como aprende:</h3>
+    <div class="answer-line" style="min-height:60px;border:1.5px solid #ccc;border-radius:6px;padding:6px;margin-top:4px;"></div>
+  </div>
+
+  <div class="two-col" style="margin-top:12px;">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Nome (opcional):</div>
+      <div class="answer-line"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Idade &nbsp;|&nbsp; Data:</div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · Q1 — Autoavaliação Cognitiva</span><span>Módulo 1</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Q2 · INVENTÁRIO DE EXPECTATIVAS (Módulo 1)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">Q2 · Módulo 1 · Todos os Grupos</div>
+  </div>
+  <div class="module-badge">MÓDULO 1 — ACOLHIMENTO</div>
+  <h1>O que espero deste programa?</h1>
+  <p class="subtitle">Inventário de Expectativas · Grupos A (com apoio), B e C</p>
+  <div class="instr"><strong>Instrução:</strong> Responda com sinceridade. Não existe resposta errada. Este é um registro seu para guardar e comparar no final do programa.</div>
+
+  <h2>1. Eu vim para este programa porque…</h2>
+  <div class="answer-line"></div>
+  <div class="answer-line"></div>
+
+  <h2>2. Algo que eu acho difícil quando estou aprendendo:</h2>
+  <div class="answer-line"></div>
+  <div class="answer-line"></div>
+
+  <h2>3. Algo que eu faço muito bem:</h2>
+  <div class="answer-line"></div>
+
+  <h2>4. No final dessas 12 semanas, eu gostaria de:</h2>
+  <div class="answer-line"></div>
+  <div class="answer-line"></div>
+
+  <h2>5. Uma palavra que me descreve hoje:</h2>
+  <div style="border:2.5px solid var(--teal);border-radius:8px;min-height:40px;margin-top:4px;padding:6px 12px;font-size:14px;"></div>
+
+  <h2>6. Complete as frases:</h2>
+  <div class="plan-table" style="margin-top:6px;">
+    <table class="plan-table">
+      <tr><th>Quando eu erro…</th><td></td></tr>
+      <tr><th>Quando aprendo algo novo…</th><td></td></tr>
+      <tr><th>Meu maior desafio na escola é…</th><td></td></tr>
+      <tr><th>O que mais gosto de aprender é…</th><td></td></tr>
+    </table>
+  </div>
+
+  <div class="two-col" style="margin-top:14px;">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Nome:</div>
+      <div class="answer-line"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Data de início do programa:</div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <div class="box box-teal" style="margin-top:12px;font-size:10.5px;color:#2a5050;">
+    💡 <strong>Para o facilitador:</strong> Guardar este formulário e retornar a ele no Módulo 12. A comparação entre expectativa inicial e percepção final é um dado terapêutico relevante.
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · Q2 — Inventário de Expectativas</span><span>Módulo 1</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F2-A · CANCELAMENTO — GRUPO A (Figuras)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F2-A · Módulo 2 · Grupo A (4–6a)</div>
+  </div>
+  <div class="module-badge">MÓDULO 2 — ATENÇÃO SELETIVA</div>
+  <h1>Encontre a Estrela! ⭐</h1>
+  <div class="target-box"><span class="lbl">Alvo a riscar:</span><span style="font-size:22px;">⭐</span><span>Risque apenas as ESTRELAS</span></div>
+  <div class="instr">Risque com um lápis todas as estrelas ⭐ que encontrar. As outras figuras deixe em paz!</div>
+
+  <div class="matrix-wrap">
+    <div class="matrix xl" style="grid-template-columns:repeat(8,28px);">
+      <script>
+        const symsA = ['🔵','⭐','🔺','🔵','⭐','🔺','🟢','⭐',
+                       '⭐','🔺','🔵','⭐','🟢','⭐','🔵','🔺',
+                       '🟢','⭐','🔵','🔺','⭐','🔵','⭐','🟢',
+                       '🔺','🔵','⭐','🟢','🔺','⭐','🔵','⭐',
+                       '⭐','🟢','🔵','⭐','🔺','🟢','⭐','🔵'];
+        document.currentScript.insertAdjacentHTML('beforebegin',
+          symsA.map(s=>`<span>${s}</span>`).join(''));
+      </script>
+    </div>
+  </div>
+
+  <div class="score-row">
+    <div class="sf">Total de estrelas encontradas: _____ / 16</div>
+    <div class="sf">Tempo: _____ min</div>
+    <div class="sf">Erros: _____</div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F2-A — Cancelamento Grupo A</span><span>Módulo 2</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F2-B · CANCELAMENTO — GRUPO B (Letras)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F2-B · Módulo 2 · Grupo B (7–10a)</div>
+  </div>
+  <div class="module-badge">MÓDULO 2 — ATENÇÃO SELETIVA</div>
+  <h1>Cancelamento de Letras</h1>
+  <div class="target-box"><span class="lbl">Alvo a riscar:</span><span style="font-size:20px;font-family:monospace;font-weight:800;color:var(--teal);">A</span><span>Risque apenas a letra <strong>A</strong> (maiúscula e minúscula)</span></div>
+  <div class="instr">Vá linha por linha, da esquerda para a direita. Risque toda letra <strong>A</strong> ou <strong>a</strong> que encontrar.</div>
+
+  <div class="matrix-wrap">
+    <div class="matrix" id="matB"></div>
+  </div>
+  <script>
+    const lettersB = 'BSDAETRAFNGAILCAMOKPADRETSAGAJPLAMEOARBTACDENASLOPREMAQSNACBOPALDRAESFATNOLPCRAMESTANBOPQRDAELACMSRATENOPALDBSCAEKMQRLAPOTNSECBADRM'.split('');
+    const mB = document.getElementById('matB');
+    mB.style.gridTemplateColumns = `repeat(13,22px)`;
+    lettersB.slice(0,104).forEach(l => {
+      const s = document.createElement('span');
+      s.textContent = l;
+      if(l==='A') s.style.color = '#ccc'; // faded hint - print will hide
+      mB.appendChild(s);
+    });
+  </script>
+
+  <div class="score-row">
+    <div class="sf">A's encontrados: _____ / 16</div>
+    <div class="sf">Omissões: _____</div>
+    <div class="sf">Comissões: _____</div>
+    <div class="sf">Tempo: _____ min</div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F2-B — Cancelamento Grupo B</span><span>Módulo 2</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F2-C · CANCELAMENTO DUPLO — GRUPO C
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F2-C · Módulo 2 · Grupo C (11–14a)</div>
+  </div>
+  <div class="module-badge">MÓDULO 2 — ATENÇÃO SELETIVA</div>
+  <h1>Cancelamento com Dois Alvos</h1>
+  <div style="display:flex;gap:12px;margin-bottom:8px;">
+    <div class="target-box"><span class="lbl">Alvo 1 — circular:</span><span style="font-family:monospace;font-weight:800;font-size:18px;color:var(--teal);">E</span></div>
+    <div class="target-box"><span class="lbl">Alvo 2 — sublinhar:</span><span style="font-family:monospace;font-weight:800;font-size:18px;color:var(--amber);">R</span></div>
+  </div>
+  <div class="instr"><strong>Atenção dupla!</strong> Circule toda letra <strong>E</strong> e sublinhe toda letra <strong>R</strong>. As outras letras não marque.</div>
+
+  <div class="matrix-wrap">
+    <div class="matrix dense" id="matC"></div>
+  </div>
+  <script>
+    const src = 'PRENTALCABORESTDMPAERSNCLBTROAMSLPEDRCQBNOAERTLMSCPDABORENTMLACQSPERMDTANBOCLRESAMTPQENBDCAOLRMTSEPCBNAQRDELMTOBSCAPRNETLQDMCBSARPENOLCT';
+    const mC = document.getElementById('matC');
+    mC.style.gridTemplateColumns = `repeat(16,18px)`;
+    src.split('').slice(0,128).forEach(l => {
+      const s = document.createElement('span');
+      s.textContent = l;
+      mC.appendChild(s);
+    });
+  </script>
+
+  <div class="score-row">
+    <div class="sf">E circulados: _____ / ~16</div>
+    <div class="sf">R sublinhados: _____ / ~16</div>
+    <div class="sf">Erros: _____</div>
+    <div class="sf">Tempo: _____</div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F2-C — Cancelamento Duplo Grupo C</span><span>Módulo 2</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F3-A · LISTAS DE PALAVRAS (Módulo 3)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F3-A · Módulo 3 · Grupos B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 3 — MEMÓRIA DE TRABALHO</div>
+  <h1>Listas de Palavras para Memorizar</h1>
+  <div class="instr">O facilitador lê a lista em voz alta. Após 1 minuto, você escreve todas as palavras que lembrar, nos espaços abaixo.</div>
+
+  <div class="two-col">
+    <div>
+      <h2>Lista 1 — Animais <span class="chip teal">Nível B</span></h2>
+      <div class="word-grid">
+        <div class="word-card">🐘 Elefante</div>
+        <div class="word-card">🦁 Leão</div>
+        <div class="word-card">🐦 Pássaro</div>
+        <div class="word-card">🐠 Peixe</div>
+        <div class="word-card">🦋 Borboleta</div>
+        <div class="word-card">🐢 Tartaruga</div>
+      </div>
+      <h3>Sua evocação:</h3>
+      <div class="answer-grid">
+        <div class="answer-box"></div><div class="answer-box"></div>
+        <div class="answer-box"></div><div class="answer-box"></div>
+        <div class="answer-box"></div><div class="answer-box"></div>
+      </div>
+      <div class="score-row"><div class="sf">Acertos: _____ / 6</div></div>
+    </div>
+    <div>
+      <h2>Lista 2 — Alimentos <span class="chip teal">Nível B</span></h2>
+      <div class="word-grid">
+        <div class="word-card">🍎 Maçã</div>
+        <div class="word-card">🍕 Pizza</div>
+        <div class="word-card">🥕 Cenoura</div>
+        <div class="word-card">🍰 Bolo</div>
+        <div class="word-card">🍇 Uva</div>
+        <div class="word-card">🥗 Salada</div>
+      </div>
+      <h3>Sua evocação:</h3>
+      <div class="answer-grid">
+        <div class="answer-box"></div><div class="answer-box"></div>
+        <div class="answer-box"></div><div class="answer-box"></div>
+        <div class="answer-box"></div><div class="answer-box"></div>
+      </div>
+      <div class="score-row"><div class="sf">Acertos: _____ / 6</div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2>Lista 3 — Palavras Misturadas <span class="chip amber">Nível C</span></h2>
+  <div class="word-grid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="word-card">🏠 Casa</div>
+    <div class="word-card">☀️ Sol</div>
+    <div class="word-card">📚 Livro</div>
+    <div class="word-card">🚗 Carro</div>
+    <div class="word-card">🎵 Música</div>
+    <div class="word-card">⭐ Estrela</div>
+    <div class="word-card">🌊 Mar</div>
+    <div class="word-card">🎒 Mochila</div>
+    <div class="word-card">🌸 Flor</div>
+    <div class="word-card">🍦 Sorvete</div>
+  </div>
+  <h3>Evocação imediata — escreva o máximo que lembrar:</h3>
+  <div class="answer-grid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="answer-box"></div><div class="answer-box"></div><div class="answer-box"></div>
+    <div class="answer-box"></div><div class="answer-box"></div><div class="answer-box"></div>
+    <div class="answer-box"></div><div class="answer-box"></div><div class="answer-box"></div>
+    <div class="answer-box"></div>
+  </div>
+  <div class="score-row">
+    <div class="sf">Evocação imediata: _____ / 10</div>
+    <div class="sf">Evocação com dica de categoria: _____ / 10</div>
+    <div class="sf">Evocação após 10 min: _____ / 10</div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F3-A — Listas de Palavras</span><span>Módulo 3</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F3-B · SEQUÊNCIAS PARA COMPLETAR (Módulo 3)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F3-B · Módulo 3 · Grupos A, B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 3 — MEMÓRIA E RACIOCÍNIO</div>
+  <h1>Sequências para Completar</h1>
+  <div class="instr">Observe cada sequência. Descubra a regra e complete os espaços em branco.</div>
+
+  <h2>Nível A — Formas e Cores <span class="chip teal">Grupo A</span></h2>
+  <table class="seq-table">
+    <tr>
+      <td>🔴</td><td>🔵</td><td>🔴</td><td class="blank-td"><div class="blank"></div></td><td>🔴</td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>⭐</td><td>⭐</td><td>🔷</td><td>⭐</td><td>⭐</td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>🟢</td><td>🔴</td><td>🟡</td><td>🟢</td><td class="blank-td"><div class="blank"></div></td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+  </table>
+
+  <h2>Nível B — Números e Letras <span class="chip teal">Grupo B</span></h2>
+  <table class="seq-table">
+    <tr>
+      <td>2</td><td>4</td><td>6</td><td class="blank-td"><div class="blank"></div></td><td>10</td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>A</td><td>C</td><td>E</td><td class="blank-td"><div class="blank"></div></td><td>I</td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>10</td><td>8</td><td>6</td><td class="blank-td"><div class="blank"></div></td><td class="blank-td"><div class="blank"></div></td><td>0</td>
+    </tr>
+    <tr>
+      <td>🌞</td><td>🌙</td><td>🌞</td><td>🌙</td><td class="blank-td"><div class="blank"></div></td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+  </table>
+
+  <h2>Nível C — Sequências Complexas <span class="chip amber">Grupo C</span></h2>
+  <table class="seq-table">
+    <tr>
+      <td>A1</td><td>B2</td><td>C3</td><td class="blank-td"><div class="blank"></div></td><td>E5</td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>3</td><td>6</td><td>12</td><td>24</td><td class="blank-td"><div class="blank"></div></td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>Z</td><td>Y</td><td>X</td><td class="blank-td"><div class="blank"></div></td><td>V</td><td class="blank-td"><div class="blank"></div></td>
+    </tr>
+    <tr>
+      <td>1</td><td>4</td><td>9</td><td>16</td><td class="blank-td"><div class="blank"></div></td><td>36</td>
+    </tr>
+  </table>
+  <div class="small" style="margin-top:8px;">💡 Gabarito — Nível B: 8, G, 4, 2, ☀️☾ &nbsp;|&nbsp; Nível C: D4, 48, 96, W, U, 25</div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F3-B — Sequências</span><span>Módulo 3</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F4-A · CALENDÁRIO DO MÊS (Módulo 4)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F4-A · Módulo 4 · Todos os Grupos</div>
+  </div>
+  <div class="module-badge">MÓDULO 4 — ORIENTAÇÃO TEMPORAL</div>
+  <h1>Meu Calendário do Mês</h1>
+  <div class="instr">Preencha o mês, o ano e os dias. Depois marque datas importantes com cores diferentes.</div>
+
+  <div style="display:flex;gap:14px;align-items:center;margin:10px 0;">
+    <div style="font-size:12px;font-weight:700;color:var(--navy);">Mês:</div>
+    <div style="border-bottom:2px solid var(--teal);width:120px;"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--navy);">Ano:</div>
+    <div style="border-bottom:2px solid var(--teal);width:80px;"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--navy);">Estação:</div>
+    <div style="border-bottom:2px solid var(--teal);width:100px;"></div>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;margin-top:6px;">
+    <tr style="background:var(--navy);">
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Dom</th>
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Seg</th>
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Ter</th>
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Qua</th>
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Qui</th>
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Sex</th>
+      <th style="color:#fff;padding:7px;font-size:12px;border:1px solid #4a6a9b;">Sáb</th>
+    </tr>
+    <script>
+      for(let w=0;w<5;w++){
+        let r='<tr>';
+        for(let d=0;d<7;d++) r+=`<td style="height:36px;border:1px solid #ccc;vertical-align:top;padding:3px;font-size:11px;"></td>`;
+        r+='</tr>';
+        document.currentScript.insertAdjacentHTML('beforebegin',r);
+      }
+    </script>
+  </table>
+
+  <h2 style="margin-top:12px;">Eventos importantes deste mês:</h2>
+  <div style="display:grid;grid-template-columns:20px 1fr;gap:4px;align-items:center;margin-top:4px;">
+    <div style="width:14px;height:14px;background:#FF6B6B;border-radius:3px;"></div><div class="answer-line"></div>
+    <div style="width:14px;height:14px;background:#4ECDC4;border-radius:3px;"></div><div class="answer-line"></div>
+    <div style="width:14px;height:14px;background:#45B7D1;border-radius:3px;"></div><div class="answer-line"></div>
+    <div style="width:14px;height:14px;background:#96CEB4;border-radius:3px;"></div><div class="answer-line"></div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F4-A — Calendário</span><span>Módulo 4</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F4-B · LINHA DO TEMPO DA MINHA VIDA (Módulo 4 e 6)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F4-B · Módulos 4 e 6 · Grupos B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 6 — MEMÓRIA AUTOBIOGRÁFICA</div>
+  <h1>Linha do Tempo da Minha Vida</h1>
+  <div class="instr">Complete cada fase com palavras, desenhos ou colagens. Não precisa lembrar de datas exatas — o importante é o que ficou na memória.</div>
+
+  <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;margin-top:10px;align-items:stretch;">
+    <div style="background:var(--teal);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:10px;font-size:11px;font-weight:700;text-align:center;">🍼<br>Bebê e Infância<br><span style="font-weight:400;font-size:10px;">0 – 5 anos</span></div>
+    <div style="border:1.5px solid var(--teal);border-radius:8px;min-height:55px;padding:8px;font-size:11px;color:#aaa;">Onde nasci · Com quem morava · Minha memória mais antiga...</div>
+    <div style="background:var(--green);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:10px;font-size:11px;font-weight:700;text-align:center;">🎒<br>Escola<br><span style="font-weight:400;font-size:10px;">6 – 10 anos</span></div>
+    <div style="border:1.5px solid var(--green);border-radius:8px;min-height:55px;padding:8px;font-size:11px;color:#aaa;">Amigos · Professores favoritos · Algo que aprendi...</div>
+    <div style="background:var(--amber);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:10px;font-size:11px;font-weight:700;text-align:center;">🌟<br>Agora<br><span style="font-weight:400;font-size:10px;">Hoje</span></div>
+    <div style="border:1.5px solid var(--amber);border-radius:8px;min-height:55px;padding:8px;font-size:11px;color:#aaa;">Quem sou · O que gosto · O que quero aprender...</div>
+    <div style="background:var(--purple);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:10px;font-size:11px;font-weight:700;text-align:center;">🚀<br>Futuro<br><span style="font-weight:400;font-size:10px;">Meus sonhos</span></div>
+    <div style="border:1.5px solid var(--purple);border-radius:8px;min-height:55px;padding:8px;font-size:11px;color:#aaa;">O que quero ser · Onde quero ir · O que quero fazer...</div>
+  </div>
+  <h2 style="margin-top:12px;">Uma memória que nunca vou esquecer:</h2>
+  <div style="border:1.5px solid #ccc;border-radius:8px;min-height:50px;padding:8px;"></div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F4-B — Linha do Tempo</span><span>Módulos 4 e 6</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F5-A · FLUÊNCIA VERBAL (Módulo 5)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F5-A · Módulo 5 · Grupos B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 5 — LINGUAGEM E FLUÊNCIA VERBAL</div>
+  <h1>Desafio das Palavras — 60 Segundos!</h1>
+  <div class="instr">Você tem <strong>60 segundos</strong> para cada categoria. Escreva o maior número de palavras que conseguir. O facilitador vai cronometrar!</div>
+
+  <div class="two-col">
+    <div>
+      <div class="box box-teal" style="margin-bottom:10px;">
+        <h3 style="color:var(--teal);margin-bottom:6px;">🐾 Categoria 1: Animais</h3>
+        <div style="font-size:10px;color:#666;margin-bottom:6px;">Total: _____ palavras &nbsp; Tempo: 60s</div>
+        <div id="anim-lines"></div>
+        <script>
+          const al=document.getElementById('anim-lines');
+          for(let i=0;i<8;i++){const d=document.createElement('div');d.className='answer-line';d.style.marginBottom='5px';al.appendChild(d);}
+        </script>
+      </div>
+      <div class="box box-amber">
+        <h3 style="color:var(--amber);margin-bottom:6px;">🍽️ Categoria 3: Comidas</h3>
+        <div style="font-size:10px;color:#666;margin-bottom:6px;">Total: _____ palavras &nbsp; Tempo: 60s</div>
+        <div id="food-lines"></div>
+        <script>
+          const fl=document.getElementById('food-lines');
+          for(let i=0;i<8;i++){const d=document.createElement('div');d.className='answer-line';d.style.marginBottom='5px';fl.appendChild(d);}
+        </script>
+      </div>
+    </div>
+    <div>
+      <div class="box" style="margin-bottom:10px;">
+        <h3 style="color:var(--green);margin-bottom:6px;">🏙️ Categoria 2: Cidades do Brasil</h3>
+        <div style="font-size:10px;color:#666;margin-bottom:6px;">Total: _____ palavras &nbsp; Tempo: 60s</div>
+        <div id="city-lines"></div>
+        <script>
+          const cl=document.getElementById('city-lines');
+          for(let i=0;i<8;i++){const d=document.createElement('div');d.className='answer-line';d.style.marginBottom='5px';cl.appendChild(d);}
+        </script>
+      </div>
+      <div class="box box-teal">
+        <h3 style="color:var(--navy);margin-bottom:6px;">🎒 Categoria 4 (Grupo C): Coisas numa mochila</h3>
+        <div style="font-size:10px;color:#666;margin-bottom:6px;">Total: _____ palavras &nbsp; Tempo: 60s</div>
+        <div id="moch-lines"></div>
+        <script>
+          const ml=document.getElementById('moch-lines');
+          for(let i=0;i<8;i++){const d=document.createElement('div');d.className='answer-line';d.style.marginBottom='5px';ml.appendChild(d);}
+        </script>
+      </div>
+    </div>
+  </div>
+  <h2>Qual foi a sua estratégia?</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;">
+    <div style="font-size:11px;">☐ Ordem alfabética</div>
+    <div style="font-size:11px;">☐ Por grupos (ex: animais do mar, da terra…)</div>
+    <div style="font-size:11px;">☐ Fui lembrando um de cada vez</div>
+    <div style="font-size:11px;">☐ Visualizei uma cena mentalmente</div>
+    <div style="font-size:11px;">☐ Outra: ___________________________</div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F5-A — Fluência Verbal</span><span>Módulo 5</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F7-B · PROJETO EM 5 PASSOS (Módulo 7) — Grupo C
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F7-B · Módulo 7 · Grupo C (11–14a)</div>
+  </div>
+  <div class="module-badge">MÓDULO 7 — PLANEJAMENTO</div>
+  <h1>Meu Projeto em 5 Passos</h1>
+  <div class="instr">Escolha algo que você quer realizar nas próximas semanas. Pode ser qualquer coisa: aprender algo, criar algo, fazer algo. Planeje usando os 5 passos abaixo.</div>
+
+  <div class="box box-teal" style="margin:10px 0;text-align:center;">
+    <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:4px;">Meu projeto é:</div>
+    <div style="border-bottom:2px solid var(--teal);min-height:30px;font-size:14px;padding:4px;"></div>
+  </div>
+
+  <table class="plan-table" style="margin-top:8px;">
+    <tr style="background:var(--navy);">
+      <th style="color:#fff;padding:8px;text-align:center;width:35px;">#</th>
+      <th style="color:#fff;padding:8px;text-align:left;">Pergunta</th>
+      <th style="color:#fff;padding:8px;text-align:left;">Minha resposta</th>
+    </tr>
+    <tr style="background:#f0f8ff;">
+      <td style="text-align:center;font-size:18px;border:1px solid #ccc;">1️⃣</td>
+      <td style="border:1px solid #ccc;padding:8px;font-weight:700;font-size:12px;">O QUÊ?<br><span style="font-weight:400;color:#888;">O que exatamente quero fazer?</span></td>
+      <td style="border:1px solid #ccc;min-height:36px;padding:6px;"></td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-size:18px;border:1px solid #ccc;">2️⃣</td>
+      <td style="border:1px solid #ccc;padding:8px;font-weight:700;font-size:12px;">QUANDO?<br><span style="font-weight:400;color:#888;">Que dia / hora vou começar?</span></td>
+      <td style="border:1px solid #ccc;min-height:36px;padding:6px;"></td>
+    </tr>
+    <tr style="background:#f0f8ff;">
+      <td style="text-align:center;font-size:18px;border:1px solid #ccc;">3️⃣</td>
+      <td style="border:1px solid #ccc;padding:8px;font-weight:700;font-size:12px;">COMO?<br><span style="font-weight:400;color:#888;">Quais passos vou seguir?</span></td>
+      <td style="border:1px solid #ccc;min-height:36px;padding:6px;"></td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-size:18px;border:1px solid #ccc;">4️⃣</td>
+      <td style="border:1px solid #ccc;padding:8px;font-weight:700;font-size:12px;">COM QUEM?<br><span style="font-weight:400;color:#888;">Preciso de ajuda? De quem?</span></td>
+      <td style="border:1px solid #ccc;min-height:36px;padding:6px;"></td>
+    </tr>
+    <tr style="background:#f0f8ff;">
+      <td style="text-align:center;font-size:18px;border:1px solid #ccc;">5️⃣</td>
+      <td style="border:1px solid #ccc;padding:8px;font-weight:700;font-size:12px;">E SE DER ERRADO?<br><span style="font-weight:400;color:#888;">Qual é o meu plano B?</span></td>
+      <td style="border:1px solid #ccc;min-height:36px;padding:6px;"></td>
+    </tr>
+  </table>
+  <div class="box box-amber" style="margin-top:12px;font-size:11.5px;">
+    <strong>Revisão:</strong> Após a próxima semana, volte aqui e responda: o plano funcionou? O que mudaria?
+    <div class="answer-line" style="margin-top:6px;"></div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F7-B — Projeto em 5 Passos</span><span>Módulo 7</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F8-A · STROOP INFANTIL (Módulo 8) — Grupos B e C
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F8-A · Módulo 8 · Grupos B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 8 — CONTROLE INIBITÓRIO</div>
+  <h1>Teste do Stroop — Fala a COR, não a Palavra!</h1>
+  <div class="instr"><strong>Regra:</strong> Diga em voz alta a <strong>COR DA TINTA</strong> com que cada palavra está escrita — <strong>NÃO leia a palavra!</strong> O facilitador marca seus acertos.</div>
+
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0;">
+    <div style="font-size:22px;font-weight:800;color:#e74c3c;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">AZUL</div>
+    <div style="font-size:22px;font-weight:800;color:#3498db;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">VERDE</div>
+    <div style="font-size:22px;font-weight:800;color:#2ecc71;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">VERMELHO</div>
+    <div style="font-size:22px;font-weight:800;color:#f39c12;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">ROXO</div>
+    <div style="font-size:22px;font-weight:800;color:#9b59b6;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">LARANJA</div>
+    <div style="font-size:22px;font-weight:800;color:#2ecc71;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">AZUL</div>
+    <div style="font-size:22px;font-weight:800;color:#9b59b6;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">VERMELHO</div>
+    <div style="font-size:22px;font-weight:800;color:#f39c12;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">VERDE</div>
+    <div style="font-size:22px;font-weight:800;color:#e74c3c;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">ROXO</div>
+    <div style="font-size:22px;font-weight:800;color:#3498db;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">LARANJA</div>
+    <div style="font-size:22px;font-weight:800;color:#f39c12;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">AZUL</div>
+    <div style="font-size:22px;font-weight:800;color:#e74c3c;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">VERDE</div>
+    <div style="font-size:22px;font-weight:800;color:#3498db;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">ROXO</div>
+    <div style="font-size:22px;font-weight:800;color:#9b59b6;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">LARANJA</div>
+    <div style="font-size:22px;font-weight:800;color:#2ecc71;text-align:center;padding:8px;background:var(--ltgray);border-radius:6px;">VERMELHO</div>
+  </div>
+
+  <div class="two-col" style="margin-top:12px;">
+    <div class="box">
+      <h3>Registro — Tentativa 1</h3>
+      <div style="font-size:11px;margin-top:6px;">Acertos: _____ / 15 &nbsp;&nbsp; Erros: _____ &nbsp;&nbsp; Tempo: _____</div>
+    </div>
+    <div class="box">
+      <h3>Registro — Tentativa 2</h3>
+      <div style="font-size:11px;margin-top:6px;">Acertos: _____ / 15 &nbsp;&nbsp; Erros: _____ &nbsp;&nbsp; Tempo: _____</div>
+    </div>
+  </div>
+  <div class="box box-teal" style="margin-top:10px;font-size:11.5px;">
+    💡 <strong>Reflexão:</strong> O que era mais difícil — os primeiros cartões ou os últimos? O que o seu cérebro tentou fazer no automático?
+    <div class="answer-line" style="margin-top:6px;"></div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F8-A — Stroop</span><span>Módulo 8</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F9-A · ESCRITA CRIATIVA — MICROCONTO (Módulo 9) — Grupo C
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F9-A · Módulo 9 · Grupo C</div>
+  </div>
+  <div class="module-badge">MÓDULO 9 — CRIATIVIDADE E EXPRESSÃO</div>
+  <h1>Meu Microconto</h1>
+  <div class="instr">Um microconto tem até 10 linhas. Precisa de 3 elementos: <strong>personagem</strong>, <strong>problema</strong> e <strong>resolução</strong>. O tema é livre.</div>
+
+  <div class="three-col" style="margin:10px 0;">
+    <div class="box box-teal">
+      <div style="font-size:11px;font-weight:700;color:var(--teal);">👤 Meu personagem é:</div>
+      <div class="answer-line" style="margin-top:6px;"></div>
+    </div>
+    <div class="box box-amber">
+      <div style="font-size:11px;font-weight:700;color:var(--amber);">⚡ O problema é:</div>
+      <div class="answer-line" style="margin-top:6px;"></div>
+    </div>
+    <div class="box box-green">
+      <div style="font-size:11px;font-weight:700;color:var(--green);">✅ A resolução é:</div>
+      <div class="answer-line" style="margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div style="border:2px solid var(--navy);border-radius:10px;padding:14px;min-height:160px;background:var(--ltgray);margin:10px 0;">
+    <div style="font-size:10px;color:var(--teal);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Meu Microconto</div>
+    <div id="mc-lines"></div>
+    <script>
+      const mc=document.getElementById('mc-lines');
+      for(let i=0;i<10;i++){const d=document.createElement('div');d.className='answer-line';mc.appendChild(d);}
+    </script>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h3>Título do meu conto:</h3>
+      <div style="border:1.5px solid var(--teal);border-radius:6px;min-height:28px;padding:5px;font-size:13px;margin-top:4px;"></div>
+    </div>
+    <div>
+      <h3>Como me senti criando:</h3>
+      <div style="display:flex;gap:8px;margin-top:6px;font-size:20px;">
+        <span>😊</span><span>😐</span><span>😩</span><span>🤩</span><span>😤</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F9-A — Microconto</span><span>Módulo 9</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F10-A · ENIGMAS POR NÍVEL (Módulo 10)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F10-A · Módulo 10 · Grupos A, B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 10 — RACIOCÍNIO LÓGICO</div>
+  <h1>Desafios e Enigmas</h1>
+  <div class="instr">Pense com calma antes de responder. O mais importante é me explicar <strong>como você chegou na resposta</strong>.</div>
+
+  <h2>Nível A — Figuras Diferentes <span class="chip teal">Grupo A</span></h2>
+  <p>Qual figura NÃO pertence ao grupo? Circule e explique por quê.</p>
+  <div style="display:flex;gap:14px;margin:8px 0;font-size:28px;align-items:center;">
+    <span style="padding:8px;background:var(--ltgray);border-radius:8px;border:2px solid #ddd;">🔴</span>
+    <span style="padding:8px;background:var(--ltgray);border-radius:8px;border:2px solid #ddd;">🔵</span>
+    <span style="padding:8px;background:var(--ltgray);border-radius:8px;border:2px solid #ddd;">🟢</span>
+    <span style="padding:8px;background:var(--ltamb);border-radius:8px;border:2px solid var(--amber);">⭐</span>
+    <span style="padding:8px;background:var(--ltgray);border-radius:8px;border:2px solid #ddd;">🟡</span>
+    <span style="font-size:12px;color:#888;">Porque: <span style="display:inline-block;width:150px;border-bottom:1px solid #aaa;"></span></span>
+  </div>
+
+  <h2>Nível B — Charadas <span class="chip teal">Grupo B</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0;">
+    <div class="box">
+      <div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:6px;">1. Quanto mais tiro, maior fico. O que sou?</div>
+      <div class="answer-line"></div>
+    </div>
+    <div class="box">
+      <div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:6px;">2. Tenho dentes mas não mordo. O que sou?</div>
+      <div class="answer-line"></div>
+    </div>
+    <div class="box">
+      <div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:6px;">3. Quanto mais seco, mais molhado fico. O que sou?</div>
+      <div class="answer-line"></div>
+    </div>
+    <div class="box">
+      <div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:6px;">4. Tenho olhos mas não vejo. O que sou?</div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <h2>Nível C — Lógica e Dedução <span class="chip amber">Grupo C</span></h2>
+  <div class="box" style="margin-bottom:8px;">
+    <div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:6px;">5. Ana é mais alta que Bia. Bia é mais alta que Carla. Quem é a mais baixa? Explique:</div>
+    <div class="answer-line"></div><div class="answer-line"></div>
+  </div>
+  <div class="box" style="margin-bottom:8px;">
+    <div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:6px;">6. Se hoje é quarta-feira, que dia foi anteontem? Daqui a 5 dias, que dia será?</div>
+    <div class="answer-line"></div>
+  </div>
+
+  <div class="small" style="margin-top:8px;">💡 Gabarito — Nível B: 1. Buraco · 2. Pente · 3. Toalha · 4. Batata</div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F10-A — Enigmas</span><span>Módulo 10</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     F11-A · CARTÕES DE EMOÇÕES (Módulo 11)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">F11-A · Módulo 11 · Todos os Grupos</div>
+  </div>
+  <div class="module-badge">MÓDULO 11 — SOCIOEMOCIONAL</div>
+  <h1>Identificando Emoções</h1>
+  <div class="instr">Olhe cada rosto. Escreva o nome da emoção que você vê e responda quando você já sentiu algo parecido.</div>
+
+  <div class="emotion-grid">
+    <div class="emotion-card"><span class="emotion-face">😄</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">😢</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">😠</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">😨</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">😲</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">🥰</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">😔</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+    <div class="emotion-card"><span class="emotion-face">😤</span><div class="emotion-name">________________</div><div style="font-size:9.5px;color:#888;margin-top:4px;">Quando sinto isso:</div><div class="emotion-line"></div></div>
+  </div>
+
+  <h2 style="margin-top:12px;">Como me sinto hoje? Desenhe ou escreva:</h2>
+  <div style="border:2px dashed var(--teal);border-radius:8px;min-height:55px;padding:8px;background:var(--ltteal);"></div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · F11-A — Emoções</span><span>Módulo 11</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LABIRINTOS — Grupos A, B e C
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">FM · Módulos 5 e 8 · Grupos A, B e C</div>
+  </div>
+  <div class="module-badge">MÓDULOS 5 E 8 — PERCEPÇÃO E PLANEJAMENTO</div>
+  <h1>Labirintos — Encontre o Caminho!</h1>
+  <div class="instr"><strong>Instrução:</strong> Antes de desenhar o caminho, <em>olhe o labirinto todo</em> por 30 segundos. Planeje antes de agir!</div>
+
+  <div class="two-col" style="margin-top:10px;">
+    <!-- Labirinto A -->
+    <div>
+      <h2>Labirinto A <span class="chip teal">Grupo A</span></h2>
+      <div class="maze-wrap">
+        <svg class="maze-svg" width="160" height="160" viewBox="0 0 160 160">
+          <rect width="160" height="160" fill="#f8f8f8"/>
+          <!-- outer walls -->
+          <rect x="0" y="0" width="160" height="8" fill="#1B3A6B"/>
+          <rect x="0" y="152" width="160" height="8" fill="#1B3A6B"/>
+          <rect x="0" y="0" width="8" height="160" fill="#1B3A6B"/>
+          <rect x="152" y="0" width="8" height="160" fill="#1B3A6B"/>
+          <!-- inner walls simple -->
+          <rect x="8" y="8" width="8" height="72" fill="#1B3A6B"/>
+          <rect x="24" y="8" width="80" height="8" fill="#1B3A6B"/>
+          <rect x="24" y="40" width="48" height="8" fill="#1B3A6B"/>
+          <rect x="56" y="40" width="8" height="48" fill="#1B3A6B"/>
+          <rect x="24" y="80" width="32" height="8" fill="#1B3A6B"/>
+          <rect x="72" y="56" width="8" height="56" fill="#1B3A6B"/>
+          <rect x="72" y="104" width="64" height="8" fill="#1B3A6B"/>
+          <rect x="104" y="24" width="8" height="80" fill="#1B3A6B"/>
+          <rect x="104" y="24" width="40" height="8" fill="#1B3A6B"/>
+          <!-- entrance/exit markers -->
+          <text x="2" y="22" font-size="10" fill="#0F7173" font-weight="bold">IN</text>
+          <text x="128" y="148" font-size="10" fill="#E07B39" font-weight="bold">OUT</text>
+          <circle cx="14" cy="14" r="4" fill="#0F7173"/>
+          <circle cx="144" cy="144" r="4" fill="#E07B39"/>
+        </svg>
+      </div>
+      <div class="score-row"><div class="sf">Tempo: _____ seg</div><div class="sf">Tentativas: _____</div></div>
+    </div>
+    <!-- Labirinto B -->
+    <div>
+      <h2>Labirinto B <span class="chip teal">Grupo B</span></h2>
+      <div class="maze-wrap">
+        <svg class="maze-svg" width="160" height="160" viewBox="0 0 160 160">
+          <rect width="160" height="160" fill="#f8f8f8"/>
+          <rect x="0" y="0" width="160" height="6" fill="#1B3A6B"/>
+          <rect x="0" y="154" width="160" height="6" fill="#1B3A6B"/>
+          <rect x="0" y="0" width="6" height="160" fill="#1B3A6B"/>
+          <rect x="154" y="0" width="6" height="160" fill="#1B3A6B"/>
+          <rect x="6" y="6" width="6" height="40" fill="#1B3A6B"/>
+          <rect x="6" y="60" width="6" height="94" fill="#1B3A6B"/>
+          <rect x="20" y="6" width="60" height="6" fill="#1B3A6B"/>
+          <rect x="20" y="32" width="40" height="6" fill="#1B3A6B"/>
+          <rect x="52" y="32" width="6" height="40" fill="#1B3A6B"/>
+          <rect x="20" y="60" width="20" height="6" fill="#1B3A6B"/>
+          <rect x="52" y="72" width="40" height="6" fill="#1B3A6B"/>
+          <rect x="86" y="6" width="6" height="60" fill="#1B3A6B"/>
+          <rect x="86" y="72" width="6" height="46" fill="#1B3A6B"/>
+          <rect x="100" y="40" width="48" height="6" fill="#1B3A6B"/>
+          <rect x="100" y="6" width="6" height="40" fill="#1B3A6B"/>
+          <rect x="112" y="72" width="6" height="50" fill="#1B3A6B"/>
+          <rect x="6" y="118" width="106" height="6" fill="#1B3A6B"/>
+          <rect x="46" y="126" width="6" height="28" fill="#1B3A6B"/>
+          <rect x="72" y="126" width="6" height="28" fill="#1B3A6B"/>
+          <text x="0" y="12" font-size="8" fill="#0F7173" font-weight="bold">IN</text>
+          <text x="130" y="152" font-size="8" fill="#E07B39" font-weight="bold">OUT</text>
+          <circle cx="10" cy="10" r="4" fill="#0F7173"/>
+          <circle cx="144" cy="146" r="4" fill="#E07B39"/>
+        </svg>
+      </div>
+      <div class="score-row"><div class="sf">Tempo: _____ seg</div><div class="sf">Tentativas: _____</div></div>
+    </div>
+  </div>
+  <div class="box box-amber" style="margin-top:10px;font-size:11px;">
+    💡 <strong>Dica:</strong> Quem planejou antes de traçar, geralmente usa menos tentativas. Você planejou?
+    <span style="margin-left:12px;">☐ Sim &nbsp;&nbsp; ☐ Não &nbsp;&nbsp; ☐ Às vezes</span>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · FM — Labirintos</span><span>Módulos 5 e 8</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Q3 · REAVALIAÇÃO FINAL (Módulo 12)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">Q3 · Módulo 12 · Grupos B e C</div>
+  </div>
+  <div class="module-badge">MÓDULO 12 — AVALIAÇÃO FINAL</div>
+  <h1>Como estou depois do programa?</h1>
+  <p class="subtitle">Reavaliação Final — Compare com o que você respondeu no Módulo 1</p>
+  <div class="instr">Responda da mesma forma que no início. Depois compare os dois questionários com o seu facilitador.</div>
+
+  <div class="likert-header" style="margin-top:14px;">
+    <span></span>
+    <span class="emoji-scale">😟</span><span class="emoji-scale">🙁</span><span class="emoji-scale">😐</span><span class="emoji-scale">🙂</span><span class="emoji-scale">😄</span>
+  </div>
+  <div class="likert-header" style="margin-bottom:6px;">
+    <span style="font-size:10px;color:#666;">Afirmação</span>
+    <span style="font-size:10px;color:#888;">Nunca</span><span style="font-size:10px;color:#888;">Raramente</span>
+    <span style="font-size:10px;color:#888;">Às vezes</span><span style="font-size:10px;color:#888;">Quase sempre</span><span style="font-size:10px;color:#888;">Sempre</span>
+  </div>
+  <div id="qs2"></div>
+  <script>
+    const q2=['Consigo prestar atenção na aula ou quando alguém me explica algo.','Lembro de coisas que aprendi na escola ou em casa.','Consigo me concentrar quando leio ou faço uma tarefa.','Entendo as instruções logo da primeira vez.','Termino minhas tarefas sem precisar que me lembrem.','Consigo organizar minhas coisas e meu tempo.','Quando erro, consigo tentar de novo sem desistir.','Me sinto bem quando aprendo coisas novas.','Lembro do que estudei quando preciso usar.','Consigo explicar para alguém algo que aprendi.'];
+    const w2=document.getElementById('qs2');
+    q2.forEach((q,i)=>{const r=document.createElement('div');r.className='likert-row';r.style.background=i%2===0?'#fafafe':'#fff';r.innerHTML=`<span>${i+1}. ${q}</span>`+[1,2,3,4,5].map(n=>`<div class="likert-num">${n}</div>`).join('');w2.appendChild(r);});
+  </script>
+
+  <div class="box box-teal" style="margin-top:12px;">
+    <h3 style="margin-bottom:6px;">Reflexão final — complete as frases:</h3>
+    <div style="font-size:11.5px;margin-bottom:4px;font-weight:700;">O que mudou em mim depois do programa:</div>
+    <div class="answer-line"></div>
+    <div style="font-size:11.5px;margin-top:6px;margin-bottom:4px;font-weight:700;">A habilidade que mais desenvolvi foi:</div>
+    <div class="answer-line"></div>
+    <div style="font-size:11.5px;margin-top:6px;margin-bottom:4px;font-weight:700;">O que ainda quero melhorar:</div>
+    <div class="answer-line"></div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · Q3 — Reavaliação Final</span><span>Módulo 12</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Q4 · MAPA DO MEU CÉREBRO (Módulo 12)
+═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">Q4 · Módulo 12 · Todos os Grupos</div>
+  </div>
+  <div class="module-badge">MÓDULO 12 — ENCERRAMENTO</div>
+  <h1>Mapa do Meu Cérebro 🧠</h1>
+  <div class="instr">Dentro da silhueta abaixo, escreva, desenhe ou cole palavras que representam as habilidades que você trabalhou e desenvolveu neste programa.</div>
+
+  <div class="brain-wrap">
+    <svg width="320" height="260" viewBox="0 0 320 260">
+      <!-- Brain silhouette shape -->
+      <path d="M160,20 C120,15 85,30 75,55 C60,50 40,60 38,80 C25,82 18,95 22,112 C12,118 10,132 18,142 C14,155 20,168 32,172 C36,188 50,198 68,195 C78,210 95,218 114,215 C124,228 140,234 160,234 C180,234 196,228 206,215 C225,218 242,210 252,195 C270,198 284,188 288,172 C300,168 306,155 302,142 C310,132 308,118 298,112 C302,95 295,82 282,80 C280,60 260,50 245,55 C235,30 200,15 160,20Z"
+        fill="none" stroke="#1B3A6B" stroke-width="3" stroke-dasharray="6,4"/>
+      <!-- Central division -->
+      <line x1="160" y1="30" x2="160" y2="220" stroke="#0F7173" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.4"/>
+      <!-- Labels around -->
+      <text x="80" y="90" font-size="9" fill="#0F7173" font-weight="700">ATENÇÃO</text>
+      <text x="200" y="90" font-size="9" fill="#0F7173" font-weight="700">MEMÓRIA</text>
+      <text x="60" y="150" font-size="9" fill="#E07B39" font-weight="700">LINGUAGEM</text>
+      <text x="210" y="150" font-size="9" fill="#E07B39" font-weight="700">LÓGICA</text>
+      <text x="120" y="195" font-size="9" fill="#6B3FA0" font-weight="700">EMOÇÕES</text>
+      <!-- Dotted area to draw -->
+      <rect x="95" y="55" width="130" height="150" fill="none" stroke="#ddd" stroke-width="0.5" rx="10"/>
+    </svg>
+  </div>
+
+  <div class="two-col" style="margin-top:6px;">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Habilidade que mais cresceu:</div>
+      <div class="answer-line"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Habilidade que ainda quero treinar:</div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--navy);">Uma frase que descreve o que aprendi sobre mim neste programa:</div>
+  <div style="border:2px solid var(--teal);border-radius:8px;min-height:40px;padding:8px;margin-top:4px;font-size:13px;font-style:italic;color:#555;"></div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · Q4 — Mapa do Cérebro</span><span>Módulo 12</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CERTIFICADO
+═══════════════════════════════════════════════════════════ -->
+<div class="page" style="display:flex;flex-direction:column;justify-content:center;">
+  <div class="page-header">
+    <div class="logo">Cogni<span>Map</span></div>
+    <div class="tag">Certificado · Trilha Infantil</div>
+  </div>
+  <div class="cert">
+    <div class="cert-title">🌱 CogniMap · Programa de Estimulação Cognitiva</div>
+    <div style="font-size:36px;margin:6px 0;">🏅</div>
+    <div class="cert-main">Certificado de Participação</div>
+    <div style="font-size:13px;color:#666;margin-bottom:8px;">Este certificado é concedido a</div>
+    <div class="cert-name">_________________________________</div>
+    <div class="cert-body">
+      pela participação completa no <strong>Programa CogniMap · Trilha Infantil</strong>,<br>
+      composto por <strong>12 módulos</strong> de estimulação cognitiva ao longo de <strong>3 meses</strong>,<br>
+      com dedicação e comprometimento com o próprio aprendizado.
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--navy);margin:8px 0 4px;">Habilidades desenvolvidas:</div>
+    <div class="cert-skills">
+      <span class="cert-skill">🎯 Atenção</span>
+      <span class="cert-skill">🧠 Memória</span>
+      <span class="cert-skill">💬 Linguagem</span>
+      <span class="cert-skill">🔢 Raciocínio Lógico</span>
+      <span class="cert-skill">🗺️ Planejamento</span>
+      <span class="cert-skill">🎨 Criatividade</span>
+      <span class="cert-skill">💛 Socioemocional</span>
+    </div>
+    <div class="cert-footer">
+      <div class="cert-sign">
+        <div class="cert-sign-line"></div>
+        <div class="cert-sign-lbl">Profissional Responsável</div>
+        <div style="font-size:10px;color:#aaa;margin-top:2px;">CRP / CRP</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:28px;">🌱</div>
+        <div style="font-size:12px;font-weight:700;color:var(--navy);">CogniMap</div>
+      </div>
+      <div class="cert-sign">
+        <div class="cert-sign-line"></div>
+        <div class="cert-sign-lbl">Data de Conclusão</div>
+        <div style="font-size:10px;color:#aaa;margin-top:2px;">____/____/________</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span>CogniMap · Trilha Infantil · Certificado de Participação</span><span>Módulo 12</span></div>
+</div>
+
+</body>
+</html>
