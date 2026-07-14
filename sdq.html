@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SDQ — Questionário de Capacidades e Dificuldades</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --bg: #F0F4FF;
+  --surface: #FFFFFF;
+  --surface2: #E8EDF8;
+  --blue: #3B5BDB;
+  --blue-dark: #1E3A8A;
+  --blue-light: #93C5FD;
+  --blue-pale: #DBEAFE;
+  --green: #166534;
+  --green-light: #DCFCE7;
+  --amber: #92400E;
+  --amber-light: #FEF3C7;
+  --red: #991B1B;
+  --red-light: #FEE2E2;
+  --text: #1E293B;
+  --text-muted: #64748B;
+  --border: #CBD5E1;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  min-height: 100vh;
+}
+.page { max-width: 740px; margin: 0 auto; padding: 36px 20px 80px; }
+
+/* HEADER */
+.header { margin-bottom: 32px; animation: fadeUp 0.7s ease both; }
+.header-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--blue-pale); color: var(--blue-dark);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 5px 14px; border-radius: 99px;
+  margin-bottom: 14px;
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 5vw, 42px);
+  color: var(--blue-dark); line-height: 1.2; margin-bottom: 8px;
+}
+.header h1 em { font-style: italic; color: var(--blue); }
+.header p { font-size: 14px; color: var(--text-muted); line-height: 1.75; }
+.header-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+.chip {
+  font-size: 12px; color: var(--text-muted);
+  background: var(--surface); padding: 4px 12px;
+  border-radius: 99px; border: 1px solid var(--border);
+}
+
+/* SCREENS */
+.screen { display: none; }
+.screen.active { display: block; animation: fadeUp 0.4s ease both; }
+
+/* START */
+.card {
+  background: var(--surface); border-radius: 18px; padding: 32px;
+  box-shadow: 0 2px 20px rgba(59,91,219,0.08); margin-bottom: 20px;
+}
+.card h2 {
+  font-family: 'Playfair Display', serif; font-size: 22px;
+  color: var(--blue-dark); margin-bottom: 12px;
+}
+.card p { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; }
+
+.responder-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.responder-btn {
+  padding: 20px 16px; border: 2px solid var(--border); border-radius: 14px;
+  background: transparent; cursor: pointer; transition: all 0.25s;
+  font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600;
+  color: var(--text); display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+.responder-btn .icon { font-size: 34px; }
+.responder-btn:hover {
+  border-color: var(--blue); background: var(--blue-pale);
+  transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,91,219,0.15);
+}
+.alert-box {
+  background: var(--amber-light); border-left: 3px solid #D97706;
+  padding: 14px 18px; border-radius: 0 10px 10px 0;
+  font-size: 13px; color: var(--amber); line-height: 1.7;
+}
+.alert-box strong { font-weight: 700; }
+
+/* PROGRESS */
+.prog-wrap { margin-bottom: 26px; }
+.prog-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 7px; }
+.prog-track { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--blue-light), var(--blue)); border-radius: 99px; transition: width 0.4s ease; }
+
+/* SCALE LABEL */
+.scale-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 4px 12px; border-radius: 99px;
+  margin-bottom: 18px;
+}
+.tag-emocional { background: #FCE7F3; color: #9D174D; }
+.tag-conduta { background: #FEF3C7; color: #92400E; }
+.tag-hiper { background: #DBEAFE; color: #1E3A8A; }
+.tag-colegas { background: #DCFCE7; color: #166534; }
+.tag-prosocial { background: #F3E8FF; color: #6B21A8; }
+.tag-impacto { background: #FEE2E2; color: #991B1B; }
+
+/* QUESTION CARD */
+.q-card {
+  background: var(--surface); border-radius: 18px; padding: 30px;
+  box-shadow: 0 2px 20px rgba(59,91,219,0.07); margin-bottom: 16px;
+  animation: fadeUp 0.35s ease both;
+}
+.q-num { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.q-text { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 20px; line-height: 1.5; }
+
+.opts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.opt-btn {
+  padding: 14px 10px; border: 2px solid var(--border); border-radius: 12px;
+  background: transparent; cursor: pointer; transition: all 0.2s;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--text-muted); text-align: center; line-height: 1.4;
+}
+.opt-btn:hover { border-color: var(--blue-light); background: var(--blue-pale); color: var(--blue-dark); }
+.opt-btn.selected { border-color: var(--blue); background: var(--blue); color: white; }
+.opt-btn.sel-maybe { border-color: #6366F1; background: #6366F1; color: white; }
+
+/* NAV */
+.nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.btn { padding: 11px 24px; border-radius: 99px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: white; box-shadow: 0 4px 14px rgba(59,91,219,0.3); }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.btn-ghost { background: var(--surface); color: var(--text-muted); border: 1.5px solid var(--border); }
+.btn-ghost:hover { background: var(--surface2); }
+
+/* RESULTS */
+.results-title {
+  font-family: 'Playfair Display', serif; font-size: 28px;
+  color: var(--blue-dark); margin-bottom: 6px;
+}
+.results-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+/* Total banner */
+.total-banner {
+  border-radius: 18px; padding: 28px 32px; margin-bottom: 20px;
+  color: white; position: relative; overflow: hidden;
+}
+.total-banner.normal { background: linear-gradient(135deg, #166534, #14532D); }
+.total-banner.limítrofe { background: linear-gradient(135deg, #92400E, #78350F); }
+.total-banner.anormal { background: linear-gradient(135deg, #991B1B, #7F1D1D); }
+.total-banner::before { content: '📊'; position: absolute; font-size: 120px; opacity: 0.08; right: -10px; top: -10px; }
+.banner-label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
+.banner-score { font-family: 'Playfair Display', serif; font-size: 64px; line-height: 1; margin-bottom: 4px; }
+.banner-max { font-size: 14px; opacity: 0.65; margin-bottom: 12px; }
+.banner-class { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 8px; }
+.banner-desc { font-size: 13px; opacity: 0.87; line-height: 1.7; }
+
+/* Scale cards */
+.scales-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.scale-card {
+  background: var(--surface); border-radius: 14px; padding: 18px 22px;
+  box-shadow: 0 2px 12px rgba(59,91,219,0.06);
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
+}
+.scale-card-left .scale-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.scale-card-left .scale-bar-wrap { display: flex; align-items: center; gap: 10px; }
+.scale-bar-track { flex: 1; height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.scale-bar-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+.fill-normal { background: linear-gradient(90deg, #4ADE80, #166534); }
+.fill-limítrofe { background: linear-gradient(90deg, #FCD34D, #D97706); }
+.fill-anormal { background: linear-gradient(90deg, #F87171, #991B1B); }
+.scale-score-box { text-align: center; }
+.scale-score-num { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--blue-dark); }
+.scale-score-max { font-size: 11px; color: var(--text-muted); }
+.class-badge {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 2px 10px; border-radius: 99px; margin-top: 4px;
+}
+.badge-normal { background: var(--green-light); color: var(--green); }
+.badge-limítrofe { background: var(--amber-light); color: var(--amber); }
+.badge-anormal { background: var(--red-light); color: var(--red); }
+
+/* Impact section */
+.impact-card {
+  background: var(--surface); border-radius: 14px; padding: 20px 22px;
+  margin-bottom: 20px; box-shadow: 0 2px 12px rgba(59,91,219,0.06);
+}
+.impact-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+.impact-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+.impact-row:last-child { border-bottom: none; }
+.impact-row strong { color: var(--text); font-weight: 700; }
+
+.disclaimer {
+  background: var(--amber-light); border: 1.5px solid #D97706;
+  border-radius: 12px; padding: 16px 20px; font-size: 13px;
+  color: var(--amber); line-height: 1.7; margin-bottom: 22px;
+}
+.disclaimer strong { font-weight: 700; }
+
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-download {
+  flex: 1; min-width: 200px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  color: white; border: none; padding: 14px 28px; border-radius: 99px;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(59,91,219,0.3);
+}
+.btn-download:hover { transform: translateY(-2px); }
+.btn-restart { background: var(--surface); color: var(--text-muted); border: 1.5px solid var(--border); padding: 14px 24px; border-radius: 99px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.btn-restart:hover { background: var(--surface2); }
+.citation { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 16px; line-height: 1.7; }
+
+/* IMPACT SCREEN */
+.impact-intro { font-size: 14px; color: var(--text-muted); line-height: 1.75; margin-bottom: 24px; background: var(--surface); border-radius: 14px; padding: 20px 22px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 480px) {
+  .opts-row { grid-template-columns: 1fr; }
+  .responder-btns { grid-template-columns: 1fr; }
+  .scale-card { grid-template-columns: 1fr; }
+  .actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-badge">🧒 Instrumento Validado</div>
+    <h1>Questionário de<br><em>Capacidades e Dificuldades</em></h1>
+    <p>SDQ — Strengths and Difficulties Questionnaire. Desenvolvido por Robert Goodman para avaliação do comportamento de crianças e adolescentes.</p>
+    <div class="header-meta">
+      <span class="chip">25 questões</span>
+      <span class="chip">5 escalas</span>
+      <span class="chip">Pais e Professores</span>
+      <span class="chip">4 a 17 anos</span>
+    </div>
+  </div>
+
+  <!-- START -->
+  <div id="screen-start" class="screen active">
+    <div class="card">
+      <h2>Quem está respondendo?</h2>
+      <p>Selecione sua relação com a criança ou adolescente. Os critérios de interpretação são diferentes para pais e professores.</p>
+      <div class="responder-btns">
+        <button class="responder-btn" onclick="iniciar('pais')">
+          <span class="icon">👨‍👩‍👧</span>
+          Pais / Responsáveis
+        </button>
+        <button class="responder-btn" onclick="iniciar('professor')">
+          <span class="icon">🧑‍🏫</span>
+          Professor / Educador
+        </button>
+      </div>
+    </div>
+    <div class="alert-box">
+      <strong>Importante:</strong> Este instrumento é de uso informativo e auxílio clínico. Não substitui avaliação diagnóstica por profissional habilitado. Aplica-se a crianças e adolescentes de 4 a 17 anos.
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="prog-wrap">
+      <div class="prog-top">
+        <span id="prog-label">Questão 1 de 25</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div id="q-area"></div>
+    <div class="nav">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQ()">← Anterior</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextQ()" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- IMPACT -->
+  <div id="screen-impact" class="screen">
+    <div class="card">
+      <h2>Suplemento de Impacto</h2>
+      <p style="margin-bottom:0">Esta seção avalia o quanto as dificuldades observadas afetam o dia a dia da criança. Responda apenas se perceber que a criança tem alguma dificuldade emocional ou de comportamento.</p>
+    </div>
+    <div id="impact-area"></div>
+    <div class="nav" style="margin-top:0">
+      <button class="btn btn-ghost" onclick="showScreen('screen-quiz'); currentQ=24; renderQ()">← Voltar</button>
+      <button class="btn btn-primary" id="btn-impact-next" onclick="finalizarImpacto()">Ver Resultado →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="screen-results" class="screen">
+    <div id="results-content"></div>
+  </div>
+
+</div>
+
+<script>
+// ─── DADOS ───────────────────────────────────────────────────
+const ESCALAS = [
+  { id: 'emocional', label: 'Sintomas Emocionais', tag: 'tag-emocional', max: 10 },
+  { id: 'conduta',   label: 'Problemas de Conduta', tag: 'tag-conduta', max: 10 },
+  { id: 'hiper',     label: 'Hiperatividade', tag: 'tag-hiper', max: 10 },
+  { id: 'colegas',   label: 'Problemas com Colegas', tag: 'tag-colegas', max: 10 },
+  { id: 'prosocial', label: 'Comportamento Pro-social', tag: 'tag-prosocial', max: 10 },
+];
+
+// reversed: true → pontuação invertida (F=2, MV=1, V=0)
+const QUESTOES = [
+  // Sintomas Emocionais
+  { escala:'emocional', texto:'Muitas vezes queixa-se de dor de cabeça, barriga ou enjoo', reversed:false },
+  { escala:'emocional', texto:'Tem muitas preocupações, muitas vezes parece preocupado(a)', reversed:false },
+  { escala:'emocional', texto:'Frequentemente parece triste, deprimido(a) ou choroso(a)', reversed:false },
+  { escala:'emocional', texto:'Fica nervoso(a) quando enfrenta situações novas, facilmente perde a confiança em si mesmo(a)', reversed:false },
+  { escala:'emocional', texto:'Tem muitos medos, assusta-se facilmente', reversed:false },
+  // Problemas de Conduta
+  { escala:'conduta', texto:'Frequentemente tem acessos de raiva ou crises de birra', reversed:false },
+  { escala:'conduta', texto:'Geralmente é obediente, costuma fazer o que os adultos pedem', reversed:true },
+  { escala:'conduta', texto:'Frequentemente briga com outras crianças ou as amedronta', reversed:false },
+  { escala:'conduta', texto:'Frequentemente mente ou engana', reversed:false },
+  { escala:'conduta', texto:'Rouba coisas de casa, da escola ou de outros lugares', reversed:false },
+  // Hiperatividade
+  { escala:'hiper', texto:'Inquieto(a), hiperativo(a), não consegue ficar parado(a) por muito tempo', reversed:false },
+  { escala:'hiper', texto:'Está constantemente irrequieto(a) ou se mexendo', reversed:false },
+  { escala:'hiper', texto:'Distrai-se facilmente, perde a concentração', reversed:false },
+  { escala:'hiper', texto:'Pensa antes de agir', reversed:true },
+  { escala:'hiper', texto:'Completa as tarefas que começa, tem boa concentração', reversed:true },
+  // Problemas com Colegas
+  { escala:'colegas', texto:'É solitário(a), prefere brincar sozinho(a)', reversed:false },
+  { escala:'colegas', texto:'Tem pelo menos um(a) bom(a) amigo(a)', reversed:true },
+  { escala:'colegas', texto:'Em geral, é querido(a) por outras crianças', reversed:true },
+  { escala:'colegas', texto:'É perseguido(a) ou atormentado(a) por outras crianças', reversed:false },
+  { escala:'colegas', texto:'Relaciona-se melhor com adultos do que com outras crianças', reversed:false },
+  // Pro-social
+  { escala:'prosocial', texto:'Tem consideração pelos sentimentos de outras pessoas', reversed:false },
+  { escala:'prosocial', texto:'Tem boa vontade em compartilhar guloseimas, brinquedos ou lápis com outras crianças', reversed:false },
+  { escala:'prosocial', texto:'Mostra-se prestativo(a) se alguém parece magoado(a), aborrecido(a) ou mal', reversed:false },
+  { escala:'prosocial', texto:'É gentil com crianças mais novas', reversed:false },
+  { escala:'prosocial', texto:'Frequentemente se oferece para ajudar outras pessoas (pais, professores, outras crianças)', reversed:false },
+];
+
+// Impacto — perguntas (pais tem 5, professor tem 3)
+const IMPACTO_PAIS = [
+  'As dificuldades incomodam ou aborrecem a criança',
+  'As dificuldades interferem no dia a dia em casa',
+  'As dificuldades interferem nas amizades',
+  'As dificuldades interferem no aprendizado escolar',
+  'As dificuldades interferem nas atividades de lazer',
+];
+const IMPACTO_PROF = [
+  'As dificuldades incomodam ou aborrecem a criança',
+  'As dificuldades interferem nas amizades',
+  'As dificuldades interferem no aprendizado escolar',
+];
+const IMPACTO_OPTS = ['Nada','Um pouco','Muito','Extremamente'];
+const IMPACTO_VALS = [0, 0, 1, 2];
+
+// Bandas de classificação
+const BANDAS_PAIS = {
+  total:    { normal:[0,13], limítrofe:[14,16], anormal:[17,40] },
+  emocional:{ normal:[0,3],  limítrofe:[4,4],   anormal:[5,10] },
+  conduta:  { normal:[0,2],  limítrofe:[3,3],   anormal:[4,10] },
+  hiper:    { normal:[0,5],  limítrofe:[6,6],   anormal:[7,10] },
+  colegas:  { normal:[0,2],  limítrofe:[3,3],   anormal:[4,10] },
+  prosocial:{ normal:[6,10], limítrofe:[5,5],   anormal:[0,4] },
+};
+const BANDAS_PROF = {
+  total:    { normal:[0,11], limítrofe:[12,15], anormal:[16,40] },
+  emocional:{ normal:[0,4],  limítrofe:[5,5],   anormal:[6,10] },
+  conduta:  { normal:[0,2],  limítrofe:[3,3],   anormal:[4,10] },
+  hiper:    { normal:[0,5],  limítrofe:[6,6],   anormal:[7,10] },
+  colegas:  { normal:[0,3],  limítrofe:[4,4],   anormal:[5,10] },
+  prosocial:{ normal:[6,10], limítrofe:[5,5],   anormal:[0,4] },
+};
+
+// ─── ESTADO ───────────────────────────────────────────────────
+let respondente = '';
+let answers = new Array(25).fill(null);
+let impactAnswers = [];
+let currentQ = 0;
+
+// ─── FUNÇÕES ──────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function iniciar(tipo) {
+  respondente = tipo;
+  const pergs = tipo === 'pais' ? IMPACTO_PAIS : IMPACTO_PROF;
+  impactAnswers = new Array(pergs.length).fill(null);
+  currentQ = 0;
+  showScreen('screen-quiz');
+  renderQ();
+}
+
+function getTagClass(escala) {
+  const map = { emocional:'tag-emocional', conduta:'tag-conduta', hiper:'tag-hiper', colegas:'tag-colegas', prosocial:'tag-prosocial' };
+  return map[escala] || '';
+}
+function getScaleLabel(escala) {
+  return ESCALAS.find(e => e.id === escala)?.label || escala;
+}
+
+function renderQ() {
+  const q = QUESTOES[currentQ];
+  const sel = answers[currentQ];
+  const total = QUESTOES.length;
+  const pct = Math.round((currentQ / total) * 100);
+
+  document.getElementById('prog-label').textContent = `Questão ${currentQ + 1} de ${total}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('btn-prev').disabled = currentQ === 0;
+  document.getElementById('btn-next').disabled = sel === null;
+  document.getElementById('btn-next').textContent = currentQ === total - 1 ? 'Suplemento de Impacto →' : 'Próxima →';
+
+  const opts = ['Falso', 'Mais ou menos verdadeiro', 'Verdadeiro'];
+  const area = document.getElementById('q-area');
+
+  area.innerHTML = `
+    <div class="q-card">
+      <div class="scale-tag ${getTagClass(q.escala)}">${getScaleLabel(q.escala)}</div>
+      <div class="q-num">Questão ${currentQ + 1}</div>
+      <div class="q-text">${q.texto}</div>
+      <div class="opts-row">
+        ${opts.map((opt, i) => `
+          <button class="opt-btn ${sel === i ? (i===1 ? 'sel-maybe' : 'selected') : ''}"
+            onclick="selectOpt(${i})">${opt}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectOpt(i) {
+  answers[currentQ] = i;
+  renderQ();
+}
+function nextQ() {
+  if (currentQ < QUESTOES.length - 1) {
+    currentQ++;
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    renderImpacto();
+    showScreen('screen-impact');
+  }
+}
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQ(); }
+}
+
+// ─── IMPACTO ──────────────────────────────────────────────────
+function renderImpacto() {
+  const pergs = respondente === 'pais' ? IMPACTO_PAIS : IMPACTO_PROF;
+  const area = document.getElementById('impact-area');
+
+  area.innerHTML = pergs.map((perg, pi) => `
+    <div class="q-card" style="margin-bottom:14px;">
+      <div class="scale-tag tag-impacto">Impacto ${pi + 1}/${pergs.length}</div>
+      <div class="q-text">${perg}</div>
+      <div class="opts-row">
+        ${IMPACTO_OPTS.map((opt, oi) => `
+          <button class="opt-btn ${impactAnswers[pi] === oi ? (oi===1 ? 'sel-maybe' : 'selected') : ''}"
+            onclick="selectImpacto(${pi}, ${oi})">${opt}</button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectImpacto(pi, oi) {
+  impactAnswers[pi] = oi;
+  renderImpacto();
+}
+
+function finalizarImpacto() {
+  // Se algum não respondido, assumir 0
+  const pergs = respondente === 'pais' ? IMPACTO_PAIS : IMPACTO_PROF;
+  for (let i = 0; i < pergs.length; i++) {
+    if (impactAnswers[i] === null) impactAnswers[i] = 0;
+  }
+  showResults();
+}
+
+// ─── PONTUAÇÃO ────────────────────────────────────────────────
+function calcScores() {
+  const scores = { emocional: 0, conduta: 0, hiper: 0, colegas: 0, prosocial: 0 };
+  answers.forEach((ans, i) => {
+    if (ans === null) return;
+    const q = QUESTOES[i];
+    const pts = q.reversed ? [2, 1, 0][ans] : [0, 1, 2][ans];
+    scores[q.escala] += pts;
+  });
+  scores.total = scores.emocional + scores.conduta + scores.hiper + scores.colegas;
+  scores.impacto = impactAnswers.reduce((sum, a) => sum + (a !== null ? IMPACTO_VALS[a] : 0), 0);
+  return scores;
+}
+
+function classificar(valor, escala) {
+  const bandas = respondente === 'pais' ? BANDAS_PAIS : BANDAS_PROF;
+  const b = bandas[escala];
+  if (!b) return 'normal';
+  if (valor >= b.anormal[0] && valor <= b.anormal[1]) return 'anormal';
+  if (valor >= b.limítrofe[0] && valor <= b.limítrofe[1]) return 'limítrofe';
+  return 'normal';
+}
+
+function classLabel(c) {
+  if (c === 'normal') return 'Normal';
+  if (c === 'limítrofe') return 'Limítrofe';
+  return 'Anormal';
+}
+
+function getTotalDesc(c) {
+  if (c === 'normal') return 'A pontuação total de dificuldades está dentro da faixa considerada normal para a população geral. Não há indicativos de dificuldades clinicamente significativas no momento.';
+  if (c === 'limítrofe') return 'A pontuação total de dificuldades está na faixa limítrofe. Recomenda-se atenção e acompanhamento profissional para avaliar a evolução do comportamento da criança.';
+  return 'A pontuação total de dificuldades está na faixa anormal, sugerindo a presença de dificuldades emocionais ou comportamentais clinicamente relevantes. Recomenda-se avaliação profissional especializada.';
+}
+
+// ─── RESULTADOS ───────────────────────────────────────────────
+function showResults() {
+  const sc = calcScores();
+  const totalClass = classificar(sc.total, 'total');
+  const impClass = sc.impacto >= 2 ? 'anormal' : sc.impacto === 1 ? 'limítrofe' : 'normal';
+
+  let html = `
+    <div class="results-title">Resultado do SDQ</div>
+    <div class="results-sub">Versão: ${respondente === 'pais' ? 'Pais / Responsáveis' : 'Professor / Educador'} · ${new Date().toLocaleDateString('pt-BR')}</div>
+
+    <div class="total-banner ${totalClass}">
+      <div class="banner-label">Pontuação Total de Dificuldades</div>
+      <div class="banner-score">${sc.total}</div>
+      <div class="banner-max">de 40 pontos possíveis</div>
+      <div class="banner-class">${classLabel(totalClass)}</div>
+      <div class="banner-desc">${getTotalDesc(totalClass)}</div>
+    </div>
+
+    <div class="scales-grid">
+  `;
+
+  ESCALAS.forEach(e => {
+    const val = sc[e.id];
+    const cls = classificar(val, e.id);
+    const fillPct = Math.round((val / e.max) * 100);
+    html += `
+      <div class="scale-card">
+        <div class="scale-card-left">
+          <div class="scale-name">${e.label}</div>
+          <div class="scale-bar-wrap">
+            <div class="scale-bar-track">
+              <div class="scale-bar-fill fill-${cls}" style="width:0%" data-w="${fillPct}%"></div>
+            </div>
+          </div>
+          <span class="class-badge badge-${cls}">${classLabel(cls)}</span>
+        </div>
+        <div class="scale-score-box">
+          <div class="scale-score-num">${val}</div>
+          <div class="scale-score-max">/${e.max}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  // Impacto
+  const impPergs = respondente === 'pais' ? IMPACTO_PAIS : IMPACTO_PROF;
+  const impMax = respondente === 'pais' ? 10 : 6;
+  html += `
+    <div class="impact-card">
+      <h3>Suplemento de Impacto — ${sc.impacto}/${impMax}
+        <span class="class-badge badge-${impClass}" style="margin-left:8px;font-size:11px">${classLabel(impClass)}</span>
+      </h3>
+      ${impPergs.map((p, i) => `
+        <div class="impact-row">
+          <span>${p}</span>
+          <strong>${IMPACTO_OPTS[impactAnswers[i]] || 'Nada'}</strong>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // Referência de corte
+  const bandas = respondente === 'pais' ? BANDAS_PAIS : BANDAS_PROF;
+  html += `
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="font-size:17px;margin-bottom:14px;">Referência de Pontuação — ${respondente === 'pais' ? 'Pais' : 'Professor'}</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:var(--surface2);">
+            <th style="text-align:left;padding:8px 12px;border-radius:8px 0 0 0;">Escala</th>
+            <th style="padding:8px;color:var(--green);">Normal</th>
+            <th style="padding:8px;color:var(--amber);">Limítrofe</th>
+            <th style="padding:8px;color:var(--red);border-radius:0 8px 0 0;">Anormal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${[
+            ['Total Dificuldades', 'total'],
+            ['Sintomas Emocionais', 'emocional'],
+            ['Problemas de Conduta', 'conduta'],
+            ['Hiperatividade', 'hiper'],
+            ['Prob. com Colegas', 'colegas'],
+            ['Comportamento Pro-social', 'prosocial'],
+          ].map(([name, key]) => {
+            const b = bandas[key];
+            return `<tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:8px 12px;font-weight:600;">${name}</td>
+              <td style="padding:8px;text-align:center;color:var(--green);">${b.normal[0]}–${b.normal[1]}</td>
+              <td style="padding:8px;text-align:center;color:var(--amber);">${b.limítrofe[0]}–${b.limítrofe[1]}</td>
+              <td style="padding:8px;text-align:center;color:var(--red);">${b.anormal[0]}–${b.anormal[1]}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  html += `
+    <div class="disclaimer">
+      ⚠️ <strong>Aviso importante:</strong> Este instrumento é de rastreamento e <strong>não realiza diagnóstico clínico</strong>. Os resultados devem ser interpretados por profissional de saúde ou educação habilitado. Uma pontuação elevada não equivale a diagnóstico.
+    </div>
+    <div class="actions">
+      <button class="btn-download" onclick="downloadPDF()">⬇ Baixar Resultado em PDF</button>
+      <button class="btn-restart" onclick="reiniciar()">Reiniciar</button>
+    </div>
+    <div class="citation">
+      SDQ — Strengths and Difficulties Questionnaire. Robert Goodman (1997).<br>
+      Versão em português: SDQ-Por. Reprodução autorizada para uso clínico e de pesquisa.
+    </div>
+  `;
+
+  document.getElementById('results-content').innerHTML = html;
+  showScreen('screen-results');
+
+  setTimeout(() => {
+    document.querySelectorAll('.scale-bar-fill').forEach(el => {
+      el.style.transition = 'width 1s ease';
+      el.style.width = el.dataset.w;
+    });
+  }, 200);
+}
+
+// ─── PDF ──────────────────────────────────────────────────────
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const sc = calcScores();
+  const totalClass = classificar(sc.total, 'total');
+  const colMap = { normal:[22,101,52], limítrofe:[146,64,14], anormal:[153,27,27] };
+  const col = colMap[totalClass];
+
+  // Header
+  doc.setFillColor(30, 58, 138);
+  doc.rect(0, 0, 210, 50, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(17);
+  doc.text('Questionário de Capacidades e Dificuldades', 105, 16, { align: 'center' });
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text('SDQ — Strengths and Difficulties Questionnaire', 105, 26, { align: 'center' });
+  doc.setFontSize(10);
+  doc.text(`Respondente: ${respondente === 'pais' ? 'Pais / Responsáveis' : 'Professor / Educador'}   ·   ${new Date().toLocaleDateString('pt-BR')}`, 105, 38, { align: 'center' });
+
+  // Total
+  doc.setFillColor(...col);
+  doc.rect(15, 58, 180, 36, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('PONTUAÇÃO TOTAL DE DIFICULDADES', 105, 68, { align: 'center' });
+  doc.setFontSize(30);
+  doc.text(String(sc.total), 60, 86, { align: 'center' });
+  doc.setFontSize(11);
+  doc.text('de 40 pontos', 60, 93, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text(classLabel(totalClass), 148, 82, { align: 'center' });
+
+  // Escalas
+  let y = 104;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(30, 58, 138);
+  doc.text('Pontuação por Escala', 20, y);
+  y += 8;
+
+  ESCALAS.forEach(e => {
+    const val = sc[e.id];
+    const cls = classificar(val, e.id);
+    const cc = colMap[cls];
+    doc.setFillColor(240, 244, 255);
+    doc.rect(20, y, 170, 9, 'F');
+    doc.setFillColor(...cc);
+    doc.rect(20, y, Math.round((val / e.max) * 100), 9, 'F');
+    doc.setTextColor(30, 41, 59);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text(e.label, 24, y + 6);
+    doc.text(`${val}/${e.max} — ${classLabel(cls)}`, 170, y + 6, { align: 'right' });
+    y += 12;
+  });
+
+  // Impacto
+  y += 6;
+  const impMax = respondente === 'pais' ? 10 : 6;
+  const impClass = sc.impacto >= 2 ? 'anormal' : sc.impacto === 1 ? 'limítrofe' : 'normal';
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(30, 58, 138);
+  doc.text(`Suplemento de Impacto: ${sc.impacto}/${impMax} — ${classLabel(impClass)}`, 20, y);
+  y += 10;
+
+  const impPergs = respondente === 'pais' ? IMPACTO_PAIS : IMPACTO_PROF;
+  impPergs.forEach((p, i) => {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`• ${p}: ${IMPACTO_OPTS[impactAnswers[i]] || 'Nada'}`, 22, y);
+    y += 7;
+  });
+
+  // Disclaimer
+  y += 6;
+  doc.setFillColor(254, 243, 199);
+  doc.rect(15, y, 180, 18, 'F');
+  doc.setTextColor(146, 64, 14);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.text('Aviso: Este instrumento é de rastreamento e não realiza diagnóstico clínico. Resultados devem ser', 105, y + 7, { align: 'center' });
+  doc.text('interpretados por profissional habilitado. Uma pontuação elevada não equivale a diagnóstico.', 105, y + 13, { align: 'center' });
+
+  y += 26;
+  doc.setTextColor(150,150,150);
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(8);
+  doc.text('SDQ — Robert Goodman (1997). Versão em português: SDQ-Por.', 105, y, { align: 'center' });
+
+  doc.save('SDQ-resultado.pdf');
+}
+
+function reiniciar() {
+  answers = new Array(25).fill(null);
+  impactAnswers = [];
+  currentQ = 0;
+  respondente = '';
+  showScreen('screen-start');
+}
+</script>
+</body>
+</html>
