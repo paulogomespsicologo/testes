@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PD-CRS – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+  --fs:#4AABAB;  /* Frontal-Subcortical */
+  --cp:#8B6FBE;  /* Cortical Posterior */
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;padding-bottom:80px;}
+
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:44px 24px 36px;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(74,171,171,.2) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(139,111,190,.15) 0%,transparent 70%);}
+.header-inner{max-width:960px;margin:0 auto;position:relative;z-index:1;}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,40px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:8px;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.6);font-size:13px;max-width:540px;line-height:1.65;}
+.header-badge{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:6px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;font-size:11px;color:rgba(255,255,255,.7);}
+
+/* SCORE BAR */
+.score-bar{position:sticky;top:0;z-index:200;background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.2);flex-wrap:wrap;}
+.sb-main{display:flex;align-items:baseline;gap:6px;}
+.sb-score{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:#fff;line-height:1;}
+.sb-max{font-size:13px;color:rgba(255,255,255,.4);}
+.sb-label{font-size:9px;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;display:block;}
+.sb-compostos{display:flex;gap:14px;flex-wrap:wrap;}
+.sb-comp{text-align:center;}
+.sb-comp-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;display:block;line-height:1;}
+.sb-comp-lbl{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.5px;text-transform:uppercase;display:block;}
+.sb-divider{width:1px;height:30px;background:rgba(255,255,255,.15);flex-shrink:0;}
+.sb-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;background:var(--green);color:#fff;white-space:nowrap;}
+
+.wrap{max-width:960px;margin:0 auto;padding:22px 16px 0;}
+
+/* PATIENT */
+.patient-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.patient-panel h3{font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:14px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group label{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+.form-group input,.form-group select{padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal-d);}
+
+/* COMPOSTOS LEGEND */
+.compostos-legend{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.cl-card{border-radius:14px;padding:14px 16px;border:1.5px solid;}
+.cl-card h4{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;}
+.cl-card p{font-size:12px;line-height:1.6;}
+.cl-items{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.cl-tag{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:500;border:1px solid;}
+
+/* SUBTESTS */
+.subtest{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 8px rgba(27,58,92,.04);}
+.st-header{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.st-header:hover{background:rgba(0,0,0,.02);}
+.st-left{display:flex;align-items:center;gap:12px;}
+.st-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.st-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;}
+.st-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.st-right{display:flex;align-items:center;gap:10px;}
+.st-score{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;min-width:32px;text-align:right;}
+.st-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;letter-spacing:.5px;}
+.st-chevron{font-size:11px;color:var(--muted);transition:transform .2s;}
+.subtest.open .st-chevron{transform:rotate(180deg);}
+.st-body{display:none;padding:14px 18px 18px;border-top:1px solid var(--border);}
+.subtest.open .st-body{display:block;}
+
+/* INPUT STYLES */
+.score-input{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.score-input label{font-size:12px;color:var(--muted);}
+.score-num{width:70px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--ink);background:var(--bg);outline:none;text-align:center;-moz-appearance:textfield;}
+.score-num:focus{border-color:var(--teal-d);}
+.score-num::-webkit-outer-spin-button,.score-num::-webkit-inner-spin-button{-webkit-appearance:none;}
+.score-max{font-size:13px;color:var(--muted);}
+
+/* Attempt scores (memory) */
+.attempt-row{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:8px;align-items:center;margin-top:10px;}
+.att-label{font-size:11px;color:var(--muted);text-align:center;}
+.att-best{font-size:12px;font-weight:500;color:var(--teal-d);text-align:center;padding:6px;}
+
+/* INSTRUCTION */
+.inst-box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.7;color:var(--muted);margin-bottom:12px;}
+.inst-box strong{color:var(--ink);}
+
+/* Items checklist (clock) */
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.cl-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:12px;line-height:1.5;transition:all .15s;}
+.cl-item:hover{border-color:var(--teal-d);}
+.cl-item.checked{background:rgba(74,171,171,.08);border-color:var(--teal-d);}
+.cl-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.cl-item.checked .cl-check{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+
+/* Fluency grid */
+.fluency-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.fluency-col label{font-size:11px;font-weight:500;color:var(--muted);display:block;margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;}
+.fluency-col textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg);resize:vertical;min-height:80px;outline:none;transition:border-color .2s;}
+.fluency-col textarea:focus{border-color:var(--teal-d);}
+
+/* OBS */
+.obs-area{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg);resize:vertical;min-height:50px;outline:none;margin-top:8px;transition:border-color .2s;}
+.obs-area:focus{border-color:var(--teal-d);}
+
+/* RESULT */
+.result-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:18px;padding:28px;margin-bottom:18px;color:#fff;position:relative;overflow:hidden;}
+.result-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(139,111,190,.2) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.rh-scores{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px;}
+.rh-score-item{text-align:center;}
+.rh-val{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;color:#fff;line-height:1;display:block;}
+.rh-lbl{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;display:block;margin-top:2px;}
+.rh-desc{font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;max-width:500px;}
+.rh-subtests{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:16px;}
+.rh-st{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 12px;text-align:center;}
+.rh-st-val{font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;display:block;line-height:1;}
+.rh-st-lbl{font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.5px;display:block;margin-top:2px;}
+
+.normative-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;}
+.normative-card h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:8px;}
+.normative-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.normative-card a{display:inline-block;padding:10px 22px;background:var(--teal-d);color:#fff;border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;}
+.normative-card a:hover{background:var(--teal);}
+
+.obs-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;}
+.obs-card h3{font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:8px;}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-row .btn{flex:1;text-align:center;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:13px;margin-top:40px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:600px){
+  .compostos-legend{grid-template-columns:1fr;}
+  .checklist{grid-template-columns:1fr;}
+  .fluency-grid{grid-template-columns:1fr;}
+  .sb-compostos{display:none;}
+  .sb-divider{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Avaliação Cognitiva na Doença de Parkinson · Examinador</div>
+    <h1><strong>PD-CRS</strong> — Parkinson's Disease<br>Cognitive Rating Scale</h1>
+    <p>Ferramenta de registro para o examinador. Aplique o protocolo completo e registre as pontuações de cada subteste. Os escores compostos são calculados automaticamente.</p>
+    <div class="header-badge">⚠ Uso exclusivo do examinador treinado · Não é versão de autorrelato</div>
+  </div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <div>
+    <div class="sb-main">
+      <span class="sb-score" id="sbTotal">0</span>
+      <span class="sb-max">/134</span>
+    </div>
+    <span class="sb-label">Total PD-CRS</span>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-compostos">
+    <div class="sb-comp">
+      <span class="sb-comp-val" id="sbFS" style="color:var(--fs)">0<span style="font-size:12px;color:rgba(255,255,255,.3)">/104</span></span>
+      <span class="sb-comp-lbl">Frontal-Subcortical</span>
+    </div>
+    <div class="sb-comp">
+      <span class="sb-comp-val" id="sbCP" style="color:var(--cp)">0<span style="font-size:12px;color:rgba(255,255,255,.3)">/30</span></span>
+      <span class="sb-comp-lbl">Cortical Posterior</span>
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <button class="sb-btn" onclick="scrollToResult()">Ver resultado ↓</button>
+</div>
+
+<div class="wrap">
+
+<!-- PATIENT -->
+<div class="patient-panel">
+  <h3>Dados do Paciente</h3>
+  <div class="form-grid">
+    <div class="form-group" style="grid-column:span 2"><label>Nome completo</label><input type="text" id="pat-nome" placeholder="Nome do paciente"></div>
+    <div class="form-group"><label>Data de nascimento</label><input type="date" id="pat-nasc"></div>
+    <div class="form-group"><label>Idade</label><input type="number" id="pat-idade" placeholder="ex: 65" min="20" max="94"></div>
+    <div class="form-group"><label>Sexo</label>
+      <select id="pat-sexo"><option value="F">Feminino</option><option value="M">Masculino</option></select>
+    </div>
+    <div class="form-group"><label>Escolaridade (anos)</label><input type="number" id="pat-edu" placeholder="ex: 8" min="0" max="30"></div>
+    <div class="form-group"><label>Data da avaliação</label><input type="date" id="pat-data"></div>
+    <div class="form-group"><label>Examinador</label><input type="text" id="pat-exam" placeholder="Nome do examinador"></div>
+  </div>
+</div>
+
+<!-- COMPOSTOS LEGEND -->
+<div class="compostos-legend">
+  <div class="cl-card" style="border-color:rgba(74,171,171,.35);background:rgba(74,171,171,.04)">
+    <h4 style="color:var(--fs)">Frontal-Subcortical (104 pts)</h4>
+    <p style="color:var(--muted)">Avalia funções executivas e subcorticais frequentemente afetadas na DP.</p>
+    <div class="cl-items">
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">Mem. Imediata</span>
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">At. Sustentada</span>
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">Mem. Operacional</span>
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">Relógio Esp.</span>
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">Mem. Tardia</span>
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">Fluência Alt.</span>
+      <span class="cl-tag" style="color:var(--fs);border-color:var(--fs)44;background:rgba(74,171,171,.07)">Fluência Ações</span>
+    </div>
+  </div>
+  <div class="cl-card" style="border-color:rgba(139,111,190,.35);background:rgba(139,111,190,.04)">
+    <h4 style="color:var(--cp)">Cortical Posterior (30 pts)</h4>
+    <p style="color:var(--muted)">Avalia funções corticais posteriores — nomeação e capacidade visuoconstrutiva.</p>
+    <div class="cl-items">
+      <span class="cl-tag" style="color:var(--cp);border-color:var(--cp)44;background:rgba(139,111,190,.07)">Nomeação Visual</span>
+      <span class="cl-tag" style="color:var(--cp);border-color:var(--cp)44;background:rgba(139,111,190,.07)">Cópia Relógio</span>
+    </div>
+  </div>
+</div>
+
+<!-- SUBTESTS -->
+<div id="subtestsContainer"></div>
+
+<!-- RESULT -->
+<div class="result-hero" id="resultHero">
+  <div class="rh-eyebrow">PD-CRS — Resultado</div>
+  <div class="rh-scores">
+    <div class="rh-score-item">
+      <span class="rh-val" id="rhTotal">0</span>
+      <span class="rh-lbl">Total /134</span>
+    </div>
+    <div class="rh-score-item">
+      <span class="rh-val" id="rhFS" style="color:rgba(74,171,171,.8)">0</span>
+      <span class="rh-lbl">Frontal-Subcortical /104</span>
+    </div>
+    <div class="rh-score-item">
+      <span class="rh-val" id="rhCP" style="color:rgba(139,111,190,.8)">0</span>
+      <span class="rh-lbl">Cortical Posterior /30</span>
+    </div>
+  </div>
+  <div class="rh-desc" id="rhDesc">Preencha os subtestes para ver o resumo clínico.</div>
+  <div class="rh-subtests" id="rhSubtests"></div>
+</div>
+
+<!-- NORMATIVE -->
+<div class="normative-card">
+  <h3>Correção Normativa Brasileira</h3>
+  <p>A interpretação clínica do PD-CRS requer correção por idade, escolaridade e sexo, baseada em dados normativos brasileiros de Brandão et al. (2023). Após registrar os dados acima, acesse a calculadora online para obter os escores ajustados (z-score, T-score e percentil).</p>
+  <a href="https://tuliocastro.github.io/normas-regressao/#!/table" target="_blank" rel="noopener">Acessar Calculadora Normativa →</a>
+</div>
+
+<!-- OBS -->
+<div class="obs-card">
+  <h3>Observações clínicas</h3>
+  <textarea class="obs-area" id="obsGeral" rows="4" placeholder="Registre observações clínicas relevantes: comportamento durante a avaliação, presença de tremor, bradicinesia, fadiga, medicação em uso, estadiamento da DP (H&Y), etc."></textarea>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" onclick="downloadPDF()">⬇ Gerar relatório em PDF</button>
+  <button class="btn btn-outline" onclick="resetForm()">↺ Nova avaliação</button>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// SUBTESTS DEFINITION
+// ═══════════════════════════════════════
+// composite: 'FS' = Frontal-Subcortical, 'CP' = Cortical Posterior
+var SUBTESTS = [
+  {
+    id:'mem_imediata', num:1, composite:'FS',
+    name:'Memória Verbal com Evocação Livre Imediata',
+    sub:'Maior pontuação entre 3 tentativas · /12',
+    max:12, color:'var(--fs)',
+    type:'memory3',
+    inst:'Leia a lista de 12 palavras (ritmo: 1 por segundo). Realize 3 tentativas. Registre as palavras evocadas em cada tentativa. A pontuação é a <strong>maior pontuação entre as 3 tentativas</strong>.',
+    words:['LUZ','SEDA','AREIA','CÍLIO','ARROZ','GRAVATA','QUADRO','BICICLETA','ESTRELA','LEÃO','ANEL','PERFUME']
+  },
+  {
+    id:'nomeacao', num:2, composite:'CP',
+    name:'Nomeação por Confronto Visual',
+    sub:'20 cartões · /20',
+    max:20, color:'var(--cp)',
+    type:'simple',
+    inst:'Mostrar os 20 cartões consecutivamente. Paciente nomeia cada figura. Sem limite de tempo, apenas uma tentativa. Sem pistas semânticas ou fonêmicas.'
+  },
+  {
+    id:'atencao', num:3, composite:'FS',
+    name:'Atenção Sustentada',
+    sub:'10 séries de letras e números · /10',
+    max:10, color:'var(--fs)',
+    type:'simple',
+    inst:'Ler série de letras e números. Paciente deve informar <strong>quantas letras</strong> ouviu em cada série. 10 séries (2 de treino, 10 pontuadas).'
+  },
+  {
+    id:'mem_operacional', num:4, composite:'FS',
+    name:'Memória Operacional',
+    sub:'Repetir números e letras separados · /10',
+    max:10, color:'var(--fs)',
+    type:'simple',
+    inst:'Ler lista aleatória de números e letras. Paciente repete <strong>primeiro os números, depois as letras</strong>. Termina após 2 erros consecutivos. 2 séries de treino + 10 pontuadas.'
+  },
+  {
+    id:'relogio_esp', num:5, composite:'FS',
+    name:'Desenho do Relógio (Espontâneo)',
+    sub:'10 critérios · /10',
+    max:10, color:'var(--fs)',
+    type:'checklist',
+    inst:'Solicitar que desenhe um relógio com todos os números marcando <strong>dez horas e vinte e cinco minutos</strong>, com ponteiros em forma de seta.',
+    criteria:[
+      'A figura parece um relógio',
+      'O relógio não é dividido por linhas ou setores',
+      'Há uma disposição simétrica dos números',
+      'Somente são escritos números no intervalo de 1 a 12',
+      'Os números das horas estão corretamente sequenciados',
+      'Somente dois ponteiros são desenhados',
+      'Os ponteiros são representados como setas',
+      'O ponteiro das horas é menor que o ponteiro dos minutos',
+      'Nenhuma palavra foi escrita',
+      'O número "25" não foi desenhado'
+    ]
+  },
+  {
+    id:'relogio_copia', num:6, composite:'CP',
+    name:'Cópia do Desenho do Relógio',
+    sub:'10 critérios · /10',
+    max:10, color:'var(--cp)',
+    type:'checklist',
+    inst:'Apresentar o relógio modelo (ponteiros em 10:25). Solicitar que copie o mais fielmente possível.',
+    criteria:[
+      'A figura parece um relógio',
+      'O relógio não é dividido por linhas ou setores',
+      'Há uma disposição simétrica dos números',
+      'Somente são escritos números no intervalo de 1 a 12',
+      'Os números das horas estão corretamente sequenciados',
+      'Somente dois ponteiros são desenhados',
+      'Os ponteiros são representados como setas',
+      'O ponteiro das horas é menor que o ponteiro dos minutos',
+      'Nenhuma palavra foi escrita',
+      'O número "25" não foi desenhado'
+    ]
+  },
+  {
+    id:'mem_tardia', num:7, composite:'FS',
+    name:'Memória Verbal de Evocação Livre Tardia',
+    sub:'Evocação das 12 palavras iniciais · /12',
+    max:12, color:'var(--fs)',
+    type:'simple',
+    inst:'Solicitar que recorde as palavras da lista inicial. Não forneça pistas. Aplicar após os subtestes intermediários.'
+  },
+  {
+    id:'fluencia_alt', num:8, composite:'FS',
+    name:'Fluência Verbal Alternada',
+    sub:'Alternância letra S / vestuário · /20',
+    max:20, color:'var(--fs)',
+    type:'fluency_alt',
+    inst:'Em 60 segundos, alternar palavras com letra <strong>S</strong> e <strong>itens do vestuário</strong>. 1 ponto por par correto que mantenha a alternância. Máximo: 20 pares (40 palavras).'
+  },
+  {
+    id:'fluencia_acoes', num:9, composite:'FS',
+    name:'Fluência Verbal de Ações',
+    sub:'Verbos / ações · /30',
+    max:30, color:'var(--fs)',
+    type:'simple',
+    inst:'Em 60 segundos, dizer o maior número de <strong>ações (verbos no infinitivo)</strong> que puder pensar. Não repetir variações da mesma palavra.'
+  }
+];
+
+var scores = {};
+var checklistStates = {}; // id -> array of booleans
+var memScores = {}; // id -> {t1, t2, t3}
+SUBTESTS.forEach(function(st){
+  scores[st.id]=0;
+  if(st.type==='checklist') checklistStates[st.id]=new Array(10).fill(false);
+  if(st.type==='memory3') memScores[st.id]={t1:0,t2:0,t3:0};
+});
+
+// ═══════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════
+function buildSubtests(){
+  var c=document.getElementById('subtestsContainer'); c.innerHTML='';
+  SUBTESTS.forEach(function(st,i){
+    var sec=document.createElement('div');
+    sec.className='subtest'+(i===0?' open':'');
+    sec.id='st-'+st.id;
+    var color=st.composite==='FS'?'var(--fs)':'var(--cp)';
+    var badge=st.composite==='FS'?
+      '<span class="st-badge" style="background:rgba(74,171,171,.12);color:var(--fs)">Frontal-Subcortical</span>':
+      '<span class="st-badge" style="background:rgba(139,111,190,.12);color:var(--cp)">Cortical Posterior</span>';
+    var bodyHtml=buildSubtestBody(st);
+    sec.innerHTML=
+      '<div class="st-header" onclick="toggleST(\''+st.id+'\')">'+
+        '<div class="st-left">'+
+          '<div class="st-num" style="background:'+color+'">'+st.num+'</div>'+
+          '<div>'+
+            '<div class="st-title">'+st.name+'</div>'+
+            '<div class="st-sub">'+st.sub+' &nbsp;'+badge+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="st-right">'+
+          '<span class="st-score" id="stscore-'+st.id+'" style="color:'+color+'">'+scores[st.id]+'</span>'+
+          '<span style="font-size:11px;color:var(--muted)">/'+st.max+'</span>'+
+          '<span class="st-chevron">▼</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="st-body">'+
+        '<div class="inst-box">'+st.inst+'</div>'+
+        bodyHtml+
+        '<textarea class="obs-area" id="obs-'+st.id+'" rows="2" placeholder="Observações deste subteste…"></textarea>'+
+      '</div>';
+    c.appendChild(sec);
+  });
+  buildSbSubtests();
+}
+
+function buildSubtestBody(st){
+  if(st.type==='simple'||st.type==='fluency_alt'){
+    var extra='';
+    if(st.type==='fluency_alt'){
+      extra='<div class="fluency-grid" style="margin-bottom:10px">'+
+        '<div class="fluency-col"><label>Palavras com S</label><textarea id="flu-s-'+st.id+'" rows="5" placeholder="sapo, seda, sopa…"></textarea></div>'+
+        '<div class="fluency-col"><label>Vestuário</label><textarea id="flu-v-'+st.id+'" rows="5" placeholder="camisa, calça, meia…"></textarea></div>'+
+      '</div>';
+    }
+    return extra+
+      '<div class="score-input">'+
+        '<label>Pontuação:</label>'+
+        '<input class="score-num" type="number" id="sn-'+st.id+'" value="'+scores[st.id]+'" min="0" max="'+st.max+'" oninput="setScoreInput(\''+st.id+'\',this.value)">'+
+        '<span class="score-max">/ '+st.max+' pts</span>'+
+      '</div>';
+  }
+  if(st.type==='memory3'){
+    var m=memScores[st.id];
+    return '<div class="attempt-row">'+
+        '<div class="att-label">1ª Tentativa</div>'+
+        '<div class="att-label">2ª Tentativa</div>'+
+        '<div class="att-label">3ª Tentativa</div>'+
+        '<div class="att-label">Maior</div>'+
+        '<input class="score-num" type="number" id="mem-t1-'+st.id+'" value="'+m.t1+'" min="0" max="12" oninput="setMemScore(\''+st.id+'\',1,this.value)">'+
+        '<input class="score-num" type="number" id="mem-t2-'+st.id+'" value="'+m.t2+'" min="0" max="12" oninput="setMemScore(\''+st.id+'\',2,this.value)">'+
+        '<input class="score-num" type="number" id="mem-t3-'+st.id+'" value="'+m.t3+'" min="0" max="12" oninput="setMemScore(\''+st.id+'\',3,this.value)">'+
+        '<div class="att-best" id="mem-best-'+st.id+'">'+scores[st.id]+'</div>'+
+      '</div>';
+  }
+  if(st.type==='checklist'){
+    var state=checklistStates[st.id];
+    var items=st.criteria.map(function(c,i){
+      var checked=state[i];
+      return '<div class="cl-item'+(checked?' checked':'')+'" onclick="toggleCheck(\''+st.id+'\','+i+')">'+
+        '<div class="cl-check">'+(checked?'✓':'')+'</div>'+
+        c+
+      '</div>';
+    }).join('');
+    return '<div class="checklist" id="cl-'+st.id+'">'+items+'</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-top:10px">'+
+        '<span style="font-size:12px;color:var(--muted)">Pontuação total:</span>'+
+        '<span class="score-num" style="pointer-events:none;background:var(--bg)" id="sn-'+st.id+'">'+scores[st.id]+'</span>'+
+        '<span class="score-max">/ '+st.max+' pts</span>'+
+      '</div>';
+  }
+  return '';
+}
+
+function toggleST(id){
+  document.getElementById('st-'+id).classList.toggle('open');
+}
+
+function buildSbSubtests(){
+  var c=document.getElementById('rhSubtests'); c.innerHTML='';
+  SUBTESTS.forEach(function(st){
+    var col=st.composite==='FS'?'var(--fs)':'var(--cp)';
+    c.innerHTML+='<div class="rh-st">'+
+      '<span class="rh-st-val" id="rhst-'+st.id+'" style="color:'+col+'">'+scores[st.id]+'</span>'+
+      '<span class="rh-st-lbl">'+st.name.substring(0,16)+'…</span>'+
+    '</div>';
+  });
+}
+
+// ═══════════════════════════════════════
+// SET SCORES
+// ═══════════════════════════════════════
+function setScoreInput(id,val){
+  var st=SUBTESTS.find(function(s){return s.id===id;});
+  var v=Math.max(0,Math.min(parseInt(val)||0,st.max));
+  scores[id]=v;
+  updateAll();
+}
+
+function setMemScore(id,trial,val){
+  var v=Math.max(0,Math.min(parseInt(val)||0,12));
+  memScores[id]['t'+trial]=v;
+  var best=Math.max(memScores[id].t1,memScores[id].t2,memScores[id].t3);
+  scores[id]=best;
+  var bestEl=document.getElementById('mem-best-'+id);
+  if(bestEl) bestEl.textContent=best;
+  updateAll();
+}
+
+function toggleCheck(id,idx){
+  checklistStates[id][idx]=!checklistStates[id][idx];
+  // Rebuild checklist
+  var st=SUBTESTS.find(function(s){return s.id===id;});
+  var state=checklistStates[id];
+  var cl=document.getElementById('cl-'+id);
+  if(cl){
+    cl.innerHTML=st.criteria.map(function(c,i){
+      var checked=state[i];
+      return '<div class="cl-item'+(checked?' checked':'')+'" onclick="toggleCheck(\''+id+'\','+i+')">'+
+        '<div class="cl-check">'+(checked?'✓':'')+'</div>'+c+'</div>';
+    }).join('');
+  }
+  var total=state.filter(Boolean).length;
+  scores[id]=total;
+  var sn=document.getElementById('sn-'+id);
+  if(sn) sn.textContent=total;
+  updateAll();
+}
+
+function updateAll(){
+  var total=0, fs=0, cp=0;
+  SUBTESTS.forEach(function(st){
+    total+=scores[st.id];
+    if(st.composite==='FS') fs+=scores[st.id];
+    else cp+=scores[st.id];
+    var el=document.getElementById('stscore-'+st.id);
+    if(el) el.textContent=scores[st.id];
+    var rhe=document.getElementById('rhst-'+st.id);
+    if(rhe) rhe.textContent=scores[st.id];
+  });
+  document.getElementById('sbTotal').textContent=total;
+  document.getElementById('sbFS').innerHTML=fs+'<span style="font-size:12px;color:rgba(255,255,255,.3)">/104</span>';
+  document.getElementById('sbCP').innerHTML=cp+'<span style="font-size:12px;color:rgba(255,255,255,.3)">/30</span>';
+  document.getElementById('rhTotal').textContent=total;
+  document.getElementById('rhFS').textContent=fs;
+  document.getElementById('rhCP').textContent=cp;
+  document.getElementById('rhDesc').textContent=
+    'Total: '+total+'/134 · Frontal-Subcortical: '+fs+'/104 · Cortical Posterior: '+cp+'/30. '+
+    'Para interpretação normativa, utilize a calculadora com dados de idade, escolaridade e sexo.';
+}
+
+function scrollToResult(){ document.getElementById('resultHero').scrollIntoView({behavior:'smooth'}); }
+
+function resetForm(){
+  if(!confirm('Limpar todos os dados?')) return;
+  SUBTESTS.forEach(function(st){
+    scores[st.id]=0;
+    if(st.type==='checklist') checklistStates[st.id]=new Array(10).fill(false);
+    if(st.type==='memory3') memScores[st.id]={t1:0,t2:0,t3:0};
+  });
+  buildSubtests(); updateAll();
+  ['pat-nome','pat-nasc','pat-idade','pat-edu','pat-exam','obsGeral'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Formulário limpo.');
+}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      violet=[139,111,190];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var total=0,fs=0,cp=0;
+  SUBTESTS.forEach(function(st){total+=scores[st.id];if(st.composite==='FS')fs+=scores[st.id];else cp+=scores[st.id];});
+  var nome=document.getElementById('pat-nome').value||'—';
+  var nasc=document.getElementById('pat-nasc').value||'—';
+  var dataAv=document.getElementById('pat-data').value||date;
+  var idade=document.getElementById('pat-idade').value||'—';
+  var sexo=document.getElementById('pat-sexo').value;
+  var edu=document.getElementById('pat-edu').value||'—';
+  var exam=document.getElementById('pat-exam').value||'—';
+  var obs=document.getElementById('obsGeral').value||'';
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,54,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO COGNITIVA NA DOENÇA DE PARKINSON',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text("Parkinson's Disease - Cognitive Rating Scale (PD-CRS)",W/2,25,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+dataAv,W/2,35,{align:'center'});
+  doc.text('Examinador: '+exam+'  ·  paulogomespsicologo.com',W/2,42,{align:'center'});
+  doc.setTextColor(255,200,100);doc.setFontSize(7.5);
+  doc.text('Uso exclusivo do examinador treinado',W/2,49,{align:'center'});
+  y=62;
+
+  // Patient
+  chk(22);
+  sf(bg);sd([210,232,232]);doc.setLineWidth(0.3);doc.roundedRect(M,y,W-M*2,18,3,3,'FD');
+  st(ink);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(nome,M+6,y+7);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);st(muted);
+  doc.text('Nasc.: '+nasc+' · Idade: '+idade+' anos · Sexo: '+(sexo==='F'?'Feminino':'Masculino'),M+6,y+14);
+  doc.text('Escolaridade: '+edu+' anos',W-M,y+7,{align:'right'});
+  y+=26;
+
+  // Score hero
+  chk(34);
+  sf(navy);doc.roundedRect(M,y,W-M*2,28,4,4,'F');
+  // Total
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('TOTAL PD-CRS',W/2,y+6,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(32);
+  doc.text(String(total),W/2-5,y+20,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(13);
+  doc.text('/134',W/2-3,y+20);
+  // FS
+  st(teal);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text(String(fs),M+30,y+16,{align:'center'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text('/104',M+38,y+16);
+  st([180,220,220]);doc.setFontSize(7);doc.text('FRONTAL-SUBCORTICAL',M+30,y+23,{align:'center'});
+  // CP
+  st(violet);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text(String(cp),W-M-30,y+16,{align:'center'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text('/30',W-M-21,y+16);
+  st([200,190,220]);doc.setFontSize(7);doc.text('CORTICAL POSTERIOR',W-M-30,y+23,{align:'center'});
+  y+=36;
+
+  // Subtests table
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Pontuação por Subteste',M,y);y+=8;
+  sf(bg);doc.roundedRect(M,y,W-M*2,8,2,2,'F');
+  st(muted);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  var cw1=80,cw2=20,cw3=25,cw4=25;
+  doc.text('Subteste',M+4,y+5.5);
+  doc.text('Composto',M+cw1+4,y+5.5);
+  doc.text('Pontuação',M+cw1+cw2+4,y+5.5);
+  doc.text('Máximo',M+cw1+cw2+cw3+4,y+5.5);
+  y+=10;
+  SUBTESTS.forEach(function(sub){
+    chk(9);
+    var isFS=sub.composite==='FS';
+    var col=isFS?teal:violet;
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+    doc.text(sub.num+'. '+sub.name.substring(0,42),M+4,y+4);
+    st(col);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text(isFS?'F-SC':'Cort.',M+cw1+4,y+4);
+    doc.setFontSize(10);doc.text(String(scores[sub.id]),M+cw1+cw2+10,y+4,{align:'center'});
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text(String(sub.max),M+cw1+cw2+cw3+10,y+4,{align:'center'});
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+7,W-M,y+7);y+=9;
+  });
+  y+=4;
+
+  // Normative note
+  chk(18);
+  sf([255,248,236]);sd([200,169,110]);doc.setLineWidth(0.4);doc.roundedRect(M,y,W-M*2,14,3,3,'FD');
+  st([122,80,16]);doc.setFont('helvetica','bold');doc.setFontSize(9);
+  doc.text('Correção normativa: acesse tuliocastro.github.io/normas-regressao',M+6,y+7);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+  doc.text('Brandão et al. (2023) · Mov Disord Clin Pract · inserir: idade, escolaridade e sexo acima',M+6,y+12);
+  y+=22;
+
+  // Clock criteria (if applicable)
+  ['relogio_esp','relogio_copia'].forEach(function(id){
+    var st2=SUBTESTS.find(function(s){return s.id===id;});
+    var state=checklistStates[id];
+    chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text(st2.name+' ('+scores[id]+'/10)',M,y);y+=7;
+    st2.criteria.forEach(function(c,i){
+      chk(7);
+      var checked=state[i];
+      st(checked?green:[192,58,58]);doc.setFont('helvetica','bold');doc.setFontSize(8);
+      doc.text(checked?'✓':'✗',M+3,y+3.5);
+      st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8);
+      doc.text(c,M+10,y+3.5);
+      y+=7;
+    });
+    y+=3;
+  });
+
+  if(obs.trim()){
+    chk(14);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text('Observações Clínicas',M,y);y+=7;
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    var olines=doc.splitTextToSize(obs,W-M*2);doc.text(olines,M,y);y+=olines.length*4.2+6;
+  }
+
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  var patName=(document.getElementById('pat-nome').value||'paciente').replace(/\s+/g,'-').toLowerCase();
+  doc.save('pdcrs-'+patName+'-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('Relatório gerado!');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// INIT
+buildSubtests();
+updateAll();
+var today=new Date();
+document.getElementById('pat-data').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+</script>
+</body>
+</html>
