@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHQ-9 – Paulo Gomes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F8;--card:#fff;--navy:#1B3A5C;--teal:#7ECECE;--teal-d:#4AABAB;
+  --green:#6DC44A;--border:#D6E8E8;--muted:#5A7A8A;--ink:#1B3A5C;--gold:#C8A96E;
+  --amber:#E8943A;--red:#C03A3A;--violet:#8B6FBE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:80px;}
+
+.screen{display:none;animation:rise .4s ease both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.header{background:linear-gradient(150deg,#0D2640,var(--navy),#1E4A6E);color:#fff;padding:54px 24px 46px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;top:-80px;right:-60px;background:radial-gradient(circle,rgba(90,122,138,.22) 0%,transparent 70%);}
+.header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;bottom:-50px;left:-40px;background:radial-gradient(circle,rgba(109,196,74,.12) 0%,transparent 70%);}
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,50px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:12px;position:relative;z-index:1;}
+.header h1 strong{font-weight:600;font-style:normal;}
+.header p{color:rgba(255,255,255,.65);font-size:14px;max-width:480px;margin:0 auto 10px;line-height:1.7;position:relative;z-index:1;}
+.credit{font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:none;align-items:center;gap:14px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--green));border-radius:99px;transition:width .4s ease;}
+.prog-txt{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+.wrap{max-width:660px;margin:0 auto;padding:32px 16px 0;}
+
+/* INTRO */
+.intro-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center;margin-top:28px;box-shadow:0 6px 32px rgba(27,58,92,.08);}
+.intro-card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:14px;}
+.intro-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:20px;}
+.notice{background:rgba(90,122,138,.07);border:1.5px solid rgba(90,122,138,.25);border-radius:12px;padding:14px 16px;font-size:13px;color:#3A5A6A;line-height:1.65;margin-bottom:24px;text-align:left;}
+.intro-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;}
+.stat strong{display:block;font-size:18px;font-weight:500;color:var(--navy);}
+.stat span{font-size:11px;color:var(--muted);}
+
+/* BUTTONS */
+.btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:14px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:inline-block;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);color:#fff;width:100%;padding:16px;}
+.btn-primary:hover{background:#5cb33a;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--border);}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;flex-wrap:wrap;}
+.pg-info{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* SCALE LEGEND */
+.scale-ref{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:14px;}
+.scale-ref p{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;font-style:italic;}
+.scale-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.schip{border-radius:10px;padding:10px 6px;text-align:center;border:1.5px solid var(--border);background:var(--bg);}
+.schip .sv{font-size:18px;font-weight:300;display:block;color:var(--navy);font-family:'Cormorant Garamond',serif;}
+.schip .sl{font-size:10px;color:var(--muted);line-height:1.4;margin-top:2px;}
+
+/* QUESTIONS */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:10px;transition:box-shadow .2s;}
+.q-card.answered{box-shadow:0 3px 14px rgba(27,58,92,.07);}
+.q-num{font-size:11px;color:var(--muted);letter-spacing:.6px;margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.65;margin-bottom:14px;font-weight:400;}
+.scale-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.sbt{padding:11px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;line-height:1.35;}
+.sbt:hover{border-color:var(--teal-d);color:var(--ink);}
+.sbt .sv{font-size:16px;font-weight:300;display:block;margin-bottom:3px;font-family:'Cormorant Garamond',serif;}
+.sbt.sel{color:#fff;border-color:transparent;}
+
+/* Q9 SPECIAL (suicidality) */
+.q9-notice{background:#FFF5F5;border:1.5px solid #FFCCCC;border-radius:10px;padding:12px 14px;font-size:12px;color:#7A2020;line-height:1.6;margin-bottom:10px;}
+
+/* RESULTS */
+.results-hero{background:linear-gradient(150deg,#0D2640,var(--navy));border-radius:20px;padding:32px 28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(90,122,138,.25) 0%,transparent 70%);}
+.rh-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,30px);font-weight:300;font-style:italic;margin-bottom:6px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.hero-score{display:flex;align-items:baseline;gap:6px;margin-top:16px;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#fff;line-height:1;}
+.hs-max{font-size:18px;color:rgba(255,255,255,.4);}
+.hero-band{display:inline-block;padding:6px 18px;border-radius:99px;font-size:13px;font-weight:500;margin-top:8px;}
+
+/* SCORE BAND BAR */
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,58,92,.05);}
+.result-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;}
+.rc-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.band-bar{display:flex;height:12px;border-radius:99px;overflow:hidden;margin:10px 0 6px;}
+.band-seg{height:100%;}
+.band-labels{display:flex;font-size:10px;color:var(--muted);}
+.band-label{flex:1;text-align:center;padding-top:2px;}
+.score-marker-wrap{position:relative;height:16px;}
+.score-marker{position:absolute;top:0;transform:translateX(-50%);font-size:12px;transition:left .8s ease;}
+.interp-text{font-size:13px;line-height:1.75;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* Q9 alert */
+.q9-alert{background:#FFF5F5;border:1.5px solid #FFCCCC;border-radius:12px;padding:16px 18px;margin-bottom:16px;font-size:13px;color:#7A2020;line-height:1.6;}
+.q9-alert strong{display:block;margin-bottom:4px;}
+
+/* Item review */
+.item-review{margin-top:10px;}
+.ir-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.ir-row:last-child{border-bottom:none;}
+.ir-num{width:20px;color:var(--muted);font-size:11px;flex-shrink:0;text-align:right;}
+.ir-text{flex:1;color:var(--ink);line-height:1.5;}
+.ir-score{font-weight:600;min-width:16px;text-align:center;flex-shrink:0;}
+.ir-label{font-size:11px;color:var(--muted);min-width:80px;text-align:right;}
+
+.cta-box{background:linear-gradient(135deg,var(--navy),#2A5580);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:20px;}
+.cta-box p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.65;}
+.cta-box a{display:inline-block;background:var(--green);color:#fff;padding:12px 28px;border-radius:99px;font-size:14px;font-weight:500;text-decoration:none;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.btn-row .btn{flex:1;}
+
+.site-footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:22px;font-size:13px;margin-top:48px;}
+.site-footer a{color:var(--teal);text-decoration:none;}
+.site-footer strong{color:#fff;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:99px;font-size:14px;font-weight:500;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){.intro-card{padding:28px 18px;}.scale-chips{grid-template-columns:repeat(4,1fr);}.sbt{font-size:10px;padding:8px 2px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Avaliação Psicológica</div>
+  <h1>Questionário sobre<br><strong>Saúde do Paciente</strong></h1>
+  <p>PHQ-9 — Avaliação da presença e intensidade de sintomas depressivos nas últimas duas semanas.</p>
+  <div class="credit">Adaptado por Paulo Gomes, Neuropsicólogo · Baseado no PHQ-9 (Kroenke & Spitzer, 2002) · Domínio público</div>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 9</div>
+</div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <h2>Como você tem se sentido?</h2>
+    <p>Nas últimas <strong>duas semanas</strong>, com que frequência você foi incomodado por algum dos problemas a seguir? Para cada pergunta, escolha a opção que melhor descreve sua experiência.</p>
+    <div class="notice">
+      ⚠️ Este questionário é uma ferramenta de <strong>triagem</strong>, não um diagnóstico. Os resultados devem ser interpretados por um profissional de saúde. Não substitui avaliação clínica completa.
+    </div>
+    <div class="intro-stats">
+      <div class="stat"><strong>9</strong><span>perguntas</span></div>
+      <div class="stat"><strong>~3 min</strong><span>para completar</span></div>
+      <div class="stat"><strong>0–27</strong><span>pontuação total</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="startTest()">Começar →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+  <div class="scale-ref">
+    <p>"Nas últimas <strong>duas semanas</strong>, com que frequência você foi incomodado por cada um dos problemas abaixo?"</p>
+    <div class="scale-chips">
+      <div class="schip"><span class="sv">0</span><span class="sl">Nenhuma vez</span></div>
+      <div class="schip"><span class="sv">1</span><span class="sl">Menos de 1 semana</span></div>
+      <div class="schip"><span class="sv">2</span><span class="sl">Mais da metade</span></div>
+      <div class="schip"><span class="sv">3</span><span class="sl">Quase todos os dias</span></div>
+    </div>
+  </div>
+  <div id="questionsWrap"></div>
+  <div class="pg-info" id="pgInfo"></div>
+  <div class="nav">
+    <button class="btn btn-outline" onclick="goIntro()">← Voltar</button>
+    <button class="btn btn-primary" onclick="showResults()">Ver resultado →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="results-hero">
+    <div class="rh-eyebrow">PHQ-9 — Resultado</div>
+    <div class="rh-title" id="rhTitle">—</div>
+    <div class="rh-sub" id="rhSub">—</div>
+    <div class="hero-score">
+      <span class="hs-num" id="hsNum">—</span>
+      <span class="hs-max">/27</span>
+    </div>
+    <div class="hero-band" id="heroBand">—</div>
+  </div>
+
+  <div class="result-card" id="interpCard"></div>
+  <div class="q9-alert" id="q9Alert" style="display:none">
+    <strong>⚠️ Atenção — Item 9 (Pensamentos de morte)</strong>
+    A resposta a este item indica presença de pensamentos sobre morte ou de se machucar. Isso requer atenção clínica imediata. Se você estiver em crise, ligue para o CVV: <strong>188</strong> (24h, gratuito).
+  </div>
+  <div class="result-card" id="reviewCard"></div>
+  <div class="result-card" id="funcCard"></div>
+
+  <div class="cta-box">
+    <p>Quer conversar sobre esses resultados e receber acompanhamento especializado?</p>
+    <a href="https://paulogomespsicologo.com">Agende uma consulta →</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadPDF()">⬇ Baixar resultado em PDF</button>
+    <button class="btn btn-outline" onclick="restartTest()">Refazer</button>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  <strong>Paulo Gomes</strong> · Neuropsicólogo · CRP-11/13235<br>
+  <a href="https://paulogomespsicologo.com">paulogomespsicologo.com</a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// PHQ-9 QUESTIONS (domínio público)
+// ═══════════════════════════════════════
+var QUESTIONS = [
+  {n:1,  text:'Pouco interesse ou pouco prazer em fazer as coisas.'},
+  {n:2,  text:'Se sentir "para baixo", deprimido(a) ou sem perspectiva.'},
+  {n:3,  text:'Dificuldade para adormecer ou permanecer dormindo, ou dormir mais do que de costume.'},
+  {n:4,  text:'Se sentir cansado(a) ou com pouca energia.'},
+  {n:5,  text:'Falta de apetite ou comer demais.'},
+  {n:6,  text:'Se sentir mal consigo mesmo(a) — ou achar que é um fracasso ou que decepcionou sua família ou você mesmo(a).'},
+  {n:7,  text:'Dificuldade para se concentrar nas coisas, como ler o jornal ou ver televisão.'},
+  {n:8,  text:'Se mover ou falar tão devagar que outras pessoas poderiam notar? Ou o oposto — estar tão agitado(a) que você fica se mexendo muito mais do que de costume.'},
+  {n:9,  text:'Pensar em se machucar de alguma forma ou que seria melhor estar morto(a).'}
+];
+
+var LABELS = ['Nenhuma vez','Menos de 1 semana','Mais da metade dos dias','Quase todos os dias'];
+var LCOLORS = ['#4AABAB','#7ECECE','#E8943A','#C03A3A'];
+
+// 10th question: functional impairment
+var FUNC_Q = 'Se você marcou algum problema acima, esses problemas dificultaram o quanto para você realizar seu trabalho, tomar conta das coisas em casa ou se relacionar com outras pessoas?';
+var FUNC_OPTS = ['Nenhuma dificuldade','Alguma dificuldade','Muita dificuldade','Extrema dificuldade'];
+
+var answers = {};
+var funcAnswer = null;
+
+// ═══════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════
+function buildQuestions(){
+  var c = document.getElementById('questionsWrap'); c.innerHTML = '';
+  QUESTIONS.forEach(function(q, i){
+    var isQ9 = i === 8;
+    var notice = isQ9 ?
+      '<div class="q9-notice">Este item é importante para sua segurança. Responda com honestidade — as informações são confidenciais e ajudam na avaliação.</div>' : '';
+    var btns = '';
+    for(var v=0;v<=3;v++){
+      var isSel = answers[i]===v;
+      btns += '<button class="sbt'+(isSel?' sel':'')+'" id="sb-'+i+'-'+v+'" '+
+        'style="'+(isSel?'background:'+LCOLORS[v]+';':'')+'" '+
+        'onclick="setAns('+i+','+v+')">'+
+        '<span class="sv">'+v+'</span>'+LABELS[v]+'</button>';
+    }
+    c.innerHTML +=
+      '<div class="q-card'+(answers[i]!==undefined?' answered':'')+'" id="qc-'+i+'">'+
+        '<div class="q-num">Pergunta '+q.n+' de 9'+(isQ9?' &nbsp;·&nbsp; <span style="color:var(--red);font-weight:500">Leia com atenção</span>':'')+' </div>'+
+        notice+
+        '<div class="q-text">'+q.text+'</div>'+
+        '<div class="scale-row">'+btns+'</div>'+
+      '</div>';
+  });
+
+  // Functional impairment question
+  var funcBtns = FUNC_OPTS.map(function(o, i){
+    var isSel = funcAnswer===i;
+    var col = ['#6DC44A','#E8943A','#D4607A','#C03A3A'][i];
+    return '<button class="sbt'+(isSel?' sel':'')+'" id="fb-'+i+'" '+
+      'style="'+(isSel?'background:'+col+';':'')+'" '+
+      'onclick="setFunc('+i+')">'+
+      '<span class="sv" style="color:'+(isSel?'#fff':col)+'">'+i+'</span>'+o+'</button>';
+  }).join('');
+  c.innerHTML +=
+    '<div class="q-card'+(funcAnswer!==null?' answered':'')+'" id="qc-func" style="border-color:var(--gold)33;background:rgba(200,169,110,.03)">'+
+      '<div class="q-num" style="color:var(--gold)">Pergunta 10 (funcionalidade)</div>'+
+      '<div class="q-text">'+FUNC_Q+'</div>'+
+      '<div class="scale-row">'+funcBtns+'</div>'+
+    '</div>';
+
+  updateProg();
+}
+
+function setAns(idx, val){
+  answers[idx]=val;
+  for(var v=0;v<=3;v++){
+    var b=document.getElementById('sb-'+idx+'-'+v);
+    if(!b) continue;
+    if(v===val){b.className='sbt sel';b.style.background=LCOLORS[v];}
+    else{b.className='sbt';b.style.background='';}
+  }
+  document.getElementById('qc-'+idx).className='q-card answered';
+  updateProg();
+}
+
+function setFunc(val){
+  funcAnswer=val;
+  var cols=['#6DC44A','#E8943A','#D4607A','#C03A3A'];
+  for(var i=0;i<4;i++){
+    var b=document.getElementById('fb-'+i);
+    if(!b) continue;
+    if(i===val){b.className='sbt sel';b.style.background=cols[i];}
+    else{b.className='sbt';b.style.background='';}
+  }
+  document.getElementById('qc-func').className='q-card answered';
+}
+
+function updateProg(){
+  var n=Object.keys(answers).length;
+  document.getElementById('progFill').style.width=(n/9*100)+'%';
+  document.getElementById('progTxt').textContent=n+' / 9';
+  document.getElementById('pgInfo').textContent=n+' de 9 respondidas';
+}
+
+function calcScore(){
+  var total=0;
+  for(var i=0;i<9;i++) total+=(answers[i]||0);
+  return total;
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goIntro(){ document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+function startTest(){ buildQuestions(); document.getElementById('progBar').style.display='flex'; showScreen('s-questions'); }
+function restartTest(){ answers={}; funcAnswer=null; document.getElementById('progBar').style.display='none'; showScreen('s-intro'); }
+
+// ═══════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════
+function showResults(){
+  var score = calcScore();
+
+  // Band
+  var band, bandColor, title, desc;
+  if(score <= 4){
+    band='Sintomas mínimos'; bandColor='#6DC44A';
+    title='Sem indicativo significativo de depressão';
+    desc='A pontuação está na faixa mínima (0–4), sem indicativo de sintomas depressivos clinicamente significativos no momento. Continue cuidando do seu bem-estar emocional.';
+  } else if(score <= 9){
+    band='Depressão leve'; bandColor='#A8C840';
+    title='Indicativo de depressão leve';
+    desc='A pontuação sugere sintomas depressivos de intensidade leve (5–9). Recomenda-se monitoramento e avaliação profissional, especialmente se os sintomas persistirem ou causarem impacto funcional.';
+  } else if(score <= 14){
+    band='Depressão moderada'; bandColor='#E8943A';
+    title='Indicativo de depressão moderada';
+    desc='A pontuação indica sintomas depressivos de intensidade moderada (10–14). Buscar avaliação profissional é recomendado. Intervenção psicológica e/ou médica pode ser indicada.';
+  } else if(score <= 19){
+    band='Depressão moderadamente grave'; bandColor='#D4607A';
+    title='Indicativo de depressão moderadamente grave';
+    desc='A pontuação indica sintomas depressivos significativos (15–19). Avaliação e acompanhamento com profissional de saúde mental é fortemente recomendado. Intervenção é indicada.';
+  } else {
+    band='Depressão grave'; bandColor='#C03A3A';
+    title='Indicativo de depressão grave';
+    desc='A pontuação indica sintomas depressivos graves (20–27). Busque apoio profissional especializado com urgência. Em caso de crise ou pensamentos de se machucar, ligue para o CVV: 188.';
+  }
+
+  document.getElementById('hsNum').textContent=score;
+  document.getElementById('rhTitle').textContent=title;
+  document.getElementById('rhSub').textContent='Pontuação '+score+'/27 · '+band;
+  var bandEl=document.getElementById('heroBand');
+  bandEl.textContent=band; bandEl.style.background=bandColor+'22'; bandEl.style.color=bandColor; bandEl.style.border='1px solid '+bandColor+'44';
+
+  // Q9 alert
+  var q9score = answers[8]||0;
+  document.getElementById('q9Alert').style.display = q9score >= 1 ? 'block' : 'none';
+
+  // Interpretation card
+  var pct=score/27*100;
+  document.getElementById('interpCard').innerHTML=
+    '<h3>Interpretação da Pontuação</h3>'+
+    '<div class="rc-sub">PHQ-9 — Kroenke & Spitzer (2002). Domínio público. Faixas de intensidade dos sintomas depressivos.</div>'+
+    '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'+
+      '<span style="font-family:Cormorant Garamond,serif;font-size:56px;font-weight:300;line-height:1;color:'+bandColor+'">'+score+'</span>'+
+      '<span style="font-size:14px;color:var(--muted)">/27 · '+band+'</span>'+
+    '</div>'+
+    '<div class="score-marker-wrap">'+
+      '<div class="score-marker" style="left:'+Math.min(pct,97)+'%;color:'+bandColor+'">▼</div>'+
+    '</div>'+
+    '<div class="band-bar">'+
+      '<div class="band-seg" style="flex:5;background:#6DC44A;opacity:.75"></div>'+
+      '<div class="band-seg" style="flex:5;background:#A8C840;opacity:.75"></div>'+
+      '<div class="band-seg" style="flex:5;background:#E8943A;opacity:.75"></div>'+
+      '<div class="band-seg" style="flex:5;background:#D4607A;opacity:.75"></div>'+
+      '<div class="band-seg" style="flex:7;background:#C03A3A;opacity:.75"></div>'+
+    '</div>'+
+    '<div class="band-labels">'+
+      '<div class="band-label" style="flex:5;color:#6DC44A;font-size:9px">Mínimo<br>0–4</div>'+
+      '<div class="band-label" style="flex:5;color:#A8C840;font-size:9px">Leve<br>5–9</div>'+
+      '<div class="band-label" style="flex:5;color:#E8943A;font-size:9px">Moderado<br>10–14</div>'+
+      '<div class="band-label" style="flex:5;color:#D4607A;font-size:9px">Mod.-grave<br>15–19</div>'+
+      '<div class="band-label" style="flex:7;color:#C03A3A;font-size:9px">Grave<br>20–27</div>'+
+    '</div>'+
+    '<div class="interp-text">'+desc+'</div>';
+
+  // Item review
+  var revHtml='<h3>Respostas por item</h3>'+
+    '<div class="rc-sub">Pontuação individual em cada um dos 9 sintomas.</div>'+
+    '<div class="item-review">';
+  QUESTIONS.forEach(function(q,i){
+    var v=answers[i]||0;
+    var col=v===0?'#6DC44A':v===1?'#7ECECE':v===2?'#E8943A':'#C03A3A';
+    revHtml+=
+      '<div class="ir-row">'+
+        '<span class="ir-num">'+q.n+'.</span>'+
+        '<span class="ir-text">'+q.text+'</span>'+
+        '<span class="ir-score" style="color:'+col+'">'+v+'</span>'+
+        '<span class="ir-label" style="color:'+col+'">'+LABELS[v]+'</span>'+
+      '</div>';
+  });
+  revHtml+='</div>';
+  document.getElementById('reviewCard').innerHTML=revHtml;
+
+  // Functional card
+  if(funcAnswer!==null){
+    var fColors=['#6DC44A','#E8943A','#D4607A','#C03A3A'];
+    var fc=fColors[funcAnswer];
+    document.getElementById('funcCard').innerHTML=
+      '<h3>Impacto Funcional</h3>'+
+      '<div class="rc-sub">Como esses sintomas afetam as suas atividades diárias, trabalho e relacionamentos.</div>'+
+      '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">'+
+        '<span style="font-family:Cormorant Garamond,serif;font-size:32px;font-weight:300;color:'+fc+'">'+funcAnswer+'</span>'+
+        '<span style="font-size:14px;color:'+fc+';font-weight:500">'+FUNC_OPTS[funcAnswer]+'</span>'+
+      '</div>';
+  } else {
+    document.getElementById('funcCard').style.display='none';
+  }
+
+  showScreen('s-results');
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+// ═══════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════
+function downloadPDF(){
+  if(typeof window.jspdf==='undefined'){var sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';sc.onload=gerarPDF;document.head.appendChild(sc);}
+  else gerarPDF();
+}
+
+function gerarPDF(){
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,M=20,y=0;
+  var navy=[27,58,92],teal=[74,171,171],green=[109,196,74],gold=[200,169,110],
+      white=[255,255,255],bg=[244,248,248],muted=[90,122,138],ink=[27,58,92],
+      amber=[232,148,58],red=[192,58,58];
+  var date=new Date().toLocaleDateString('pt-BR');
+  var score=calcScore();
+  var bandColor,bandText;
+  if(score<=4){bandColor=green;bandText='Sintomas mínimos';}
+  else if(score<=9){bandColor=[168,200,64];bandText='Depressão leve';}
+  else if(score<=14){bandColor=amber;bandText='Depressão moderada';}
+  else if(score<=19){bandColor=[212,96,122];bandText='Moderadamente grave';}
+  else{bandColor=red;bandText='Depressão grave';}
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function chk(n){if(y+n>275){doc.addPage();y=20;}}
+
+  // Header
+  sf(navy);doc.rect(0,0,W,50,'F');
+  st(gold);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('AVALIAÇÃO PSICOLÓGICA  ·  PHQ-9',W/2,14,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(20);
+  doc.text('Questionário de Saúde do Paciente — PHQ-9',W/2,26,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,210,220);
+  doc.text('Paulo Gomes, Neuropsicólogo  ·  CRP-11/13235  ·  '+date,W/2,36,{align:'center'});
+  doc.text('paulogomespsicologo.com',W/2,43,{align:'center'});
+  y=60;
+
+  // Score hero
+  chk(34);
+  sf(navy);doc.roundedRect(M,y,W-M*2,28,4,4,'F');
+  st([180,210,220]);doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('PONTUAÇÃO TOTAL (PHQ-9)',W/2,y+7,{align:'center'});
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(34);
+  doc.text(String(score),W/2-6,y+21,{align:'right'});
+  st([160,190,210]);doc.setFont('helvetica','normal');doc.setFontSize(14);
+  doc.text('/27',W/2-4,y+21);
+  sf(bandColor);doc.roundedRect(W/2+10,y+13,56,10,3,3,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text(bandText,W/2+38,y+20,{align:'center'});
+  y+=36;
+
+  // Band bar
+  chk(20);
+  var barW=W-M*2;
+  var segs=[{w:5,c:green},{w:5,c:[168,200,64]},{w:5,c:amber},{w:5,c:[212,96,122]},{w:7,c:red}];
+  var total_w=27,x=M;
+  segs.forEach(function(s){
+    sf(s.c);doc.setGState(new doc.GState({opacity:0.7}));
+    doc.roundedRect(x,y,s.w/total_w*barW,8,1,1,'F');
+    x+=s.w/total_w*barW;
+  });
+  doc.setGState(new doc.GState({opacity:1}));
+  // marker
+  var markerX=M+(score/27)*barW;
+  sf(navy);doc.triangle(markerX-3,y-4,markerX+3,y-4,markerX,y-1,'F');
+  st(muted);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('0',M,y+13);doc.text('5',M+(5/27)*barW,y+13,{align:'center'});
+  doc.text('10',M+(10/27)*barW,y+13,{align:'center'});doc.text('15',M+(15/27)*barW,y+13,{align:'center'});
+  doc.text('20',M+(20/27)*barW,y+13,{align:'center'});doc.text('27',W-M,y+13,{align:'right'});
+  y+=22;
+
+  // Interpretation
+  chk(26);
+  sf(bandColor);doc.rect(M,y,3,20,'F');
+  st(bandColor);doc.setFont('helvetica','bold');doc.setFontSize(11);
+  doc.text(bandText,M+8,y+8);
+  st(ink);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  var interpP=score<=4?'Pontuação na faixa mínima — sem indicativo significativo de sintomas depressivos.':
+    score<=9?'Depressão leve — monitoramento e avaliação profissional recomendados se persistirem.':
+    score<=14?'Depressão moderada — avaliação e acompanhamento profissional recomendados.':
+    score<=19?'Moderadamente grave — intervenção profissional fortemente indicada.':
+    'Depressão grave — busque apoio profissional especializado com urgência.';
+  var il=doc.splitTextToSize(interpP,W-M*2-10);doc.text(il,M+8,y+15);
+  y+=il.length*4.8+14;
+
+  // Item detail
+  chk(12);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Pontuação por Item',M,y);y+=8;
+  var bw=W-M*2-50;
+  QUESTIONS.forEach(function(q,i){
+    chk(11);
+    var v=answers[i]||0;
+    var col=v===0?green:v===1?teal:v===2?amber:red;
+    st(ink);doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+    doc.text(q.n+'. '+q.text.substring(0,58)+(q.text.length>58?'…':''),M,y+4);
+    sf(bg);sd([210,232,232]);doc.setLineWidth(0.2);doc.roundedRect(W-M-30,y,30,6,2,2,'FD');
+    sf(col);doc.roundedRect(W-M-30,y,(v/3)*30,6,2,2,'F');
+    st(col);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text(String(v),W-M,y+4.5,{align:'right'});
+    sd([210,232,232]);doc.setLineWidth(0.2);doc.line(M,y+8,W-M,y+8);y+=10;
+  });
+  y+=4;
+
+  // Q9 alert
+  if((answers[8]||0)>=1){
+    chk(16);
+    sf([255,245,245]);sd([255,180,180]);doc.setLineWidth(0.4);doc.roundedRect(M,y,W-M*2,14,3,3,'FD');
+    st([122,32,32]);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text('Atenção — Item 9: Pensamentos de morte presentes.',M+6,y+7);
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+    doc.text('Requer atenção clínica imediata. CVV: 188 (24h).',M+6,y+12);
+    y+=22;
+  }
+
+  // Functional
+  if(funcAnswer!==null){
+    chk(16);st(ink);doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text('Impacto Funcional',M,y);y+=7;
+    st(muted);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    doc.text(FUNC_OPTS[funcAnswer],M,y);y+=8;
+  }
+
+  // CTA
+  chk(22);y+=4;
+  sf(navy);doc.roundedRect(M,y,W-M*2,18,4,4,'F');
+  st(white);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('Agende uma consulta:',M+10,y+8);
+  st(teal);doc.setFont('helvetica','normal');doc.setFontSize(10);
+  doc.text('paulogomespsicologo.com',M+10,y+14);
+
+  var pages=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pages;p++){doc.setPage(p);sf(navy);doc.rect(0,287,W,10,'F');st(white);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.text('Paulo Gomes · Neuropsicólogo · CRP-11/13235 · paulogomespsicologo.com',W/2,293,{align:'center'});}
+
+  doc.save('phq9-'+date.replace(/\//g,'-')+'.pdf');
+  showToast('PDF baixado com sucesso!');
+}
+</script>
+</body>
+</html>
